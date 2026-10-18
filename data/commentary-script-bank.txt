@@ -1,0 +1,507 @@
+ROCKET LEAGUE COMMENTARY SCRIPT BANK — BROADCAST REWRITE
+400 original spoken lines: 40 situations, 10 variations each.
+
+Copy only the text after the ID into your speech generator.
+Keep the ID as the audio filename, for example save_01.wav.
+Delivery notes and usage notes are not spoken dialogue.
+Team and player names are deliberately omitted. Existing IDs are preserved.
+Use each category's ten variations before repeating one within a game.
+
+PERFORMANCE GUIDE
+Speak as though watching the play, not reading an announcement. Use contractions,
+uneven sentence lengths and natural breaths. Routine touches need interest, not a shout.
+Let anticipation rise before a dangerous play; let the result release that tension.
+An exclamation mark marks emphasis, not a requirement to scream every word.
+For big goals and multiple saves, project with clear consonants rather than distortion.
+Analysis and banter should sound like a thought offered to a co-caster, not a tutorial.
+These lines are original, inspired by the supplied broadcast's pacing and tactical focus.
+Do not carry over its sponsors, event history, named players or transcription errors.
+
+CONTEXT GUIDE
+Select a line only when its category is confirmed. A shot is not a goal; a touch in
+the air is not automatically a reset. A bump or demo does not prove the net is open.
+Double/triple-save calls describe the defensive sequence, not necessarily one player.
+Late-goal calls are for meaningful late scores, not an inconsequential consolation.
+Overtime winners settle a game; they do not automatically settle a series.
+Match-win calls below celebrate a completed game, without inventing a tournament title.
+Tactical and banter lines make general observations, not claims about unseen player stats.
+
+01. KICKOFF — Brisk anticipation; reusable at the opening or after a goal.
+kickoff_01: Here we go. Who gets the better of this kickoff?
+kickoff_02: Back to the middle. Straight into the challenge!
+kickoff_03: And away we go! First touch to fight for.
+kickoff_04: The kickoff comes through. Who's following it up?
+kickoff_05: Here comes the challenge. Watch that second touch.
+kickoff_06: Ball back in play. No easing into this one.
+kickoff_07: Straight at each other from the kickoff!
+kickoff_08: We're underway again. Let's see who takes the initiative.
+kickoff_09: Kickoff time. Can either side get something early?
+kickoff_10: Into the middle they go. Now, where does it break?
+
+02. GROUND DRIBBLE — Watchful and conversational; build toward the release.
+dribble_01: Settles it on the car. What's the next move?
+dribble_02: Carries it forward. The defender has a decision to make.
+dribble_03: Taking a touch, taking a moment. No rush here.
+dribble_04: Keeping it close. Looking for a way through.
+dribble_05: A controlled carry now. Can the challenge get there?
+dribble_06: Working with the ball on the bonnet.
+dribble_07: Waiting to show the flick. That's the threat here.
+dribble_08: Nice control. Now it's about the release.
+dribble_09: Brings it under control. Time to make a decision.
+dribble_10: Keeping possession on the ground. What can come of it?
+
+03. FLICK — Quick emphasis on the release; no assumption of a goal or a beaten defender.
+flick_01: There's the flick! Who's getting to that?
+flick_02: Lets the flick go! A different ball to deal with.
+flick_03: Flicks it forward. Now watch the follow-up.
+flick_04: Up it goes! The flick is away.
+flick_05: Releases it off the car. Here's the next test.
+flick_06: That was the flick they were waiting for!
+flick_07: The carry becomes a flick. Can it cause trouble?
+flick_08: Flicks it away! The defence has to readjust.
+flick_09: There's the release. A flick to chase now.
+flick_10: Goes for the flick! Let's see what it creates.
+
+04. WALL PLAY — Matter-of-fact continuation; interest without exaggerating every wall touch.
+wall_01: Up the sidewall. Can the next touch connect?
+wall_02: Working it along the wall now.
+wall_03: A touch off the wall. Who's underneath it?
+wall_04: Taking the wall route. Looking to keep this going.
+wall_05: Brings the sidewall into play.
+wall_06: Along the wall it goes. Watch the bounce.
+wall_07: There's the wall touch. A new angle to work with.
+wall_08: Gets to it on the wall. What comes next?
+wall_09: Following the ball up the side.
+wall_10: Away from the ground now. Can this develop?
+
+05. AERIAL CHALLENGE — Short, alert calls; leave room for the next event.
+aerial_01: Up for it! Who gets the touch?
+aerial_02: High challenge coming in!
+aerial_03: Going to meet this one in the air.
+aerial_04: Gets airborne. Can the touch come through?
+aerial_05: Up above the play now!
+aerial_06: The aerial challenge is on.
+aerial_07: Going up to contest it!
+aerial_08: A touch to fight for up there.
+aerial_09: Climbing to meet the ball. Watch the timing.
+aerial_10: Into the air! Who comes away with it?
+
+06. AIR DRIBBLE — Rising anticipation, without assuming a beaten defender or finish.
+airdribble_01: Bringing it along in the air. How far can this go?
+airdribble_02: Another touch on the carry. Still working with it.
+airdribble_03: The air dribble's on. Can the defence get a challenge in?
+airdribble_04: Guiding it forward. Looking for that final touch.
+airdribble_05: Keeping the ball close in the air.
+airdribble_06: Here comes the carry. Plenty to think about at the back.
+airdribble_07: Working underneath the ball. Where's the release?
+airdribble_08: Still carrying it! Can something come of this?
+airdribble_09: Bringing the ball through the air. Watch the challenge.
+airdribble_10: Touches to work with up there. Can the attack connect?
+
+07. CEILING PLAY — Intrigue; a ceiling setup alone does not confirm a reset or goal.
+ceiling_01: Up to the ceiling. What is the plan here?
+ceiling_02: Taking the ceiling route. This needs watching.
+ceiling_03: Coming off the ceiling now. Where's the next touch?
+ceiling_04: A setup from the roof. Can it come together?
+ceiling_05: Right up to the ceiling! Looking for something different.
+ceiling_06: Dropping back into the play from above.
+ceiling_07: Using the ceiling. The defence has to keep track.
+ceiling_08: There's the ceiling setup. Now for the execution.
+ceiling_09: Coming down from the roof. What's waiting underneath?
+ceiling_10: A different approach here. Off the ceiling!
+
+08. FLIP RESET — Emphasize the extra threat only after a reset is confirmed.
+reset_01: Gets the reset! Now, when does the flip come?
+reset_02: The reset's there. Don't bite too early.
+reset_03: Another flip to use! This isn't finished.
+reset_04: Picks up the reset. Can the follow-up connect?
+reset_05: There's the reset touch! Watch the delay.
+reset_06: Has the flip back. That's another problem to solve.
+reset_07: Reset secured! Still a move to play.
+reset_08: Got the reset. The defender has to wait for it.
+reset_09: All four wheels connect! There's the extra threat.
+reset_10: The flip is available again. What can it produce?
+
+09. DOUBLE TOUCH — Recognize a confirmed rebound touch; do not announce an unconfirmed goal.
+doubletouch_01: Gets back to the rebound! Lovely read.
+doubletouch_02: The second touch comes through!
+doubletouch_03: Follows it up. There's the double touch!
+doubletouch_04: Meets the rebound! Can the defence deal with that?
+doubletouch_05: Back to the ball again! Read that bounce beautifully.
+doubletouch_06: First touch, then the follow-up. Keeps the attack going.
+doubletouch_07: Gets a second touch on it! Still a threat.
+doubletouch_08: There for the rebound. That takes some reading.
+doubletouch_09: Follows the first touch and connects again!
+doubletouch_10: The bounce comes back. The double touch is there!
+
+10. PASS — Acknowledge the teammate connection without inventing the pass angle.
+pass_01: Finds the teammate. That's more like it.
+pass_02: There's the connection! Can they build on it?
+pass_03: Brings a teammate into the attack.
+pass_04: The pass comes through. Now for the next touch.
+pass_05: Lovely link-up. Keep an eye on the follow-up.
+pass_06: Shares it with the teammate. Another option in play.
+pass_07: That's a pass to work with!
+pass_08: They connect. Can the defence keep up?
+pass_09: Finds the support. The move stays alive.
+pass_10: A teammate gets involved. Can they make it count?
+
+11. SHOT — Very short and urgent; the outcome remains open.
+shot_01: Goes for goal! Can it get through?
+shot_02: Here's the shot!
+shot_03: Lets it go! A chance here.
+shot_04: Takes the attempt. Who can get to it?
+shot_05: A look at goal! Here's the strike.
+shot_06: Looking for the finish!
+shot_07: Puts the shot in. Can it find the net?
+shot_08: An attempt here! The defence has work to do.
+shot_09: Takes aim! Watch this one.
+shot_10: There's the effort! Can they keep it out?
+
+12. POWERFUL SHOT — A strong burst for a confirmed hard hit; avoid assuming its placement.
+powershot_01: Absolutely belts it! What a hit.
+powershot_02: Puts some real pace on that!
+powershot_03: That is struck with venom!
+powershot_04: Hammers it! No holding back there.
+powershot_05: An absolute rocket of a shot!
+powershot_06: Oh, that's got some power behind it!
+powershot_07: Really gets hold of that one!
+powershot_08: Smashes it towards goal!
+powershot_09: That's a fierce strike! Can it get through?
+powershot_10: What a connection! That ball is flying.
+
+13. BLOCKED SHOT — Immediate recognition; the block alone may not end the attack.
+block_01: Blocked! Can't get the shot through.
+block_02: Gets in the way! That attempt is stopped.
+block_03: Read it and shut it down!
+block_04: Runs into the block. No way through there.
+block_05: The defender meets it! Good challenge.
+block_06: Cut off before it can get through!
+block_07: That's blocked away. The defence gets a touch.
+block_08: Denied at the challenge!
+block_09: A body in the way. The shot doesn't get through.
+block_10: Steps into it! Good defensive read.
+
+14. SHOT WIDE OR HIGH — Measured frustration; no claim that every miss was an open net.
+miss_01: Can't find the target. A chance goes missing.
+miss_02: That one's off target!
+miss_03: Doesn't quite get the finish right.
+miss_04: Won't find the net. They'll want another go at that.
+miss_05: The attempt goes astray. A let-off for the defence.
+miss_06: Not the shot they were looking for.
+miss_07: Couldn't put it on target!
+miss_08: The chance is there, but the finish isn't.
+miss_09: That won't trouble the net.
+miss_10: Can't make the attempt count. An opportunity gone.
+
+15. POST HIT — A sharp gasp; avoid promising a rebound that may already be cleared.
+post_01: Off the post! Oh, so close.
+post_02: Hits the upright! Couldn't squeeze it in.
+post_03: The post keeps it out!
+post_04: Against the post! A huge let-off.
+post_05: Finds the frame, not the finish!
+post_06: Oh! Catches the upright.
+post_07: That rattles the post! Inches in it.
+post_08: Off the woodwork! It stays out.
+post_09: The upright gets in the way!
+post_10: So nearly there! Hits the post.
+
+16. CROSSBAR HIT — Surprise and near-miss tension; no invented rebound outcome.
+crossbar_01: Off the bar! Almost.
+crossbar_02: The crossbar keeps it out!
+crossbar_03: Hits the crossbar! Can't get it underneath.
+crossbar_04: Against the bar! That was close.
+crossbar_05: Oh, the crossbar! It won't go in.
+crossbar_06: A little lower and that's a goal!
+crossbar_07: Crashes off the bar!
+crossbar_08: Finds the crossbar instead!
+crossbar_09: The frame denies the finish. Off the bar!
+crossbar_10: So close to getting it underneath! Crossbar.
+
+17. SAVE — Clear approval; reserve the biggest shout for genuinely difficult stops.
+save_01: Kept out! Great save.
+save_02: Gets the touch! The shot is denied.
+save_03: Oh, lovely save! Read that well.
+save_04: Not getting past this time!
+save_05: There to make the stop!
+save_06: The defence comes up with the answer!
+save_07: Saved! That's a touch they needed.
+save_08: Gets in front of it. Keeps it out!
+save_09: A good response to the shot!
+save_10: Gets there! The save comes through.
+
+18. DOUBLE SAVE — Build from disbelief to admiration; two confirmed stops by the defence.
+doublesave_01: Saved, and saved AGAIN! How do they keep that out?
+doublesave_02: The follow-up's stopped as well! Brilliant defending.
+doublesave_03: Two shots, two saves! Still no way through.
+doublesave_04: They get the first one, and somehow the second!
+doublesave_05: Twice denied! The defence stands up to it.
+doublesave_06: Another save! That is a huge defensive effort.
+doublesave_07: The second chance doesn't go in either!
+doublesave_08: Back-to-back stops! They refuse to let it through.
+doublesave_09: One save wasn't enough. They needed two, and got them!
+doublesave_10: Both kept out! What a sequence at the back.
+
+19. TRIPLE SAVE — Genuine disbelief; shout the key beat, then articulate the rest.
+triplesave_01: A third save! HOW is there still no goal?
+triplesave_02: Once, twice, THREE TIMES! What defending!
+triplesave_03: All three kept out! That is ridiculous.
+triplesave_04: Another one! Three saves in that sequence!
+triplesave_05: They cannot get it in! Three chances, all denied.
+triplesave_06: Three saves! What more can the attack do?
+triplesave_07: That's the third stop! Unbelievable resistance.
+triplesave_08: Not the first, not the second, not the THIRD!
+triplesave_09: How have they survived that? Three saves!
+triplesave_10: The defence has answered every one! Three straight stops.
+
+20. GOAL — A clean release of excitement; no assumption of a lead, comeback or match win.
+goal_01: YES! That one's in!
+goal_02: Finds the net! There's the finish.
+goal_03: It's a goal! They've got it through!
+goal_04: There it is! The attack pays off.
+goal_05: Puts it away! There's the finish.
+goal_06: And it's IN! Can't keep that one out.
+goal_07: They've scored! A finish to celebrate.
+goal_08: Gets the goal! Made that chance count.
+goal_09: Over the line! They've found a way through.
+goal_10: Into the net! There's the reward.
+
+21. EQUALIZER — Relief and renewed belief; a confirmed level score.
+equalizer_01: They've got it! We're level again!
+equalizer_02: There's the answer! All square.
+equalizer_03: Back on terms! This game is alive.
+equalizer_04: An equalizer! That's the response they needed.
+equalizer_05: The lead is gone! Nothing between them now.
+equalizer_06: They pull it back! Level on the scoreboard.
+equalizer_07: And we're tied! Back in business.
+equalizer_08: That's their way back in! Scores level.
+equalizer_09: They find the equalizer! A chance to go again.
+equalizer_10: All square once more! They've answered the challenge.
+
+22. GO-AHEAD GOAL — A strong lift; the scoring side has just moved in front.
+goahead_01: They've got the lead! There's the breakthrough.
+goahead_02: In front now! The advantage is theirs.
+goahead_03: That puts them ahead! What a moment.
+goahead_04: There's the go-ahead goal! Now it's on the other side to answer.
+goahead_05: They take the lead! Something to defend now.
+goahead_06: Out in front! They've made that one count.
+goahead_07: The scoreboard turns their way! A lead to work with.
+goahead_08: That's the goal to go ahead!
+goahead_09: Advantage taken! Can they build on it?
+goahead_10: They get their noses in front! The next response matters.
+
+23. OWN GOAL — Shock followed by sympathy; criticize the touch without attacking the person.
+owngoal_01: Oh, no! Into the wrong net.
+owngoal_02: That's an own goal! A horrible moment at the back.
+owngoal_03: The defensive touch goes wrong! It's in their own goal.
+owngoal_04: Oh, that's painful. They've put it in themselves.
+owngoal_05: An own goal! Not what they meant to do at all.
+owngoal_06: Disaster on the touch! It ends up in their own net.
+owngoal_07: They were trying to get it away! Instead, an own goal.
+owngoal_08: That'll hurt. The ball goes into their own goal.
+owngoal_09: Oh, what an unfortunate touch! Wrong end.
+owngoal_10: An own goal from the defence. They'll have to reset after that.
+
+24. LATE GOAL — Release built-up tension; meaningful late scores only, not a guaranteed winner.
+lategoal_01: RIGHT AT THE END! They find the goal!
+lategoal_02: They've left it so late! What a time to score.
+lategoal_03: With the clock almost gone! They get it in!
+lategoal_04: Oh, what a moment! A goal in the dying seconds.
+lategoal_05: They find a finish at the death! Unbelievable timing.
+lategoal_06: That late! That is when they produce it!
+lategoal_07: The goal comes through! Barely any time left.
+lategoal_08: Into the net at the last! What a finish.
+lategoal_09: They've scored so late! What does that do to this game?
+lategoal_10: Just when the clock was running out! There's the goal.
+
+25. OVERTIME WINNER — Full release; celebrate the game, without inventing a series victory.
+overtimewin_01: IT'S IN! They've won it in overtime!
+overtimewin_02: There's your winner! Finally, the breakthrough!
+overtimewin_03: YES! That's the game! Overtime is theirs.
+overtimewin_04: They get it done! One goal, and it's over!
+overtimewin_05: What a time to find the net! The overtime winner!
+overtimewin_06: That's it! They've found the deciding goal!
+overtimewin_07: They take the game! The overtime finish comes through!
+overtimewin_08: The wait is over! They've got the winner!
+overtimewin_09: They've done it! This overtime belongs to them!
+overtimewin_10: Goal! Game over! What a release of pressure.
+
+26. CLEARANCE — Relief and continuation; do not assume every clear creates a counter.
+clear_01: Gets it away. A bit of breathing room.
+clear_02: Cleared out! They needed that touch.
+clear_03: Sends it away from the goal.
+clear_04: There's the clearance. Can they follow it out?
+clear_05: Out of the danger area for now.
+clear_06: A defensive touch to ease the pressure.
+clear_07: Away it goes! Time to reorganise.
+clear_08: Gets it out. A chance to move forward.
+clear_09: The defence finds a clearance!
+clear_10: That takes the immediate danger away.
+
+27. FIFTY-FIFTY — A brief contest call; do not declare a winner before the ball breaks.
+fifty_01: Into the fifty! Where does it fall?
+fifty_02: Both meet the ball. Who gets the break?
+fifty_03: There's the challenge! Neither backing out.
+fifty_04: They collide over it. Watch the next touch.
+fifty_05: A contested ball! Who's there to follow?
+fifty_06: The fifty comes through. Where's the follow-up?
+fifty_07: Both going for it! Where's the advantage?
+fifty_08: Meets the challenge head-on!
+fifty_09: Locked into the fifty. Can a teammate pick it up?
+fifty_10: No backing away from that one! They meet at the ball.
+
+28. INTERCEPTION — Praise the read; a cut-out pass may still leave a contested ball.
+intercept_01: Reads the pass! Cuts it out.
+intercept_02: Gets into the passing lane!
+intercept_03: That's intercepted. The connection isn't there.
+intercept_04: Spots it early! Gets a touch in the way.
+intercept_05: The pass is shut down. Good anticipation.
+intercept_06: Steps across and breaks up the move!
+intercept_07: Saw where that was heading!
+intercept_08: Can't find the teammate. The interception comes through.
+intercept_09: Cuts off the pass! That's a useful read.
+intercept_10: A touch in the passing lane. Stops the link-up.
+
+29. BUMP — A quick physical-play reaction; not every bump targets a defender or opens the net.
+bump_01: Gets the bump! That disrupts the play.
+bump_02: A nudge off the line! Awkward now.
+bump_03: There's contact! Can't ignore the car as well as the ball.
+bump_04: Knocks the opponent off course!
+bump_05: The bump comes through. Can a teammate use it?
+bump_06: Gets a car in the way! A bit of disruption.
+bump_07: Bumped out of position!
+bump_08: That contact changes the next decision.
+bump_09: A bump to deal with! Another problem in the play.
+bump_10: Moves the opponent aside. What can come from that?
+
+30. DEMOLITION — Sharp emphasis; a confirmed demo does not prove a critical defender was removed.
+demo_01: Taken out! That's one car out of the play.
+demo_02: Finds the demo! Can they use that space?
+demo_03: Gone for the moment! The demolition comes through.
+demo_04: There's the explosion! Someone has to cover.
+demo_05: Removes an opponent from the play!
+demo_06: Gets the demolition. Now, can the ball follow?
+demo_07: One less car to deal with for a moment!
+demo_08: A demo comes through! Watch the next few seconds.
+demo_09: Catches the opponent! A demolition to work with.
+demo_10: Blown up! How does that change this play?
+
+31. COUNTERATTACK — Accelerate the delivery; do not invent a two-on-one or empty net.
+counter_01: Here comes the response! Straight back the other way.
+counter_02: Possession turns over. They're on the counter!
+counter_03: Suddenly, the other end is under threat!
+counter_04: A chance to break! Can they make it count?
+counter_05: The attack changes direction. Can the defence get back?
+counter_06: They're away on the counter! Watch the recovery.
+counter_07: A quick transition! Now it's their turn to attack.
+counter_08: The ball comes back the other way. Danger here!
+counter_09: Turns defence into an attack! Can it connect?
+counter_10: Here they come! A counter to deal with.
+
+32. SUSTAINED DEFENSIVE PRESSURE — Concern and tactical detail; use only while pressure persists.
+pressure_01: Another ball coming back in. They're not getting out, and the next clear has to stick.
+pressure_02: They can defend the first shot. It's the ball coming straight back that causes the trouble.
+pressure_03: Still pinned in here. Someone needs to get a touch that a teammate can actually follow.
+pressure_04: There hasn't been much time to breathe at the back. One clean possession would make such a difference.
+pressure_05: The attack keeps coming. Every challenge has to leave somebody covering the next ball.
+pressure_06: You can keep making saves, but you don't want to spend the whole passage having to make them.
+pressure_07: This is getting uncomfortable. The defence needs an exit, and the attack keeps taking it away.
+pressure_08: Still defending, still having to react. Can they force the ball somewhere the attack doesn't want it?
+pressure_09: The pressure hasn't turned into a goal yet. That's the job now: find the finish while they're pinned back.
+pressure_10: A clear would help. A clear towards a teammate would help even more. They need a way out of this.
+
+33. RECOVERY — Brief appreciation for a confirmed return to play; no invented defensive result.
+recovery_01: Quick recovery. Straight back into it.
+recovery_02: Back on the wheels! Doesn't lose much time.
+recovery_03: Lands well. Ready for the next play.
+recovery_04: Recovers and gets moving again.
+recovery_05: Nice landing. Keeps that momentum.
+recovery_06: Wastes no time getting back involved.
+recovery_07: That's a tidy recovery!
+recovery_08: Back into the rotation already.
+recovery_09: Gets the car sorted. Can go again.
+recovery_10: A clean recovery after the touch.
+
+34. ROTATION COMMENTARY — Thoughtful co-caster analysis; observations are general, not invented telemetry.
+rotation_01: I always watch the player behind the challenge. If that player can collect the loose ball, the first touch has done its job.
+rotation_02: You don't need all three cars to win the same ball. Sometimes the useful thing is being there for the ball that comes next.
+rotation_03: There's a fine line between supporting the attack and joining a double commit. That's where the third player has to read the risk.
+rotation_04: A rotation can look a bit passive until the clear comes straight to you. Suddenly, waiting was exactly the right decision.
+rotation_05: The way you leave a play matters. If you cut across your teammate on the way out, you've made the next touch harder before it even happens.
+rotation_06: I like an attack with somewhere to go if the shot is blocked. Give yourself a second ball, rather than putting everything into the first one.
+rotation_07: If the first challenge buys time for a teammate to recover, that's useful. You don't always have to come away with possession yourself.
+rotation_08: Spacing is such a difficult thing to judge at this speed. Too close, you get in each other's way. Too far, the pass isn't an option.
+rotation_09: You want the defence looking at more than one threat. A teammate showing for the pass can make the player on the ball much harder to challenge.
+rotation_10: It's tempting to send another car forward when a goal feels close. But somebody still has to be ready if that next touch goes wrong.
+
+35. BOOST MANAGEMENT CHAT — Conversational tactical detail; no fabricated boost steals or totals.
+boostchat_01: Those little pads don't look glamorous, but they keep you in the play. You don't always have time for a trip to the corner.
+boostchat_02: A full tank is lovely. It's less lovely if the ball has gone past you while you were picking it up.
+boostchat_03: Boost management starts before the tank gets low. It's deciding which touches are worth spending it on.
+boostchat_04: Sometimes the defender doesn't need to fly at all. Get the position right early, and you can save that boost for the recovery.
+boostchat_05: Taking an opponent's boost can be useful even if you don't get a shot straight away. You're making the next defensive rotation harder.
+boostchat_06: I like a recovery route that takes in the small pads. You get back into position and give yourself enough to challenge again.
+boostchat_07: The dangerous part of being low on boost is getting stuck there. If the ball keeps coming back, when do you get a chance to refill?
+boostchat_08: You can spend a lot going for an aerial, then need more to get back. The cost of that play doesn't end when you touch the ball.
+boostchat_09: If a teammate has the boost to go up, let that player use it. There's no prize for both of you spending everything on the same challenge.
+boostchat_10: Having more boost gives you options. Keeping the ball for a moment can give you options too. It's about which one the play needs.
+
+36. LOW OR ZERO BOOST — Recognize confirmed low resources; do not say empty unless zero is confirmed.
+lowboost_01: Not much in the tank. Has to make this touch count.
+lowboost_02: Short on boost here. Can they buy a bit of time?
+lowboost_03: Very little to work with! The positioning matters now.
+lowboost_04: Running low. Needs to keep the next move simple.
+lowboost_05: Limited boost. Can a teammate help out?
+lowboost_06: Can't spend much on this. Has to read it early.
+lowboost_07: The tank's low. A touch to relieve the pressure would help.
+lowboost_08: Not a lot of boost left. This gets awkward.
+lowboost_09: Has to do more with less here!
+lowboost_10: Short of boost, still involved. Can they find the right touch?
+
+37. CLOSING CLOCK — Tightening tension; no fixed seconds, lead, or prediction of a winner.
+lateclock_01: Time is starting to become a problem. There can't be too many loose possessions now.
+lateclock_02: Into the closing stretch. The next chance might be the one that matters.
+lateclock_03: The clock keeps moving. They have to make these last possessions count.
+lateclock_04: Not much regulation time left. Can either side find one more opening?
+lateclock_05: We're getting towards the end. One awkward touch could make this very interesting.
+lateclock_06: The window is getting smaller. There may not be time to build the perfect attack.
+lateclock_07: So little time to put things right if the next challenge goes wrong.
+lateclock_08: The next clear, the next pass, the next shot. Any of them could decide how this ends.
+lateclock_09: We're nearly out of regulation. Keep an eye on where this ball is heading.
+lateclock_10: The closing moments now. Let's see who can make something of them.
+
+38. OVERTIME CHAT — Composed tension; only during tied, sudden-death overtime.
+overtimechat_01: It's one goal now. You want to be brave enough to find it without giving the other side their chance.
+overtimechat_02: Nobody needs to win this twice. One clean attack, and the whole game is theirs.
+overtimechat_03: This is where a little bit of patience helps. There's no need to force the first half-chance you see.
+overtimechat_04: A safe clear keeps you alive. A clear to a teammate might win you the game. That's the difference you're looking for.
+overtimechat_05: The scary thing about overtime is how ordinary the deciding play can look until somebody makes the wrong touch.
+overtimechat_06: You still need support behind the ball. Going all-in for the winner can give the other side exactly what they need.
+overtimechat_07: Every save buys another chance. At some point, one of those chances has to turn into a goal.
+overtimechat_08: You don't have to do anything spectacular here. Find the opening, keep your composure, put the ball away.
+overtimechat_09: It only takes one mistake. But sitting back and waiting for one can be dangerous as well.
+overtimechat_10: One side will have to leave this game without the win. Until that goal comes, there's still a chance for both.
+
+39. CONFIRMED MATCH WIN — Celebrate a completed game; no unsupported series or title claims.
+matchwin_01: That's the game! They've got it done.
+matchwin_02: The result is theirs! Time to take a breath.
+matchwin_03: They take this one! A win on the board.
+matchwin_04: It's over! They've come away with the victory.
+matchwin_05: Game secured! That's the result they wanted.
+matchwin_06: The win goes their way! They'll be pleased with that.
+matchwin_07: They've seen it through! This game belongs to them.
+matchwin_08: That settles this one. They get the win!
+matchwin_09: They finish on top! The game is theirs.
+matchwin_10: Job done in this game! Now they can take that breath.
+
+40. RANDOM CHAT AND BOOTH BANTER — Warm booth conversation; no invented past results or required reply.
+banter_01: I do enjoy a player taking an extra touch instead of just smashing it away. It's the little pause that makes the defender nervous.
+banter_02: From up here, every decision looks obvious. Down there, somebody's arriving at the ball before you've finished having the thought.
+banter_03: You know the touch I'd find difficult? The easy one, immediately after doing something ridiculous. That's where I'd forget how to drive.
+banter_04: The ball gets all the attention. I spend half the time watching the car that hasn't touched it yet. That's often where the trouble starts.
+banter_05: The replay usually makes it look easier. Slow it down enough, and even I start thinking I could have got there. I couldn't.
+banter_06: I love a pass that makes you notice the teammate afterwards. You were watching the solo play, and somebody else was waiting for the whole thing.
+banter_07: You can have a plan for every kickoff. The ball still gets a vote on how that plan goes.
+banter_08: There's a lot to be said for making the opponent uncomfortable. You don't need a highlight every possession. Sometimes you just need a really annoying touch.
+banter_09: Everybody loves the big finish. I'm quite fond of the little touch that stopped the defender getting there in the first place.
+banter_10: The difficult bit is knowing when the clever option is the simple one. Usually just after I've suggested something much more complicated.

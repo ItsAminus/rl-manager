@@ -1,0 +1,261 @@
+.player-profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 32px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.profile-loading, .profile-not-found {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.profile-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-breadcrumbs {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #5f6368);
+  text-transform: uppercase;
+}
+
+.status-notification-banner {
+  background-color: rgba(79, 195, 247, 0.15);
+  border: 1px solid rgba(79, 195, 247, 0.3);
+  color: #4fc3f7;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Header Card */
+.profile-header-card {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-ovr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-pot-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #b388ff;
+  background-color: rgba(124, 77, 255, 0.15);
+  border: 1px solid rgba(124, 77, 255, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.header-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.header-top-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.nat-flag {
+  font-size: 11px;
+  font-weight: 800;
+  background-color: var(--bg-tertiary, #242938);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+}
+
+.region-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.tendency-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-primary, #4fc3f7);
+  background-color: rgba(79, 195, 247, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.header-gamertag {
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.header-realname {
+  font-size: 13px;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.header-team-name {
+  color: #fff;
+}
+
+.header-contract-box {
+  display: flex;
+  gap: 24px;
+  background-color: var(--bg-tertiary, #242938);
+  border: 1px solid var(--border-color, #2d3343);
+  padding: 16px 20px;
+  border-radius: 6px;
+}
+
+.contract-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.contract-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted, #5f6368);
+  letter-spacing: 0.05em;
+}
+
+.contract-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Actions Toolbar */
+.profile-actions-toolbar {
+  display: flex;
+  gap: 12px;
+}
+
+.text-danger {
+  color: var(--accent-danger, #ef5350) !important;
+}
+
+/* Main Grid */
+.profile-attributes-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+}
+
+.profile-radar-panel {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-secondary, #9aa0a6);
+  letter-spacing: 0.08em;
+  align-self: flex-start;
+}
+
+.condition-bars-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.condition-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 36px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.progress-track {
+  height: 6px;
+  background-color: var(--bg-primary, #0f1419);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.fill-morale {
+  background-color: #66bb6a;
+}
+
+.fill-fatigue {
+  background-color: #ef5350;
+}
+
+.fill-consistency {
+  background-color: #4fc3f7;
+}
+
+.condition-val {
+  font-weight: 700;
+  color: #fff;
+  text-align: right;
+}
+
+/* Attributes Columns */
+.profile-attributes-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.attr-group-card {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attr-group-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-primary, #4fc3f7);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}

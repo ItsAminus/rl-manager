@@ -1,0 +1,588 @@
+.design-page {
+  max-width: 1600px;
+  margin: auto;
+  padding: 12px 4px 36px;
+}
+.design-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.design-heading h1 {
+  font-size: clamp(28px, 2.8vw, 42px);
+  letter-spacing: -1.4px;
+  margin: 8px 0 10px;
+}
+.design-heading p {
+  color: var(--text-secondary, #96aaa4);
+  max-width: 650px;
+  line-height: 1.65;
+  margin: 0;
+}
+.design-heading-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.studio-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.75fr) minmax(420px, 1.25fr);
+  gap: 24px;
+  align-items: start;
+}
+.design-controls,
+.design-preview-stack {
+  display: grid;
+  gap: 20px;
+}
+.design-panel {
+  background: var(--bg-panel, #17221c);
+  border: 1px solid var(--border-color, #2a3930);
+  border-radius: 18px;
+  padding: 24px;
+  overflow: hidden;
+}
+.design-panel h2 {
+  font-size: 22px;
+  margin: 8px 0 23px;
+  letter-spacing: -0.5px;
+}
+.design-panel > label,
+.design-fields-grid > label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 16px 0;
+  color: var(--text-secondary, #adbbb6);
+}
+.design-panel input:not([type='color']):not([type='checkbox']):not([type='file']),
+.design-panel select {
+  width: 100%;
+  min-width: 0;
+  background: #0d1712;
+  border: 1px solid #35443c;
+  color: #eaf2ec;
+  border-radius: 10px;
+  padding: 12px;
+  font: inherit;
+  font-weight: 400;
+  box-sizing: border-box;
+}
+.design-panel input:focus,
+.design-panel select:focus {
+  outline: 2px solid #91c6a5;
+  outline-offset: 2px;
+}
+.design-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+.design-color {
+  font-size: 12px;
+  color: #aabdb2;
+  display: grid;
+  gap: 9px;
+}
+.design-color > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.design-color input {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  flex-shrink: 0;
+}
+.design-color code {
+  font-size: 11px;
+  color: #cad9cf;
+}
+.design-color input:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.design-segments {
+  display: flex;
+  background: #0b1510;
+  border: 1px solid #2b3c30;
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.design-segments button {
+  border: 0;
+  background: none;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: #aabeb1;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.design-segments button.active {
+  background: #bfd6c8;
+  color: #0c2014;
+  font-weight: 700;
+}
+.design-hint {
+  font-size: 12px;
+  line-height: 1.75;
+  color: #93a89d;
+  margin: 18px 0 0;
+}
+.design-upload {
+  padding: 16px;
+  border: 1px dashed #5a7866;
+  border-radius: 12px;
+}
+.design-upload input {
+  max-width: 100%;
+  font-size: 12px;
+}
+.design-upload small {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.design-preview-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #99b2a3;
+}
+.design-preview-label > span:first-child {
+  color: #dceadd;
+  font-size: 13px;
+  font-weight: 600;
+}
+.design-preview-label strong {
+  color: #e3eee5;
+  font-size: 17px;
+}
+.brand-banner {
+  border-radius: 12px;
+  overflow: hidden;
+  line-height: 0;
+}
+.brand-banner > svg,
+.brand-banner > img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 10/3;
+  object-fit: contain;
+}
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 22px 0 4px;
+}
+.brand-lockup h2 {
+  font-size: 28px;
+  margin: 0 0 7px;
+  overflow-wrap: anywhere;
+}
+.brand-lockup p {
+  font-size: 12px;
+  color: #abc0b1;
+  line-height: 1.65;
+  margin: 0;
+}
+.brand-crest {
+  width: 100px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.brand-crest svg,
+.brand-crest img {
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+}
+.brand-crest > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal;
+  height: 90px;
+  background: #23372b;
+  border-radius: 20px;
+  font-size: 24px;
+  font-weight: 800;
+}
+.brand-swatches {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.brand-swatches i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #ffffff24;
+}
+.jersey-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  background: radial-gradient(ellipse at center, #ffffff06, transparent);
+}
+.jersey-pair svg {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  filter: drop-shadow(0 14px 10px #0005);
+}
+.jersey-pair > div > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.jersey-pair .text-link {
+  font-size: 11px;
+}
+.studio-timer {
+  max-width: 460px;
+  margin: 16px auto;
+  background: #030609;
+  border: 1px solid #23323d;
+  color: white;
+  padding: 6px 7px 9px;
+}
+.studio-timer-heading {
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  padding: 0 2px 7px;
+  display: flex;
+  justify-content: space-between;
+}
+.studio-timer-main {
+  display: grid;
+  grid-template-columns: 64px 1fr 1.7fr 1fr 64px;
+  align-items: stretch;
+}
+.studio-timer-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 6px;
+  gap: 5px;
+}
+.studio-timer-team img,
+.studio-timer-team svg {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+.studio-timer-team b {
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  height: 42px;
+}
+.studio-timer-team small {
+  font-size: 9px;
+}
+.studio-timer-main > strong {
+  display: grid;
+  place-items: center;
+  font-style: italic;
+  font-size: 42px;
+  font-family: Arial, sans-serif;
+  letter-spacing: -2px;
+}
+.studio-blue {
+  background: linear-gradient(#134894, #318cca);
+}
+.studio-orange {
+  background: linear-gradient(#a56112, #edb84b);
+}
+.studio-time {
+  background: #fafbf9;
+  color: #090c0d;
+  font-size: 38px !important;
+}
+.studio-series {
+  display: flex;
+  gap: 5px;
+  margin: 6px 64px 0;
+}
+.studio-series i {
+  height: 5px;
+  background: #19232a;
+  border: 1px solid #334046;
+  flex: 1;
+}
+.studio-series i:nth-child(3) {
+  border-color: #ddc876;
+}
+.garage-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.garage-roster {
+  position: sticky;
+  top: 0;
+  padding: 20px 12px;
+}
+.garage-roster > .eyebrow,
+.garage-roster > h2 {
+  margin-left: 10px;
+}
+.garage-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  background: none;
+  width: 100%;
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: left;
+  color: #e2efe4;
+  cursor: pointer;
+}
+.garage-player.selected {
+  background: #2c4135;
+  border-color: #729d81;
+}
+.garage-player > span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.garage-player strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.garage-player small {
+  font-size: 10px;
+  color: #a7bcae;
+}
+.garage-player > i {
+  width: 6px;
+  height: 6px;
+  background: #f2d68d;
+  border-radius: 50%;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.garage-squad-actions {
+  margin: 24px 6px 4px;
+  padding-top: 20px;
+  border-top: 1px solid #34453a;
+  display: grid;
+  gap: 12px;
+}
+.garage-squad-actions button {
+  font-size: 12px;
+  padding: 11px 9px;
+}
+.garage-squad-actions small {
+  color: #9bb1a3;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.garage-workspace {
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+}
+.garage-showroom {
+  padding: 22px 22px 15px;
+  background: #101a16;
+}
+.garage-showroom > svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  max-height: 420px;
+}
+.garage-build-details {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  color: #a4b9ad;
+  font-size: 11px;
+}
+.garage-build-details span + span:before {
+  content: '·';
+  margin-right: 15px;
+  opacity: 0.5;
+}
+.garage-controls-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+}
+.design-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+.design-panel label.design-toggle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.7;
+  font-size: 12px;
+}
+.design-toggle input {
+  accent-color: #b5ddb8;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.garage-preset-actions {
+  display: grid;
+  gap: 20px;
+  margin-top: 24px;
+}
+.garage-preset-actions .text-link {
+  text-align: left;
+  font-size: 12px;
+}
+.garage-support p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: #a8beb0;
+}
+.garage-support small {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #89a392;
+}
+.club-brand-strip {
+  margin-bottom: 26px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #ffffff20;
+  position: relative;
+  min-height: 130px;
+  background: #14231d;
+}
+.club-brand-strip > img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  display: block;
+}
+.club-brand-strip-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: absolute;
+  inset: 0;
+  padding: 25px;
+  background: linear-gradient(90deg, #06100bea, transparent);
+}
+.club-brand-strip-content .matchday-team-crest {
+  width: 64px;
+  height: 64px;
+}
+.club-brand-strip-content h2 {
+  margin: 0 0 6px;
+}
+.club-brand-strip-content p {
+  margin: 0;
+  font-size: 12px;
+  color: #cfdfd4;
+}
+.club-brand-strip-content > button {
+  margin-left: auto;
+  background: #142b21df;
+}
+.club-brand-shortcuts {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.club-brand-shortcuts button {
+  font-size: 12px;
+}
+.design-panel:focus-within {
+  border-color: #647e6e;
+}
+@media (max-width: 1200px) {
+  .studio-layout {
+    grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1fr);
+  }
+  .garage-layout {
+    grid-template-columns: 190px 1fr;
+  }
+  .garage-controls-grid {
+    grid-template-columns: 1fr;
+  }
+  .design-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .design-heading-actions {
+    flex-wrap: wrap;
+  }
+  .design-panel {
+    padding: 20px;
+  }
+}
+@media (max-width: 850px) {
+  .studio-layout,
+  .garage-layout {
+    grid-template-columns: 1fr;
+  }
+  .garage-roster {
+    position: static;
+  }
+  .garage-roster .garage-player {
+    display: inline-flex;
+    width: auto;
+    margin: 3px;
+  }
+  .design-heading h1 {
+    font-size: 30px;
+  }
+  .studio-timer-main {
+    grid-template-columns: 48px 1fr 1.7fr 1fr 48px;
+  }
+  .studio-timer-main > strong {
+    font-size: 32px;
+  }
+  .studio-time {
+    font-size: 29px !important;
+  }
+  .studio-timer-team img,
+  .studio-timer-team svg {
+    width: 32px;
+    height: 35px;
+  }
+  .club-brand-strip-content > button {
+    font-size: 11px;
+  }
+  .design-fields-grid {
+    gap: 0 10px;
+  }
+}

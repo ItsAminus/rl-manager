@@ -1,0 +1,74 @@
+.attribute-bar-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 34px;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.attribute-bar-row:hover {
+  background-color: var(--bg-hover, #2a3040);
+}
+
+.attribute-bar-row.highlight {
+  background-color: rgba(79, 195, 247, 0.08);
+  border-left: 2px solid var(--accent-primary, #4fc3f7);
+}
+
+.attribute-bar-label {
+  font-size: 13px;
+  color: var(--text-secondary, #9aa0a6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.attribute-bar-track {
+  height: 6px;
+  background-color: #1a2230;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.attribute-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.attribute-bar-value {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Color tiers */
+.attr-tier-s {
+  background-color: #ffd700;
+  color: #ffd700;
+}
+
+.attr-tier-a {
+  background-color: #2ecc71;
+  color: #2ecc71;
+}
+
+.attr-tier-b {
+  background-color: #00d2ff;
+  color: #00d2ff;
+}
+
+.attr-tier-c {
+  background-color: #af7ac5;
+  color: #af7ac5;
+}
+
+.attr-tier-d {
+  background-color: #7f8c8d;
+  color: #9aa0a6;
+}

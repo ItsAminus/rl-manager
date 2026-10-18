@@ -1,0 +1,201 @@
+.competition-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 32px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.comp-detail-loading {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.comp-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.comp-tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color, #2d3343);
+  padding-bottom: 10px;
+}
+
+.comp-tab {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary, #9aa0a6);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.comp-tab:hover {
+  color: #fff;
+}
+
+.comp-tab.active {
+  color: #000;
+  background-color: var(--accent-primary, #4fc3f7);
+}
+
+/* Standings */
+.standings-table-wrap {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.standings-table th {
+  background-color: var(--bg-tertiary, #242938);
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary, #9aa0a6);
+  letter-spacing: 0.05em;
+}
+
+.standings-table td {
+  padding: 12px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.row-my-team {
+  background-color: rgba(79, 195, 247, 0.05);
+}
+
+.team-col {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.my-team-pill {
+  font-size: 9px;
+  font-weight: 800;
+  background-color: var(--accent-primary, #4fc3f7);
+  color: #000;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.points-col {
+  font-weight: 800;
+  color: #ffd54f;
+  font-size: 14px;
+}
+
+/* Fixtures */
+.fixtures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fixture-row-card {
+  display: grid;
+  grid-template-columns: 110px 1fr 100px auto;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  padding: 12px 20px;
+  border-radius: 6px;
+}
+
+.fix-date {
+  font-size: 12px;
+  color: var(--text-muted, #5f6368);
+}
+
+.fix-matchup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fix-score-badge {
+  background-color: var(--bg-tertiary, #242938);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 800;
+  color: var(--accent-primary, #4fc3f7);
+}
+
+.fix-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted, #5f6368);
+}
+
+/* Bracket */
+.bracket-visual-wrap {
+  display: flex;
+  gap: 40px;
+  padding: 24px 0;
+}
+
+.bracket-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 260px;
+}
+
+.stage-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent-primary, #4fc3f7);
+  letter-spacing: 0.08em;
+}
+
+.bracket-matchup {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.final-matchup {
+  border-color: #ffd54f;
+  box-shadow: 0 0 12px rgba(255, 213, 79, 0.15);
+}
+
+.bracket-team {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-secondary, #9aa0a6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.bracket-team:last-child {
+  border-bottom: none;
+}
+
+.bracket-team.winner {
+  color: #fff;
+  font-weight: 700;
+  background-color: rgba(79, 195, 247, 0.08);
+}
+
+.bracket-team strong {
+  color: #fff;
+}
+
+.event-format-repair{border:1px solid #e2b76a!important;background:linear-gradient(120deg,#31291970,#16221c)!important}.event-format-repair p{line-height:1.7;color:#c8d2ca;max-width:950px}.repair-entrant-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:20px 0}.repair-entrant-list>span{padding:10px 12px;background:#ffffff07;border:1px solid #ffffff18;border-radius:7px;font-size:13px}.repair-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px}@media(max-width:1050px){.repair-entrant-list{grid-template-columns:repeat(2,minmax(0,1fr))}}

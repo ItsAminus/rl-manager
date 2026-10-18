@@ -1,0 +1,36 @@
+{
+  "tiers": [
+    {
+      "minRating": 86,
+      "maxRating": 100,
+      "botId": "nexto",
+      "description": "Full-strength local Nexto (beta 1), approximately GC. All players above 85 use this engine; it is not an RLCS pro clone.",
+      "supportedParameters": ["beta"]
+    },
+    {
+      "minRating": 85,
+      "maxRating": 85,
+      "botId": "nexto",
+      "description": "Local Nexto with beta 0.8, approximately GC. Used for rating 85.",
+      "supportedParameters": ["beta"]
+    },
+    {
+      "minRating": 70,
+      "maxRating": 84,
+      "botId": "necto",
+      "description": "Local Necto, roughly Diamond with rating-dependent native action selection. Plat target needs gameplay calibration.",
+      "supportedParameters": ["beta"]
+    },
+    {
+      "minRating": 0,
+      "maxRating": 69,
+      "botId": "psyonix",
+      "description": "Default Psyonix bot. Used for lower ratings.",
+      "supportedParameters": ["skill"]
+    }
+  ],
+  "fallbacks": {
+    "default": "psyonix",
+    "missing": "psyonix"
+  }
+}

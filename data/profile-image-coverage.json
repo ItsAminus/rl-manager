@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-11",
+  "players": {
+    "total": 5709,
+    "images": 3217,
+    "noPublicImage": 2474,
+    "noVerifiedProfile": 17
+  },
+  "teams": {
+    "total": 1704,
+    "images": 562
+  },
+  "realCommunityAccounts": {
+    "total": 5,
+    "images": 5
+  },
+  "note": "Missing images retain labelled initials. Public profile images may be artwork chosen by the account owner, not headshots."
+}

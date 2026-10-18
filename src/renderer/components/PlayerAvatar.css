@@ -1,0 +1,108 @@
+.player-avatar-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.player-avatar-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.player-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.player-avatar-img.is-photo {
+  filter: contrast(1.05) brightness(1.02);
+}
+
+.player-avatar-ovr-tag {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* SIZES */
+.player-avatar-wrapper.size-sm { width: 36px; height: 36px; }
+.player-avatar-wrapper.size-sm .player-avatar-frame { border-radius: 8px; border-width: 1.5px; }
+
+.player-avatar-wrapper.size-md { width: 52px; height: 52px; }
+.player-avatar-wrapper.size-md .player-avatar-frame { border-radius: 10px; }
+
+.player-avatar-wrapper.size-lg { width: 72px; height: 72px; }
+.player-avatar-wrapper.size-lg .player-avatar-frame { border-radius: 14px; }
+
+.player-avatar-wrapper.size-xl { width: 110px; height: 110px; }
+.player-avatar-wrapper.size-xl .player-avatar-frame { border-radius: 18px; border-width: 2.5px; }
+
+.player-avatar-wrapper.size-hero { width: 150px; height: 150px; }
+.player-avatar-wrapper.size-hero .player-avatar-frame { border-radius: 22px; border-width: 3px; }
+
+/* TIER GLOWS */
+.tier-gold .player-avatar-frame {
+  border-color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+.tier-gold.player-avatar-ovr-tag,
+.tier-gold .player-avatar-ovr-tag {
+  background: #ffd700;
+  color: #0f1419;
+}
+
+.tier-green .player-avatar-frame {
+  border-color: #00e676;
+  box-shadow: 0 0 12px rgba(0, 230, 118, 0.25);
+}
+.tier-green.player-avatar-ovr-tag,
+.tier-green .player-avatar-ovr-tag {
+  background: #00e676;
+  color: #0f1419;
+}
+
+.tier-blue .player-avatar-frame {
+  border-color: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+.tier-blue.player-avatar-ovr-tag,
+.tier-blue .player-avatar-ovr-tag {
+  background: #00e5ff;
+  color: #0f1419;
+}
+
+.tier-silver .player-avatar-frame {
+  border-color: #b0bec5;
+}
+.tier-silver.player-avatar-ovr-tag,
+.tier-silver .player-avatar-ovr-tag {
+  background: #b0bec5;
+  color: #0f1419;
+}
+
+.tier-bronze .player-avatar-frame {
+  border-color: #78909c;
+}
+.tier-bronze.player-avatar-ovr-tag,
+.tier-bronze .player-avatar-ovr-tag {
+  background: #78909c;
+  color: #ffffff;
+}

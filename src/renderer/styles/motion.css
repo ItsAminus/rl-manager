@@ -1,0 +1,17 @@
+/* Short, bounded feedback: no endless animations on Chirp or background pages. */
+@media(prefers-reduced-motion:no-preference){
+  .btn,.btn-icon,.nav-item,.segmented-tabs button,.soft-badge{transition:transform 150ms ease,background-color 160ms ease,border-color 160ms ease,color 160ms ease,box-shadow 160ms ease}
+  .btn:hover:not(:disabled),.btn-icon:hover:not(:disabled){transform:translateY(-1px)}
+  .btn:active:not(:disabled),.btn-icon:active:not(:disabled),.segmented-tabs button:active{transform:translateY(1px) scale(.97)}
+  .nav-item:hover{transform:translateX(3px)}
+  .panel,.skill-player-card,.training-day-card{transition:border-color 200ms ease,box-shadow 200ms ease}
+  .panel:hover,.skill-player-card:hover,.training-day-card:hover{border-color:#47604e}
+  .notice,.training-save-banner{animation:manager-notice-in 220ms ease-out both}
+  .fatigue-meter-fill,.progress-fill,.meter-fill{transition:width 420ms cubic-bezier(.2,.75,.25,1)}
+  .notification-dot{animation:manager-notification-in 380ms cubic-bezier(.2,1.5,.3,1)}
+  .tactic-pills button,.intensity-btn,.chirp-action{transition:transform 140ms ease,background-color 160ms ease,color 160ms ease}
+  .tactic-pills button:active,.intensity-btn:active,.chirp-action:active{transform:scale(.95)}
+}
+@keyframes manager-notice-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes manager-notification-in{from{transform:scale(0)}to{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.main-content{scroll-behavior:auto}.skill-player-card *{animation:none!important;transition:none!important}}

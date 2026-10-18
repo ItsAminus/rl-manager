@@ -1,0 +1,90 @@
+[
+  {
+    "id": "comp_1",
+    "name": "RLCS Major 1",
+    "region": "GLOBAL",
+    "type": "MAJOR",
+    "format": "round_robin",
+    "prizePool": 250000,
+    "config": {
+      "seriesFormat": "BO7"
+    }
+  },
+  {
+    "id": "comp_2",
+    "name": "EU Regional Open 1",
+    "region": "Europe",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 100000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  },
+  {
+    "id": "comp_3",
+    "name": "NA Regional Open 1",
+    "region": "North America",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 100000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  },
+  {
+    "id": "comp_4",
+    "name": "MENA Regional Open 1",
+    "region": "MENA",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 80000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  },
+  {
+    "id": "comp_5",
+    "name": "SAM Regional Open 1",
+    "region": "South America",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 80000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  },
+  {
+    "id": "comp_6",
+    "name": "OCE Regional Open 1",
+    "region": "Oceania",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 60000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  },
+  {
+    "id": "comp_7",
+    "name": "APAC Regional Open 1",
+    "region": "Asia-Pacific",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 60000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  },
+  {
+    "id": "comp_8",
+    "name": "SSA Regional Open 1",
+    "region": "Sub-Saharan Africa",
+    "type": "REGIONAL",
+    "format": "round_robin",
+    "prizePool": 50000,
+    "config": {
+      "seriesFormat": "BO5"
+    }
+  }
+]

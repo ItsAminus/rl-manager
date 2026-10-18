@@ -1,0 +1,40 @@
+.main-layout {
+  display: flex;
+  height: calc(100vh - var(--titlebar-height));
+  margin-top: var(--titlebar-height);
+  position: relative;
+  overflow: hidden;
+}
+
+.titlebar-drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--titlebar-height);
+  -webkit-app-region: drag;
+  z-index: 9999;
+  background-color: transparent;
+}
+
+.menu-fullscreen-container {
+  height: calc(100vh - var(--titlebar-height));
+  margin-top: var(--titlebar-height);
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; /* Important for preventing flex children from overflowing */
+  background-color: var(--bg-primary);
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0; /* Pages handle their own inner padding */
+}

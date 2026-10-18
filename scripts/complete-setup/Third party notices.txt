@@ -1,0 +1,25 @@
+RL Manager complete Windows kit — component provenance
+
+This kit includes original third-party components; their existing license and
+copyright files are retained inside the runtime and original installers.
+No ownership of the third-party software, brands or player imagery is claimed.
+
+CPython 3.11: https://www.python.org/ — Python Software Foundation license
+Temurin Java 17: https://adoptium.net/ — GPLv2 with Classpath Exception; bundled notices retained
+Microsoft Visual C++ runtime: https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist — original installer
+RLBot v4: https://github.com/RLBot/RLBot — MIT
+RLBot Pack: https://github.com/RLBot/RLBotPack — individual bots retain their notices
+PyTorch: https://github.com/pytorch/pytorch — BSD-style license
+TorchVision / TorchAudio: https://github.com/pytorch — respective license files
+Chatterbox: https://github.com/resemble-ai/chatterbox — MIT
+Chatterbox model: https://huggingface.co/ResembleAI/chatterbox
+Qwen2.5-1.5B-Instruct-GGUF: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF
+llama.cpp: https://github.com/ggml-org/llama.cpp — MIT
+7-Zip command-line tool: https://www.7-zip.org/ — see Tools/7zip-license.txt
+BakkesMod: https://www.bakkesmod.com/ — original official installer and core
+Rocket Host: https://bakkesplugins.com/plugin/216 — original plugin archive
+
+BakkesMod and Rocket Host are maintained by their respective authors. Their
+update/compatibility checks and service requirements remain in effect.
+Model files are included; no Hugging Face access token or personal cache is used.
+Rocket League and NVIDIA drivers are not included and must be installed normally.

@@ -1,0 +1,283 @@
+{
+  "source": "https://github.com/RLBot/RLBotGUI/blob/master/rlbot_gui/gui/csv/items.csv",
+  "groups": {
+    "bodies": [
+      {
+        "id": 23,
+        "name": "Octane"
+      },
+      {
+        "id": 4284,
+        "name": "Fennec"
+      },
+      {
+        "id": 403,
+        "name": "Dominus"
+      },
+      {
+        "id": 22,
+        "name": "Breakout"
+      },
+      {
+        "id": 30,
+        "name": "Merc"
+      }
+    ],
+    "wheels": [
+      {
+        "id": 386,
+        "name": "Cristiano"
+      },
+      {
+        "id": 376,
+        "name": "OEM"
+      },
+      {
+        "id": 363,
+        "name": "Dieci"
+      },
+      {
+        "id": 359,
+        "name": "Tunica"
+      },
+      {
+        "id": 381,
+        "name": "Vortex"
+      },
+      {
+        "id": 368,
+        "name": "Stern"
+      },
+      {
+        "id": 374,
+        "name": "Alchemist"
+      },
+      {
+        "id": 380,
+        "name": "Invader"
+      }
+    ],
+    "boosts": [
+      {
+        "id": 63,
+        "name": "Standard"
+      },
+      {
+        "id": 45,
+        "name": "Ion"
+      },
+      {
+        "id": 62,
+        "name": "Sparkles"
+      },
+      {
+        "id": 32,
+        "name": "Gold Rush"
+      },
+      {
+        "id": 64,
+        "name": "Standard Blue"
+      },
+      {
+        "id": 67,
+        "name": "Standard Yellow"
+      },
+      {
+        "id": 36,
+        "name": "Flamethrower"
+      }
+    ],
+    "finishes": [
+      {
+        "id": 270,
+        "name": "Glossy"
+      },
+      {
+        "id": 273,
+        "name": "Matte"
+      },
+      {
+        "id": 274,
+        "name": "Metallic"
+      },
+      {
+        "id": 276,
+        "name": "Pearlescent"
+      },
+      {
+        "id": 2275,
+        "name": "Anodized"
+      },
+      {
+        "id": 4127,
+        "name": "Anodized Pearl"
+      }
+    ],
+    "trails": [
+      {
+        "id": 1948,
+        "name": "Classic"
+      },
+      {
+        "id": 1898,
+        "name": "Lightspeed"
+      },
+      {
+        "id": 3224,
+        "name": "Laser Wave III"
+      },
+      {
+        "id": 2047,
+        "name": "Hot Rocks"
+      },
+      {
+        "id": 1900,
+        "name": "Friction"
+      }
+    ],
+    "explosions": [
+      {
+        "id": 1903,
+        "name": "Classic"
+      },
+      {
+        "id": 1904,
+        "name": "Electroshock"
+      },
+      {
+        "id": 1908,
+        "name": "Hellfire"
+      },
+      {
+        "id": 1907,
+        "name": "Sub-Zero"
+      },
+      {
+        "id": 2027,
+        "name": "Party Time"
+      }
+    ],
+    "decals": [
+      {
+        "id": 0,
+        "name": "Clean paint",
+        "bodyId": 0
+      },
+      {
+        "id": 306,
+        "name": "Stripes",
+        "bodyId": 23
+      },
+      {
+        "id": 308,
+        "name": "Wings",
+        "bodyId": 23
+      },
+      {
+        "id": 302,
+        "name": "Flames",
+        "bodyId": 23
+      },
+      {
+        "id": 1955,
+        "name": "Lone Wolf",
+        "bodyId": 23
+      },
+      {
+        "id": 7079,
+        "name": "Ombre",
+        "bodyId": 23
+      },
+      {
+        "id": 1744,
+        "name": "RLCS",
+        "bodyId": 23
+      },
+      {
+        "id": 4286,
+        "name": "Stripes",
+        "bodyId": 4284
+      },
+      {
+        "id": 4291,
+        "name": "Flames",
+        "bodyId": 4284
+      },
+      {
+        "id": 4382,
+        "name": "Ombre",
+        "bodyId": 4284
+      },
+      {
+        "id": 4838,
+        "name": "Yorebands",
+        "bodyId": 4284
+      },
+      {
+        "id": 508,
+        "name": "Stripes",
+        "bodyId": 403
+      },
+      {
+        "id": 510,
+        "name": "Wings",
+        "bodyId": 403
+      },
+      {
+        "id": 504,
+        "name": "Flames",
+        "bodyId": 403
+      },
+      {
+        "id": 7210,
+        "name": "Ombre",
+        "bodyId": 403
+      },
+      {
+        "id": 1743,
+        "name": "RLCS",
+        "bodyId": 403
+      },
+      {
+        "id": 299,
+        "name": "Stripes",
+        "bodyId": 22
+      },
+      {
+        "id": 301,
+        "name": "Wings",
+        "bodyId": 22
+      },
+      {
+        "id": 295,
+        "name": "Flames",
+        "bodyId": 22
+      },
+      {
+        "id": 7050,
+        "name": "Ombre",
+        "bodyId": 22
+      },
+      {
+        "id": 1745,
+        "name": "RLCS",
+        "bodyId": 22
+      },
+      {
+        "id": 349,
+        "name": "Stripes",
+        "bodyId": 30
+      },
+      {
+        "id": 350,
+        "name": "Wings",
+        "bodyId": 30
+      },
+      {
+        "id": 345,
+        "name": "Flames",
+        "bodyId": 30
+      }
+    ]
+  }
+}

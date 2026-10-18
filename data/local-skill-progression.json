@@ -1,0 +1,35 @@
+{
+  "skills": [
+    {"id":"passing","label":"Passing","attributes":["passing"],"effect":"Local AI: more precise receiver lead and pass-contact alignment when a safe outlet is available."},
+    {"id":"dribbling","label":"Dribbling","attributes":["groundControl"],"effect":"Local AI: tighter bonnet alignment and speed matching while carrying a low ball."},
+    {"id":"aerial","label":"Aerial","attributes":["aerial"],"effect":"Local AI: more precise pitch/yaw tracking during aerials its current bot can already perform."},
+    {"id":"shooting","label":"Shooting","attributes":["shooting","shotAccuracy"],"effect":"Local AI: more precise aim at goal openings and a cleaner approach behind the ball."},
+    {"id":"saving","label":"Saving","attributes":["defense","goalkeeping"],"effect":"Local AI: more accurate positioning and braking to intercept predictable low shots."}
+  ],
+  "difficulties": {
+    "Path To Glory": [
+      {"cutoff":94,"minimumSkill":90,"level":"Elite"},
+      {"cutoff":89,"minimumSkill":85,"level":"GC / SSL"},
+      {"cutoff":84,"minimumSkill":80,"level":"Champ"},
+      {"cutoff":79,"minimumSkill":75,"level":"Diamond"},
+      {"cutoff":74,"minimumSkill":70,"level":"Platinum"},
+      {"cutoff":69,"minimumSkill":65,"level":"Gold"},
+      {"cutoff":59,"minimumSkill":55,"level":"Silver"},
+      {"cutoff":0,"minimumSkill":0,"level":"Bronze / Rookie"}
+    ],
+    "Medium": [
+      {"cutoff":94,"minimumSkill":90,"level":"Diamond"},
+      {"cutoff":89,"minimumSkill":80,"level":"Platinum"},
+      {"cutoff":84,"minimumSkill":80,"level":"Platinum"},
+      {"cutoff":74,"minimumSkill":70,"level":"Gold"},
+      {"cutoff":64,"minimumSkill":60,"level":"Silver"},
+      {"cutoff":0,"minimumSkill":0,"level":"Bronze / Rookie"}
+    ],
+    "Easy": [
+      {"cutoff":94,"minimumSkill":90,"level":"Gold"},
+      {"cutoff":84,"minimumSkill":80,"level":"Silver"},
+      {"cutoff":69,"minimumSkill":65,"level":"Silver / developing"},
+      {"cutoff":0,"minimumSkill":0,"level":"Bronze / Rookie"}
+    ]
+  }
+}

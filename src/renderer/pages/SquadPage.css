@@ -1,0 +1,354 @@
+.squad-page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 24px 32px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.squad-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.page-heading {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.page-subheading {
+  font-size: 13px;
+  color: var(--text-secondary, #9aa0a6);
+  max-width: 600px;
+}
+
+.squad-summary-badges {
+  display: flex;
+  gap: 16px;
+}
+
+.summary-pill {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  padding: 10px 16px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.pill-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted, #5f6368);
+  letter-spacing: 0.05em;
+}
+
+.pill-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pill-val.cyan {
+  color: var(--accent-primary, #4fc3f7);
+}
+
+/* Sections */
+.squad-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary, #9aa0a6);
+  letter-spacing: 0.06em;
+}
+
+.section-note {
+  font-size: 12px;
+  color: var(--text-muted, #5f6368);
+}
+
+/* Starters Grid */
+.starters-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.starter-detailed-card {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.starter-detailed-card:hover {
+  border-color: var(--accent-primary, #4fc3f7);
+  background-color: var(--bg-tertiary, #242938);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.starter-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.starter-slot-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-primary, #4fc3f7);
+  background-color: rgba(79, 195, 247, 0.1);
+  border: 1px solid rgba(79, 195, 247, 0.3);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.starter-card-name-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.starter-gamertag {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.starter-realname {
+  font-size: 12px;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.starter-card-tendency {
+  background-color: var(--bg-tertiary, #242938);
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tendency-label {
+  font-size: 10px;
+  color: var(--text-muted, #5f6368);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.tendency-val {
+  font-size: 13px;
+  color: var(--accent-primary, #4fc3f7);
+  font-weight: 600;
+}
+
+.starter-card-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background-color: rgba(15, 20, 25, 0.4);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted, #5f6368);
+  letter-spacing: 0.05em;
+}
+
+.stat-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.text-red {
+  color: #ef5350;
+}
+
+.text-green {
+  color: #66bb6a;
+}
+
+.starter-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 10px;
+}
+
+.card-action-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-primary, #4fc3f7);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.card-action-btn:hover {
+  text-decoration: underline;
+}
+
+/* Roster Table */
+.roster-table-wrapper {
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.roster-table th {
+  background-color: var(--bg-tertiary, #242938);
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary, #9aa0a6);
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border-color, #2d3343);
+}
+
+.roster-table td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-primary, #e8eaed);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.roster-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.roster-row:hover {
+  background-color: var(--bg-hover, #2a3040);
+}
+
+.row-starter {
+  background-color: rgba(79, 195, 247, 0.02);
+}
+
+.status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  letter-spacing: 0.02em;
+}
+
+.tag-starter {
+  background-color: rgba(79, 195, 247, 0.15);
+  color: var(--accent-primary, #4fc3f7);
+}
+
+.tag-reserve {
+  background-color: rgba(154, 160, 166, 0.12);
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.table-player-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gamertag-link {
+  font-weight: 700;
+  color: #fff;
+}
+
+.subname {
+  font-size: 11px;
+  color: var(--text-muted, #5f6368);
+}
+
+.table-tendency {
+  font-size: 12px;
+  color: var(--accent-primary, #4fc3f7);
+  font-weight: 500;
+}
+
+.pot-val {
+  font-weight: 700;
+  color: #fff;
+}
+
+.morale-val {
+  font-weight: 600;
+  color: #66bb6a;
+}
+
+.fatigue-val {
+  font-weight: 600;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-table-action {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--bg-tertiary, #242938);
+  color: var(--text-primary, #e8eaed);
+  border: 1px solid var(--border-color, #2d3343);
+  transition: all 0.15s ease;
+}
+
+.btn-table-action:hover {
+  background-color: var(--accent-primary, #4fc3f7);
+  color: #000;
+}
+.starter-detailed-card[draggable="true"], .roster-row[draggable="true"] { cursor: grab; }
+.starter-detailed-card.lineup-drop-target { outline: 3px solid #66edbc; background: #183c30; }
+.lineup-selected { outline: 2px solid #66edbc; }
+.starter-detailed-card:focus-visible { outline: 3px solid #66edbc; }

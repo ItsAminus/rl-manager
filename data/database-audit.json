@@ -1,0 +1,73 @@
+{
+  "version": "2026-10-11-real-qualifiers-v2",
+  "verifiedAt": "2026-10-11",
+  "counts": {
+    "teams": 1704,
+    "players": 5709,
+    "playableTeams": 1687,
+    "registeredTeamsReviewed": 1723,
+    "byRegion": {
+      "Europe": 681,
+      "MENA": 199,
+      "South America": 88,
+      "Oceania": 182,
+      "North America": 406,
+      "Sub-Saharan Africa": 65,
+      "Asia-Pacific": 66
+    },
+    "ratingCoverage": {
+      "high": 4,
+      "medium": 61,
+      "low": 5613,
+      "unknown": 31
+    },
+    "excluded": {
+      "newer_roster_or_shared_player": 64
+    }
+  },
+  "sources": [
+    {
+      "region": "Asia-Pacific",
+      "date": "2026-04-18",
+      "name": "RLCS 2026 - APAC Open 6",
+      "source": "https://www.start.gg/tournament/rlcs-2026-apac-open-6/attendees/teams"
+    },
+    {
+      "region": "Sub-Saharan Africa",
+      "date": "2026-04-11",
+      "name": "RLCS 2026 - SSA Open 6",
+      "source": "https://www.start.gg/tournament/rlcs-2026-ssa-open-6/attendees/teams"
+    },
+    {
+      "region": "Oceania",
+      "date": "2026-04-10",
+      "name": "RLCS 2026 - Oceania Open 6",
+      "source": "https://www.start.gg/tournament/rlcs-2026-oceania-open-6/attendees/teams"
+    },
+    {
+      "region": "Europe",
+      "date": "2026-07-03",
+      "name": "RLCS 2026 - Europe Last Chance Qualifier",
+      "source": "https://www.start.gg/tournament/rlcs-2026-europe-last-chance-qualifier/attendees/teams"
+    },
+    {
+      "region": "North America",
+      "date": "2026-07-03",
+      "name": "RLCS 2026 - North America Last Chance Qualifier",
+      "source": "https://www.start.gg/tournament/rlcs-2026-north-america-last-chance-qualifier/attendees/teams"
+    },
+    {
+      "region": "MENA",
+      "date": "2026-07-02",
+      "name": "RLCS 2026 - MENA Last Chance Qualifier",
+      "source": "https://www.start.gg/tournament/rlcs-2026-mena-last-chance-qualifier/attendees/teams"
+    },
+    {
+      "region": "South America",
+      "date": "2026-07-03",
+      "name": "RLCS 2026 - South America Last Chance Qualifier",
+      "source": "https://www.start.gg/tournament/rlcs-2026-south-america-last-chance-qualifier/attendees/teams"
+    }
+  ],
+  "ratingNote": "OVR and all gameplay attributes are estimates. Qualifier-only players have low-confidence team-result estimates, not invented individual statistics."
+}

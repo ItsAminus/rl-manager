@@ -1,0 +1,37 @@
+{
+  "community": {
+    "gibbs": {
+      "url": "/chirp-media/banner-gibbs.jpg",
+      "source": "https://www.youtube.com/@Gibbs0o0"
+    },
+    "johnny": {
+      "url": "/chirp-media/banner-johnny.jpg",
+      "source": "https://www.youtube.com/@JohnnyBoi_i"
+    },
+    "sunless": {
+      "url": "/chirp-media/banner-sunless.jpg",
+      "source": "https://www.youtube.com/@SunlessKhan"
+    },
+    "esports": {
+      "url": "/chirp-media/banner-esports.jpg",
+      "source": "https://www.youtube.com/@RLEsports"
+    }
+  },
+  "photos": [
+    {
+      "url": "/chirp-media/rlcs-editorial-0.png",
+      "source": "https://www.rocketleague.com/competitive/rlcs-2026-world-championship",
+      "caption": "Official RLCS editorial image · archive"
+    },
+    {
+      "url": "/chirp-media/rlcs-editorial-1.jpg",
+      "source": "https://www.rocketleague.com/competitive/rlcs-2026-world-championship",
+      "caption": "Official RLCS editorial image · archive"
+    },
+    {
+      "url": "/chirp-media/rlcs-editorial-2.jpg",
+      "source": "https://www.rocketleague.com/competitive/rlcs-2026-world-championship",
+      "caption": "Official RLCS editorial image · archive"
+    }
+  ]
+}

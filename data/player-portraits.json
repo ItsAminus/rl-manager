@@ -1,0 +1,478 @@
+{
+  "monkey": {
+    "missing": true,
+    "source": "https://liquipedia.net/rocketleague/Monkey"
+  },
+  "linus": {
+    "missing": true,
+    "source": "https://liquipedia.net/rocketleague/Linus"
+  },
+  "zen": {
+    "path": "/player-portraits/player_1.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_zen.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak zen.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "vatira": {
+    "path": "/player-portraits/player_2.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Vatira.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Vatira.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "atow": {
+    "path": "/player-portraits/player_3.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Atow.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Atow.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "m0nkey m00n": {
+    "path": "/player-portraits/player_4.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_M0nkey_M00n.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak M0nkey M00n.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "seikoo": {
+    "path": "/player-portraits/player_5.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Seikoo.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Seikoo.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "exotiik": {
+    "path": "/player-portraits/player_6.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_ExoTiiK.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak ExoTiiK.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "dralii": {
+    "path": "/player-portraits/player_7.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_World_Championship_2026_Aleks_Jachimiak_dralii.jpg",
+    "file": "RLCS World Championship 2026 Aleks Jachimiak dralii.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "oski": {
+    "path": "/player-portraits/player_8.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Oski.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Oski.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "daniel": {
+    "path": "/player-portraits/player_9.jpg",
+    "source": "https://liquipedia.net/commons/File:Daniel_Esports_World_Cup_2026_Rocket_League_Media_Day.jpg",
+    "file": "Daniel Esports World Cup 2026 Rocket League Media Day.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "beastmode": {
+    "path": "/player-portraits/player_10.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Beastmode.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Beastmode.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "firstkiller": {
+    "path": "/player-portraits/player_11.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Firstkiller.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Firstkiller.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "nass": {
+    "path": "/player-portraits/player_12.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Nass.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Nass.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "rw9": {
+    "path": "/player-portraits/player_13.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Rw9.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Rw9.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "kiileerrz": {
+    "path": "/player-portraits/player_14.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Kiileerrz.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Kiileerrz.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "nwpo": {
+    "path": "/player-portraits/player_15.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Nwpo.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Nwpo.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "trk511": {
+    "path": "/player-portraits/player_16.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Trk511.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Trk511.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "yanxnz": {
+    "path": "/player-portraits/player_17.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_yANXNZ.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak yANXNZ.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "lostt": {
+    "path": "/player-portraits/player_18.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Lostt.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Lostt.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "drufinho": {
+    "path": "/player-portraits/player_19.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_DRUFINHO.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak DRUFINHO.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "joyo": {
+    "path": "/player-portraits/player_20.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_Boston_Major_Joyo_Michal_Konkol.jpg",
+    "file": "RLCS 2026 Boston Major Joyo Michal Konkol.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "alpha54": {
+    "path": "/player-portraits/player_21.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2024_LAN_Michal_Konkol_Alpha54.jpg",
+    "file": "RLCS Worlds 2024 LAN Michal Konkol Alpha54.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "radosin": {
+    "path": "/player-portraits/player_22.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_World_Championship_2025_LAN_Michal_Konkol_Radosin.jpg",
+    "file": "RLCS World Championship 2025 LAN Michal Konkol Radosin.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "rise": {
+    "path": "/player-portraits/player_23.jpg",
+    "source": "https://liquipedia.net/commons/File:Rise_RLCS_2026_Kickoff_Week_End_Michal_Konkol.jpg",
+    "file": "Rise RLCS 2026 Kickoff Week End Michal Konkol.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "archie": {
+    "path": "/player-portraits/player_24.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Archie.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Archie.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "joreuz": {
+    "path": "/player-portraits/player_25.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Joreuz.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Joreuz.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "appjack": {
+    "path": "/player-portraits/player_26.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_ApparentlyJack.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak ApparentlyJack.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "chronic": {
+    "path": "/player-portraits/player_27.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Chronic.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Chronic.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "noly": {
+    "path": "/player-portraits/player_28.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2024_LAN_Michal_Konkol_noly.jpg",
+    "file": "RLCS Worlds 2024 LAN Michal Konkol noly.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "retals": {
+    "path": "/player-portraits/player_29.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Retals.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Retals.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "arsenal": {
+    "path": "/player-portraits/player_30.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_World_Championship_2025_LAN_Michal_Konkol_Arsenal.jpg",
+    "file": "RLCS World Championship 2025 LAN Michal Konkol Arsenal.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "ayyjayy": {
+    "path": "/player-portraits/player_31.jpg",
+    "source": "https://liquipedia.net/commons/File:Gamers8_2023_Rocket_League_Jo%C3%A3o_Ferreira_AYYJAYY.jpg",
+    "file": "Gamers8 2023 Rocket League João Ferreira AYYJAYY.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "mist": {
+    "path": "/player-portraits/player_32.jpg",
+    "source": "https://liquipedia.net/commons/File:Gamers8_2023_Rocket_League_Luc_Bouchon_Mist.jpg",
+    "file": "Gamers8 2023 Rocket League Luc Bouchon Mist.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "sypical": {
+    "path": "/player-portraits/player_33.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Winter_Major_2022-23_LAN_Viola_Sophie_Schuldner_Sypical.jpg",
+    "file": "RLCS Winter Major 2022-23 LAN Viola Sophie Schuldner Sypical.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "atomic": {
+    "path": "/player-portraits/player_34.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Atomic.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Atomic.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "chicago": {
+    "path": "/player-portraits/player_35.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2024_LAN_Michal_Konkol_Chicago.jpg",
+    "file": "RLCS Worlds 2024 LAN Michal Konkol Chicago.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "jknaps": {
+    "path": "/player-portraits/player_36.jpg",
+    "source": "https://liquipedia.net/commons/File:JKnaps_Esports_World_Cup_2026_Rocket_League_Last_Chance_Qualifier.jpg",
+    "file": "JKnaps Esports World Cup 2026 Rocket League Last Chance Qualifier.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "garrettg": {
+    "path": "/player-portraits/player_37.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_GarrettG.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak GarrettG.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "squishy": {
+    "path": "/player-portraits/player_38.jpg",
+    "source": "https://liquipedia.net/commons/File:SquishyMuffinz_Cloud9.jpg",
+    "file": "SquishyMuffinz Cloud9.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "justin": {
+    "path": "/player-portraits/player_39.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Jstn.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Jstn.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "ahmad": {
+    "path": "/player-portraits/player_40.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_London_Major_2024_LAN_Michal_Konkol_Ahmad.jpg",
+    "file": "RLCS London Major 2024 LAN Michal Konkol Ahmad.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "khalid": {
+    "path": "/player-portraits/player_41.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Copenhagen_Major_2024_LAN_Adela_Sznajder_oKhaliD.jpg",
+    "file": "RLCS Copenhagen Major 2024 LAN Adela Sznajder oKhaliD.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "fever": {
+    "path": "/player-portraits/player_42.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Fever.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Fever.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "superlachie": {
+    "path": "/player-portraits/player_43.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_Boston_Major_Superlachie_Michal_Konkol.jpg",
+    "file": "RLCS 2026 Boston Major Superlachie Michal Konkol.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "kamii": {
+    "path": "/player-portraits/player_44.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2023_LAN_Michal_Konkol_Kamii.jpg",
+    "file": "RLCS Worlds 2023 LAN Michal Konkol Kamii.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "amphis": {
+    "path": "/player-portraits/player_45.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_World_Championship_2025_LAN_Michal_Konkol_Amphis.jpg",
+    "file": "RLCS World Championship 2025 LAN Michal Konkol Amphis.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "torsos": {
+    "path": "/player-portraits/player_46.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Torsos.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Torsos.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "reysbull": {
+    "path": "/player-portraits/player_47.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Reysbull.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Reysbull.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "crr": {
+    "path": "/player-portraits/player_48.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_crr.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak crr.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "dorito": {
+    "path": "/player-portraits/player_49.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Copenhagen_Major_2024_LAN_Michal_Konkol_DORITO.jpg",
+    "file": "RLCS Copenhagen Major 2024 LAN Michal Konkol DORITO.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "acronik": {
+    "path": "/player-portraits/player_50.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Kick-Off_Weekend_2026_LAN_Michal_Konkol_AcroniK.jpg",
+    "file": "RLCS Kick-Off Weekend 2026 LAN Michal Konkol AcroniK.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "itachi": {
+    "path": "/player-portraits/player_51.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_itachi.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak itachi.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "aztral": {
+    "path": "/player-portraits/player_52.jpg",
+    "source": "https://liquipedia.net/commons/File:FIFAe_World_Cup_AztraL.jpg",
+    "file": "FIFAe World Cup AztraL.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "kash": {
+    "path": "/player-portraits/player_53.jpg",
+    "source": "https://liquipedia.net/commons/File:GRIDSERVE_Resolve_Kash.jpg",
+    "file": "GRIDSERVE Resolve Kash.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "eekso": {
+    "path": "/player-portraits/player_54.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_Boston_Major_Eekso_Michal_Konkol.jpg",
+    "file": "RLCS 2026 Boston Major Eekso Michal Konkol.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "relatingwave": {
+    "path": "/player-portraits/player_55.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Fall_Major_2022-23_LAN_Helena_Kristiansson_RelatingWave.jpg",
+    "file": "RLCS Fall Major 2022-23 LAN Helena Kristiansson RelatingWave.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "metsanauris": {
+    "path": "/player-portraits/player_56.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2022_LAN_Jo%C3%A3o_Ferreira_Metsanauris.jpg",
+    "file": "RLCS Worlds 2022 LAN João Ferreira Metsanauris.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "extra": {
+    "path": "/player-portraits/player_57.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_Extra.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak Extra.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "marc_by_8": {
+    "path": "/player-portraits/player_58.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Winter_Major_2022-23_LAN_Viola_Sophie_Schuldner_MaRc_By_8.jpg",
+    "file": "RLCS Winter Major 2022-23 LAN Viola Sophie Schuldner MaRc By 8.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "rizzo": {
+    "path": "/player-portraits/player_60.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2024_LAN_Rachel_Mathews_Rizzo.jpg",
+    "file": "RLCS Worlds 2024 LAN Rachel Mathews Rizzo.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "kro": {
+    "path": "/player-portraits/player_61.jpg",
+    "source": "https://liquipedia.net/commons/File:DHMONTREAL_2019_RL_KRONOVI.jpg",
+    "file": "DHMONTREAL_2019_RL_KRONOVI.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "sadjunior": {
+    "path": "/player-portraits/player_62.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_World_Championship_2025_LAN_Michal_Konkol_Sadjunior.jpg",
+    "file": "RLCS World Championship 2025 LAN Michal Konkol Sadjunior.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "torment": {
+    "path": "/player-portraits/player_63.jpg",
+    "source": "https://liquipedia.net/commons/File:FIFAe_World_Cup_torment.jpg",
+    "file": "FIFAe World Cup torment.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "gimmick": {
+    "path": "/player-portraits/player_64.jpg",
+    "source": "https://liquipedia.net/commons/File:RLSUMMIT_GIMMICK.jpg",
+    "file": "RLSUMMIT GIMMICK.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "scrubkilla": {
+    "path": "/player-portraits/player_65.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2022_LAN_Stephanie_Lindgren_Scrub_Killa.jpg",
+    "file": "RLCS Worlds 2022 LAN Stephanie Lindgren Scrub Killa.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "fairypeak": {
+    "path": "/player-portraits/player_66.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2024_LAN_Rachel_Mathews_Fairy_Peak!.jpg",
+    "file": "RLCS Worlds 2024 LAN Rachel Mathews Fairy Peak!.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "kaydop": {
+    "path": "/player-portraits/player_67.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_S8_LAN_Zeebo_Kaydop.jpg",
+    "file": "RLCS S8 LAN Zeebo Kaydop.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "turbopolsa": {
+    "path": "/player-portraits/player_68.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_S8_LAN_Zeebo_Turbopolsa.jpg",
+    "file": "RLCS S8 LAN Zeebo Turbopolsa.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "violentpanda": {
+    "path": "/player-portraits/player_69.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_2026_World_Championship_Aleksander_Jachimiak_ViolentPanda.jpg",
+    "file": "RLCS 2026 World Championship Aleksander Jachimiak ViolentPanda.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "deevo": {
+    "path": "/player-portraits/player_70.jpg",
+    "source": "https://liquipedia.net/commons/File:DHVALENCIA_2019_RL_DEEVO.jpg",
+    "file": "DHVALENCIA 2019 RL DEEVO.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "kuxir97": {
+    "path": "/player-portraits/player_71.jpg",
+    "source": "https://liquipedia.net/commons/File:DHMONTREAL_2019_RL_KUXIR.jpg",
+    "file": "DHMONTREAL_2019_RL_KUXIR.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "markydooda": {
+    "path": "/player-portraits/player_72.jpg",
+    "source": "https://liquipedia.net/commons/File:RLCS_Worlds_2024_LAN_Michal_Konkol_Markydooda.jpg",
+    "file": "RLCS Worlds 2024 LAN Michal Konkol Markydooda.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "paschy90": {
+    "path": "/player-portraits/player_73.jpg",
+    "source": "https://liquipedia.net/commons/File:GFINITY_JOEBRADY_PASCHY90.jpg",
+    "file": "GFINITY JOEBRADY PASCHY90.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "sikii": {
+    "path": "/player-portraits/player_74.jpg",
+    "source": "https://liquipedia.net/commons/File:DHLEIPZIG_RL_Sikii.jpg",
+    "file": "DHLEIPZIG_RL_Sikii.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "remkoe": {
+    "path": "/player-portraits/player_75.jpg",
+    "source": "https://liquipedia.net/commons/File:DHMONTREAL_2019_RL_REMKOE.jpg",
+    "file": "DHMONTREAL_2019_RL_REMKOE.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "maestro": {
+    "path": "/player-portraits/player_76.jpg",
+    "source": "https://liquipedia.net/commons/File:GFINITY_JOEBRADY_MAESTRO.jpg",
+    "file": "GFINITY JOEBRADY MAESTRO.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "greazy": {
+    "path": "/player-portraits/player_77.jpg",
+    "source": "https://liquipedia.net/commons/File:DHMONTREAL_2019_RL_GREAZY.jpg",
+    "file": "DHMONTREAL_2019_RL_GREAZY.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "mognus": {
+    "path": "/player-portraits/player_78.jpg",
+    "source": "https://liquipedia.net/commons/File:DHMONTREAL_2019_RL_MOGNUS.jpg",
+    "file": "DHMONTREAL_2019_RL_MOGNUS.jpg",
+    "origin": "Liquipedia Commons"
+  },
+  "al0t": {
+    "path": "/player-portraits/player_79.jpg",
+    "source": "https://liquipedia.net/commons/File:DHMONTREAL_2019_RL_AL0T.jpg",
+    "file": "DHMONTREAL_2019_RL_AL0T.jpg",
+    "origin": "Liquipedia Commons"
+  }
+}

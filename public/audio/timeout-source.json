@@ -1,0 +1,10 @@
+{
+  "sourceFile": "RLCS TIMEOUT perfect loop [MUZZ Horsepower F O O L & TOKYO ROSE] - Le bazar de Xiron (192k) (mp3cut.net).wav",
+  "sourceSha256": "9e49ceeff890923daa5a82a5790af97791326649015f5ed8c93ce99a46be3763",
+  "playbackFile": "timeout.ogg",
+  "playbackSha256": "b55e47be0ac46cb0d0446a482ed63a4df1ff9b49316a15d0a59551383dd283b0",
+  "codec": "Opus",
+  "bitrate": 160000,
+  "durationSeconds": 69.64027083333333,
+  "use": "Loop during either team tactical timeout. Stop at timeout deadline."
+}

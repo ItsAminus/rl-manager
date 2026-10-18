@@ -1,0 +1,56 @@
+RL MANAGER 1.0.8 - FIRST-TIME INSTALLATION
+
+BEFORE YOU START
+- Windows 10 or Windows 11, 64-bit.
+- Rocket League installed through Epic Games or Steam. Launch it once and sign in.
+- Install 7-Zip for Windows x64 from https://www.7-zip.org/
+- Have 30 GB free for downloading, extracting and installing, in addition to Rocket League.
+- Internet access and working graphics/audio drivers.
+- NVIDIA is not required. AMD/Intel users can use CPU commentary with the same voices; generation may be slower.
+
+DOWNLOAD ALL FOUR FILES (about 7.3 GB total)
+1. RL-Manager-Complete-1.0.8.7z.001
+2. RL-Manager-Complete-1.0.8.7z.002
+3. RL-Manager-Complete-1.0.8.7z.003
+4. RL-Manager-Complete-1.0.8.7z.004
+
+Get them from https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.0.8
+Keep all four together in ONE folder. Do not rename them.
+These are parts of ONE download, not four installers.
+
+EXTRACT AND INSTALL
+1. Wait for all four downloads to finish.
+2. Right-click .001, choose 7-Zip, then Extract Here.
+   Windows 11 may require Show more options first.
+3. 7-Zip reads .002, .003 and .004 automatically. Extract ONLY .001.
+4. Open the extracted RL-Manager-Complete-1.0.8 folder.
+5. Close Rocket League, BakkesMod and RLM.
+6. Run Install RL Manager.exe, then click Install everything.
+7. Allow the component installers to finish. Keep Packages, Setup and Tools together.
+8. Open RL Manager using its desktop or Start menu shortcut.
+
+The wizard includes RLM, local bots/Python, BakkesMod, Rocket Host, the AI models and required runtime components.
+You do NOT need the separate RL.Manager.1.0.8.Setup.exe file for a first installation.
+That file is an app updater for people with an existing COMPLETE installation.
+GitHub's Source code downloads are for development, not installation.
+
+BEFORE PLAYED MATCHES: LAUNCH ROCKET LEAGUE WITHOUT EAC
+Epic Games: Library > Rocket League ... > Manage > Launch Options.
+Enter -noeac without quotation marks, then fully restart Rocket League.
+Steam: choose the option without Easy Anti-Cheat when launching Rocket League.
+Official instructions: https://www.epicgames.com/help/c-37599050/c-42869540/a16737879
+For normal online matchmaking, enable EAC again and restart; remove the Epic flag first.
+
+FIRST MATCH
+- Follow RLM's skippable tutorial and create your career.
+- Check Settings > Rocket League connection.
+- Use Settings > Sound & gameplay > Test match audio.
+- Start a played match in RLM. When prompted, wait at Rocket League's main menu,
+  then click RLM's button to start/restart BakkesMod.
+- Easy/Medium Manager Career matches use local bots. Hard is experimental and
+  uses Rocket Host for eligible matches; it may be unstable or laggy.
+
+HELP
+Full guide: https://github.com/MyMedicalCenters/rl-manager#start-here-first-time-installation
+Audio problems: run Test match audio, then check the Windows volume mixer/default output.
+Support logs: Settings > Help & about > Open support logs.

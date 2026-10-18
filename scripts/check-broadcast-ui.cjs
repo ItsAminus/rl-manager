@@ -1,0 +1,70 @@
+const {app,BrowserWindow}=require('electron');
+const fs=require('node:fs');
+app.whenReady().then(async()=>{
+  const win=new BrowserWindow({show:false,width:840,height:520,webPreferences:{contextIsolation:true,offscreen:true,backgroundThrottling:false}});
+  const run=code=>win.webContents.executeJavaScript(code);
+  const wait=async code=>{for(let i=0;i<150;i++){if(await run(code))return;await new Promise(r=>setTimeout(r,100));}throw Error('Timeout: '+code);};
+  const assert=async(code,message)=>{if(!await run(code))throw Error(message);};
+  const capture=async name=>fs.writeFileSync('scratch/ui-review/'+name+'.png',(await win.webContents.capturePage()).toPNG());
+  let failed=false,originalFixture;
+  try{
+    await win.loadURL('http://127.0.0.1:5179/__broadcast?broadcast=1');
+    await wait('document.querySelectorAll(".broadcast-player").length===6');
+    await wait('Array.from(document.querySelectorAll(".broadcast-player img")).every(i=>i.complete&&i.naturalWidth>0)');
+    await wait('document.querySelectorAll(".broadcast-club img").length===2 && Array.from(document.querySelectorAll(".broadcast-club img")).every(i=>i.complete&&i.naturalWidth>0)');
+    await assert('Array.from(document.querySelectorAll(".broadcast-player .player-avatar-img")).every(i=>i.classList.contains("is-photo"))','A confirmed roster portrait was replaced by a placeholder');
+    await assert('document.querySelector(".broadcast-clock").textContent==="3:55"','Clock must use minutes and seconds');
+    await assert('document.querySelector(".broadcast-player-panel").getBoundingClientRect().bottom<=window.innerHeight','Player panel is clipped');
+    await assert('document.documentElement.scrollWidth<=window.innerWidth','Scoreboard overflows');
+    await capture('broadcast-scoreboard');
+    await run('window.__emitBroadcast({remaining:-61,overtime:true,blue:5})');
+    await wait('document.querySelector(".broadcast-score.blue").textContent==="5"');
+    await assert('document.querySelector(".broadcast-clock").textContent==="OVERTIME+1:01"','Overtime clock incorrect');
+    await capture('broadcast-overtime');
+    await run('window.__emitBroadcast({scoreboard:false})');win.setSize(840,106);
+    await wait('!document.querySelector(".broadcast-player-panel")');
+    await assert('document.querySelector(".broadcast-root").getBoundingClientRect().bottom<=window.innerHeight','Compact scoreboard is clipped');
+    await capture('broadcast-compact');
+    win.setSize(640,520);await run('window.__emitBroadcast({scoreboard:true})');
+    await wait('document.querySelectorAll(".broadcast-player").length===6');
+    await assert('document.documentElement.scrollWidth<=window.innerWidth','Small game window overflows');
+    await run(`(()=>{const c=structuredClone(window.__broadcastState.context);c.blue.shortName='A very long qualifier team name';c.orange.shortName='Another very long qualifier team name';c.blue.players[0].gamertag='A very long qualifier player name';window.__emitBroadcast({context:c});})()`);
+    await wait('document.querySelector(".broadcast-club.blue").textContent.includes("A very long")');
+    await assert('document.documentElement.scrollWidth<=window.innerWidth','Long qualifier names overflow the clock');
+    win.setSize(1450,1000);await win.loadURL('http://127.0.0.1:5179/__bracket');
+    await wait('document.querySelectorAll(".bracket-connectors path").length===4');
+    await assert('document.querySelectorAll(".bye").length===32','Initial bye pagination incorrect');
+    await run('document.querySelector(".bracket-more").click()');
+    await wait('document.querySelectorAll(".bye").length===64');
+    await run('document.querySelector(".bracket-more").click()');
+    await wait('document.querySelectorAll(".bye").length===70');
+    await run('document.querySelector(".bracket-toolbar button").click()');
+    await wait('document.querySelectorAll("[data-match]").length===2');
+    await assert('document.querySelectorAll(".bye").length===0','Your route includes unrelated byes');
+    await run('document.querySelector(".bracket-toolbar button").click()');
+    await wait('document.querySelectorAll("[data-match]").length===6');
+    await capture('tournament-bracket');
+    await run(`(()=>{const c=structuredClone(window.__bracketState);c.fixtures.filter(f=>f.round===2).forEach(f=>{f.status='completed';f.homeScore=3;f.awayScore=1;});const a=c.fixtures[4],b=c.fixtures[5];c.fixtures.push({...a,id:'final',round:3,awayTeamId:b.homeTeamId,awayTeamName:b.homeTeamName,status:'scheduled',homeScore:0,awayScore:0});window.__setBracket(c);})()`);
+    await wait('document.querySelectorAll(".bracket-connectors path").length===6');
+    await capture('tournament-advancement');
+    await run('window.__setBracket({...window.__bracketState,format:"round_robin"})');
+    await wait('document.querySelectorAll(".bracket-connectors path").length===0');
+    await assert('document.querySelector(".bracket-toolbar h2").textContent==="Group stage"','Round robin falsely presented as knockout');
+    // Check the real page's polling and IPC against the isolated save as well.
+    await win.loadURL('http://127.0.0.1:5179/__review');
+    await wait('document.body.innerText.includes("Your starting three")');
+    originalFixture=await run(`window.api.db.query("SELECT f.* FROM fixtures f JOIN career_competitions cc ON cc.competitionId=f.competitionId WHERE cc.careerId='ui-preview' ORDER BY f.round,f.scheduledDate,f.id LIMIT 1")`);
+    if(!originalFixture)throw Error('Preview has no fixture for live refresh test');
+    await run(`location.hash='/competition/${originalFixture.competitionId}?tab=bracket'`);
+    await wait(`!!document.querySelector('[data-match="${originalFixture.id}"]')`);
+    const newScore=Number(originalFixture.homeScore||0)+2;
+    await run(`window.api.db.run("UPDATE fixtures SET status='completed',homeScore=?,awayScore=0 WHERE id=?",${JSON.stringify([newScore,originalFixture.id])})`);
+    await wait(`document.querySelector('[data-match="${originalFixture.id}"]').textContent.includes('FINAL') && document.querySelector('[data-match="${originalFixture.id}"] .winner b').textContent===${JSON.stringify(String(newScore))}`);
+    await capture('tournament-live-refresh');
+    console.log('PASS: clock, overtime, scores, six portraits, panel sizing, compact layout, bracket connectors, 70 byes, team route and dynamic advancement.');
+  }catch(error){failed=true;console.error(error.stack);await capture('broadcast-bracket-failed');}
+  finally{
+    if(originalFixture)await run(`window.api.db.run("UPDATE fixtures SET status=?,homeScore=?,awayScore=? WHERE id=?",${JSON.stringify([originalFixture.status,originalFixture.homeScore,originalFixture.awayScore,originalFixture.id])})`).catch(()=>{});
+    win.destroy();app.exit(failed?1:0);
+  }
+});

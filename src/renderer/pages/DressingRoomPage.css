@@ -1,0 +1,23 @@
+.dressing-room-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
+.player-meetings { padding: 10px; display: grid; gap: 6px; }
+.meeting-player { display: flex; align-items: center; gap: 12px; width: 100%; border: 1px solid transparent; border-radius: 12px; padding: 12px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.meeting-player.selected { background: var(--bg-secondary, #eef4ef); border-color: var(--accent-primary, #3e8b62); }
+.meeting-player span, .player-promise div { display: grid; gap: 5px; }
+.meeting-player small, .player-promise small { color: var(--text-secondary); }
+.meeting-content { display: grid; gap: 18px; min-width: 0; }
+.relationship-metrics { display: flex; flex-wrap: wrap; gap: 24px; margin: 18px 0; }
+.relationship-metrics span { display: grid; gap: 5px; color: var(--text-secondary); }
+.relationship-metrics strong { color: var(--text-primary); font-size: 22px; }
+.conversation-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.conversation-actions button { white-space: normal; text-align: left; }
+.conversation-transcript { display: grid; gap: 14px; margin-top: 18px; }
+.conversation-line { background: var(--bg-secondary, #eef4ef); border-radius: 12px; padding: 16px; max-width: 92%; }
+.conversation-line.manager { margin-left: auto; background: rgba(64, 140, 96, .10); }
+.conversation-line p { margin: 8px 0 0; line-height: 1.6; }
+.player-promise { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-color, #d8e1da); }
+.team-talk-panel { margin: 16px 0; }
+.coach-quote { font-size: 17px; line-height: 1.6; }
+.talk-reactions { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 18px; }
+.talk-reactions > div { display: grid; gap: 7px; border-left: 3px solid var(--accent-primary, #3e8b62); padding-left: 12px; }
+.talk-reactions span, .talk-reactions small { color: var(--text-secondary); line-height: 1.5; }
+@media (max-width: 1050px) { .dressing-room-layout { grid-template-columns: 1fr; } .player-meetings { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); } }

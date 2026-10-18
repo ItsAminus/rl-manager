@@ -1,0 +1,96 @@
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 700;
+  border-radius: 4px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rating-badge:hover {
+  transform: translateY(-1px);
+}
+
+.rating-badge-label {
+  font-size: 0.65em;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-right: 4px;
+  opacity: 0.85;
+}
+
+/* Sizes */
+.rating-badge.size-sm {
+  font-size: 11px;
+  padding: 2px 5px;
+  min-width: 22px;
+  height: 18px;
+}
+
+.rating-badge.size-md {
+  font-size: 13px;
+  padding: 3px 8px;
+  min-width: 32px;
+  height: 24px;
+}
+
+.rating-badge.size-lg {
+  font-size: 16px;
+  padding: 5px 12px;
+  min-width: 44px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.rating-badge.size-xl {
+  font-size: 26px;
+  padding: 8px 18px;
+  min-width: 64px;
+  height: 48px;
+  border-radius: 8px;
+  letter-spacing: -0.03em;
+}
+
+/* Tier S: 90+ World-class Gold */
+.tier-s {
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+  color: #12100e;
+  border: 1px solid #ffe066;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.35);
+}
+
+/* Tier A: 85-89 Strong RLCS Emerald */
+.tier-a {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: #06230f;
+  border: 1px solid #58d68d;
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+}
+
+/* Tier B: 80-84 Mid Pro Electric Cyan */
+.tier-b {
+  background: linear-gradient(135deg, #00d2ff 0%, #0099cc 100%);
+  color: #031c26;
+  border: 1px solid #33ddff;
+  box-shadow: 0 2px 8px rgba(0, 210, 255, 0.3);
+}
+
+/* Tier C: 75-79 Bubble / Fringe Purple-Violet */
+.tier-c {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: #ffffff;
+  border: 1px solid #af7ac5;
+  box-shadow: 0 2px 6px rgba(155, 89, 182, 0.25);
+}
+
+/* Tier D: <75 Prospect Dark Slate */
+.tier-d {
+  background: #2c3444;
+  color: #9aa0a6;
+  border: 1px solid #3d4758;
+}

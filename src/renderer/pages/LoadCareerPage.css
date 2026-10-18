@@ -1,0 +1,196 @@
+.load-career-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg-primary, #0f1419);
+  padding: 32px 48px;
+  overflow: hidden;
+}
+
+.load-career-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.load-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-primary, #e8eaed);
+}
+
+.new-career-shortcut-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-primary, #4fc3f7);
+  background-color: rgba(79, 195, 247, 0.1);
+  border: 1px solid rgba(79, 195, 247, 0.25);
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.new-career-shortcut-btn:hover {
+  background-color: rgba(79, 195, 247, 0.2);
+}
+
+.load-career-content {
+  flex: 1;
+  overflow-y: auto;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.loading-saves {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.no-saves-card {
+  text-align: center;
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  border-radius: 8px;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 500px;
+  margin: 40px auto 0;
+}
+
+.no-saves-icon {
+  font-size: 40px;
+}
+
+.no-saves-card h2 {
+  font-size: 18px;
+  color: #fff;
+}
+
+.no-saves-card p {
+  font-size: 13px;
+  color: var(--text-secondary, #9aa0a6);
+  line-height: 1.5;
+}
+
+.saves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.save-item-card {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr auto;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--bg-secondary, #1a1f2e);
+  border: 1px solid var(--border-color, #2d3343);
+  padding: 18px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-item-card:hover {
+  background-color: var(--bg-tertiary, #242938);
+  border-color: var(--border-light, #363d4f);
+}
+
+.save-item-card.selected {
+  border-color: var(--accent-primary, #4fc3f7);
+  background-color: rgba(79, 195, 247, 0.08);
+}
+
+.save-primary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.save-manager-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.save-team-name {
+  font-size: 13px;
+  color: var(--accent-primary, #4fc3f7);
+}
+
+.save-meta-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.save-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.region-badge {
+  background-color: rgba(124, 77, 255, 0.15);
+  color: #b388ff;
+  border: 1px solid rgba(124, 77, 255, 0.3);
+}
+
+.difficulty-badge {
+  background-color: rgba(255, 167, 38, 0.15);
+  color: #ffa726;
+  border: 1px solid rgba(255, 167, 38, 0.3);
+}
+
+.save-date {
+  font-size: 12px;
+  color: var(--text-secondary, #9aa0a6);
+}
+
+.save-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.save-last-saved {
+  font-size: 11px;
+  color: var(--text-muted, #5f6368);
+}
+
+.delete-save-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted, #5f6368);
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.delete-save-btn:hover {
+  color: var(--accent-danger, #ef5350);
+  background-color: rgba(239, 83, 80, 0.1);
+}
+
+.load-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color, #2d3343);
+}
+
+.load-btn {
+  padding: 12px 28px;
+  font-weight: 700;
+}

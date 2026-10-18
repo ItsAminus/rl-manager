@@ -1,0 +1,47 @@
+RL MANAGER — COMPLETE WINDOWS DOWNLOAD
+
+1. Extract this entire folder to a normal local folder first.
+2. Close Rocket League, BakkesMod and RL Manager.
+3. Double-click Install RL Manager.exe, then choose Install everything.
+4. Use the RL Manager desktop shortcut after setup finishes.
+
+Keep every Runtime.7z part together. Do not open or extract individual parts.
+No terminal, Node.js, pip, Python installation or separate model download is needed.
+Setup includes RLM, Python 3.11/RLBot v4, Java, Microsoft runtime libraries, the local bot pack, text AI, speech AI,
+the official BakkesMod installer/core and Rocket Host plugin. It configures new
+local integration settings and an individual RCON password. No developer saves,
+passwords, accounts, caches or personal settings are included.
+
+You must install Rocket League yourself, sign in through its normal launcher,
+and have current graphics drivers. For modded RLM matches, disable Easy Anti-Cheat:
+Epic: Library > Rocket League (...) > Manage > Launch Options > -noeac.
+Steam: choose the launch option without Easy Anti-Cheat. Restart Rocket League
+after changing this. Re-enable Easy Anti-Cheat before normal online matchmaking. Internet access is required for Rocket Host,
+normal game sign-in, and BakkesMod compatibility/update checks. This is not an
+offline replacement for Rocket League. Hosted server availability is external.
+Live generated speech keeps Caster One and Caster Two on NVIDIA CUDA, a working optional
+AMD ROCm environment, or the CPU. AMD/Intel users do not need a GPU on a special
+support list to use CPU voice generation. CPU speech can be considerably slower;
+recorded caster reactions remain active and speech does not hold up match launch.
+Settings > Rocket League connection offers Automatic/CPU voice processing and an optional
+separate AMD speech Python executable. See AMD speech support.txt for details.
+Local text generation uses the CPU.
+Allow about 30 GB free space during installation. Do not run setup from a ZIP.
+
+The BakkesMod installer may request administrator permission. Setup does not
+launch or force-inject BakkesMod into a running game. In RLM, start a played
+match, wait at Rocket League's main menu, then use RLM's BakkesMod button.
+
+Existing careers are kept. RLM's interactive first-launch guide explains both
+game modes. Check Settings > Rocket League if your game is installed elsewhere.
+This is an unsigned, unofficial fan project, not an Epic/Psyonix/RLCS product.
+
+Upload this ENTIRE folder (or zip the entire folder). The small RLM installer
+alone does not include the extra runtime packages in this complete download.
+
+MATCH AUDIO
+If you cannot hear match commentary, goal crowd audio or the countdown, open
+Settings > Sound & gameplay > Test match audio. It plays all three through the
+same system as a match. Check Windows default speakers/headphones and the volume
+mixer if playback completes silently. Open support logs from Help & about when
+reporting an error. Recorded audio does not need an NVIDIA GPU.

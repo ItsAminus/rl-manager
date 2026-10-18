@@ -1,0 +1,73 @@
+appId: com.rlmanager.game
+productName: RL Manager
+directories:
+  output: release/${version}
+asar: true
+electronDist: node_modules/electron/dist
+asarUnpack:
+  - public/**
+electronLanguages:
+  - en-US
+files:
+  - dist-electron
+  - dist
+  - public
+  - package.json
+extraResources:
+  - from: data
+    to: data
+    filter:
+      - '*.json'
+  - from: rl_bridge
+    to: rl_bridge
+    filter:
+      - '*.py'
+      - local_bots/**/*
+      - commentary/audio_check.py
+      - commentary/chatterbox_worker.py
+      - commentary/clip_broadcast.py
+      - commentary/gpu_pacing.py
+      - commentary/hybrid_broadcast.py
+      - commentary/local_fact_selector.py
+      - commentary/match_story.py
+      - commentary/native_audio.py
+      - commentary/native_audio_worker.py
+      - commentary/runtime_paths.py
+      - commentary/series_story.py
+      - commentary/speech_device.py
+      - commentary/story_lines.py
+      - commentary/windows_audio.py
+      - commentary/voice_bank/*.wav
+      - commentary/voice_bank/manifest.json
+      - commentary/cache/caster_one_conds.pt
+      - commentary/cache/caster_two_conds.pt
+      - '!**/test_*.py'
+      - '!**/__pycache__/**'
+      - '!**/*.pyc'
+  - from: rl_bridge/local_runtime/google_deps
+    to: audio-deps
+    filter:
+      - '**/*'
+      - '!**/__pycache__/**'
+  - from: bakkesmod/build
+    to: career-hud
+    filter:
+      - RLManagerHUD.dll
+      - fonts/**/*
+win:
+  icon: public/brand/app-icon.ico
+  artifactName: RL.Manager.${version}.Setup.${ext}
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: RL Manager
+  installerIcon: public/brand/app-icon.ico
+  uninstallerIcon: public/brand/app-icon.ico

@@ -1,0 +1,85 @@
+// Read the real source once, then exercise actual IPC only in a disposable copy.
+import {createServer} from 'vite';
+import path from 'node:path';
+import os from 'node:os';
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const root=process.cwd(),folder=fs.mkdtempSync(path.join(root,'scratch','career-integration-'));
+fs.mkdirSync(path.join(folder,'database'));
+fs.copyFileSync(path.join(os.homedir(),'AppData','Roaming','rl-manager','database','rlmanager.sqlite'),path.join(folder,'database','rlmanager.sqlite'));
+globalThis.__dirname=path.join(root,'src/main');
+const vite=await createServer({configFile:false,root,resolve:{alias:{electron:path.join(root,'tests/preview-electron.ts')}},server:{watch:null}});
+let database;
+try{
+  database=await vite.ssrLoadModule('/src/main/database.ts');await database.initDb(folder);
+  // This test runner has a redirected LOCALAPPDATA. Supply the separately
+  // verified runtime path; still execute the real Python preview and IPC.
+  const {RLBotDetector}=await vite.ssrLoadModule('/src/services/rlbot-detector.ts');
+  RLBotDetector.prototype.detectRLBot=async()=>({found:true,path:path.join(os.homedir(),'AppData','Local','RLBotGUIX','Python311','python.exe'),pythonPath:path.join(os.homedir(),'AppData','Local','RLBotGUIX','Python311','python.exe'),version:'1.68.0'});
+  const {setupIpcHandlers}=await vite.ssrLoadModule('/src/main/ipc-handlers.ts');setupIpcHandlers();
+  const handlers=globalThis.__rlPreviewHandlers;
+  const call=(name,...args)=>handlers.get(name)({},...args);
+  const list=await call('career:list'),mates=list.find(c=>c.teamId==='team_4'),empor=list.find(c=>c.teamId==='sg_team_3127329');
+  assert(mates&&empor);
+  let loaded=await call('career:load',mates.id);assert(loaded.success,loaded.error);
+  const m=database.getCareerDatabase(mates.id);
+  const savedDate=loaded.career.currentDate;
+  m.prepare('UPDATE careers SET currentDate=? WHERE id=?').run('2025-09-26',mates.id);
+  const closed=await call('career:load',mates.id);assert(closed.success,closed.error);
+  assert(closed.career.transferWindows?.length);
+  const overview=await call('management:overview',mates.id);assert.equal(overview.window.open,false);
+  const zen=m.prepare("SELECT id FROM players WHERE gamertag='zen'").get();assert(zen);
+  const q=await call('management:signingQuote',mates.id,zen.id);assert(q.success,q.error);assert(q.unavailableReason.includes('closed'));
+  const denied=await call('management:sign',mates.id,zen.id,{salary:10000000,bonus:10000000,buyout:100000,duration:24,role:'Core Starter'});
+  assert.equal(denied.success,false);assert(denied.error.includes('closed'));
+  m.prepare('UPDATE careers SET currentDate=? WHERE id=?').run(savedDate,mates.id);
+  const atomM=m.prepare("SELECT teamId FROM players WHERE gamertag='AtomiK'").get();
+  assert.notEqual(atomM.teamId,empor.teamId);
+  assert.equal(m.prepare("SELECT teamId FROM players WHERE gamertag='kofyr'").get().teamId,null);
+  const plan=await call('management:tactics',mates.id),archie=m.prepare("SELECT id FROM players WHERE gamertag='archie'").get();
+  assert(plan.rolesByPlayer[archie.id].startsWith('First Man'));
+  assert.equal((await call('management:dressingRoom',mates.id)).conversations.filter(c=>c.playerId===archie.id&&c.topic==='tactics'&&c.status==='pending').length,0);
+  assert((await call('management:setDifficulty',mates.id,'Easy')).success);
+  // An asynchronous old-save operation must retain its origin while the UI switches.
+  let release;const gate=new Promise(r=>release=r);
+  const pending=database.careerWorld(mates.id,async()=>{await gate;database.db.prepare('UPDATE teams SET cashBalance=? WHERE id=?').run(123456,mates.teamId);});
+  loaded=await call('career:load',empor.id);assert(loaded.success,loaded.error);
+  release();await pending;
+  const e=database.getCareerDatabase(empor.id);
+  assert.equal(e.prepare("SELECT teamId FROM players WHERE gamertag='AtomiK'").get().teamId,empor.teamId);
+  assert.equal(e.prepare("SELECT teamId FROM players WHERE gamertag='kofyr'").get().teamId,empor.teamId);
+  assert.notEqual(e.prepare('SELECT cashBalance FROM teams WHERE id=?').get(mates.teamId).cashBalance,123456);
+  assert((await call('management:setDifficulty',empor.id,'Medium')).success);
+  loaded=await call('career:load',mates.id);assert.equal(loaded.career.difficulty,'Easy');
+  assert.equal(m.prepare('SELECT cashBalance FROM teams WHERE id=?').get(mates.teamId).cashBalance,123456);
+  const created=await call('career:create',{managerName:'World QA',teamId:'team_4',region:'Europe',difficulty:'Medium'});assert(created.success,created.error);
+  const fresh=await call('career:load',created.id);assert(fresh.success,fresh.error);
+  const world=database.getCareerDatabase(created.id);
+  const identity=(await call('management:clubBranding',created.id)).branding;
+  const designed=await call('management:saveClubBranding',created.id,{...identity,name:'Studio Career QA',shortName:'SCQA',primary:'#8822CC'});assert(designed.success,designed.error);
+  const garage=await call('management:squadGarage',created.id);assert(garage.success);
+  assert((await call('management:saveCarPreset',created.id,garage.players[1].id,{...garage.players[1].preset,enabled:true,bodyId:4284})).success);
+  const designedLoad=await call('career:load',created.id);assert.equal(designedLoad.team.name,'Studio Career QA');assert.equal(designedLoad.team.branding.primary,'#8822CC');
+  await call('career:load',mates.id);assert.notEqual((await call('teams:getById','team_4')).name,'Studio Career QA');
+  await call('career:load',created.id);assert.equal((await call('management:squadGarage',created.id)).players[1].preset.bodyId,4284);
+  assert.notEqual(world.prepare("SELECT teamId FROM players WHERE gamertag='AtomiK'").get().teamId,empor.teamId);
+  assert.equal(world.prepare('SELECT COUNT(*) AS n FROM transfers').get().n,0);
+  assert.equal(fresh.career.difficulty,'Medium');
+  const training=await call('management:training',created.id);assert(Array.isArray(training.earned));
+  const next=(await call('fixtures:getUpcoming',fresh.career.teamId,fresh.career.currentDate))[0];assert(next);
+  world.prepare('UPDATE careers SET currentDate=? WHERE id=?').run(next.scheduledDate,created.id);
+  const before=await call('rlbot:botPlan',{fixtureId:next.id,gameNumber:1});assert(before.success,before.error);assert.equal(before.route,'Local');
+  const target=before.assignments.find(a=>a.type==='Local');assert(target.performance);assert(target.condition);
+  world.prepare('UPDATE players SET form=5,morale=5,fatigue=95 WHERE id=?').run(target.playerId);
+  world.prepare('UPDATE player_traits SET confidence=0 WHERE playerId=?').run(target.playerId);
+  const after=await call('rlbot:botPlan',{fixtureId:next.id,gameNumber:2});assert(after.success,after.error);
+  const changed=after.assignments.find(a=>a.playerId===target.playerId);
+  assert.equal(changed.engine,target.engine);assert(changed.performance.quality<target.performance.quality);assert.equal(changed.performance.confidence,0);
+  const competitions=await call('competitions:getAll');
+  assert(competitions.some(c=>c.name.includes('RLCS Major 1')));assert(competitions.some(c=>c.name.includes('World Championship')));
+  console.log(JSON.stringify({passed:true,checks:['closed transfer window in legacy-save IPC','legacy roster repair','player role recovery','save switching','async origin isolation','independent difficulty','fresh canonical world','flagship competitions','earned-development API','database condition to real bot preview'],competitions:competitions.length}));
+}finally{
+  database?.closeDb();await vite.close();
+  if(!path.resolve(folder).startsWith(path.resolve(root,'scratch')+path.sep))throw Error('Unsafe cleanup');
+  fs.rmSync(folder,{recursive:true,force:true});
+}
