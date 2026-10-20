@@ -106,4 +106,11 @@ Only people with repository access. A public release requires a public repositor
 
 For source builds, see [Developer instructions](docs/DEVELOPMENT.md). For packaging details, see [Player release notes](docs/PLAYER_RELEASE.md).
 
+
+
+"Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic."
+
+
+
+
 Unofficial fan project, not affiliated with Psyonix or Epic Games. Third-party software, brands, player imagery and recordings retain their respective ownership and notices.
