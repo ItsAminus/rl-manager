@@ -4,15 +4,6 @@ Build your Rocket League career in **Manager Career** or take a fixed squad from
 
 **Latest version: 1.0.9 · Windows PC only**
 
-## Already installed RLM? Update to 1.0.9
-
-Close RL Manager and Rocket League, then download and run
-**[RL.Manager.1.0.9.Setup.exe](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.9/RL.Manager.1.0.9.Setup.exe)**.
-Keep your existing bot/mod/AI installation. Your RLM saves and settings are preserved.
-
-1.0.9 fixes Steam launcher selection for played matches and adds detailed local
-bot tactical-response logs. [What changed](docs/RELEASE_1.0.9.md).
-
 ## Start here: first-time installation
 
 **New players need the COMPLETE 1.0.8 download: all four numbered parts below, followed by the 1.0.9 update above.**
