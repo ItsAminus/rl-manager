@@ -32,6 +32,18 @@ class Tests(unittest.TestCase):
         view=self.bridge.update(self.packet,self.wall+.1)
         self.assertIn('Hunting Player 3',view['label']);self.assertTrue(view['activity'][0]['changedControls'])
         status=json.loads((self.bots/'tactics-status-1.json').read_text());self.assertEqual(status['stage'],'Hunting')
+        self.assertIsNotNone(status['driveTarget']);self.assertIn('steer',status['controlChanges'])
+        behavior=[line for line in self.log if line.startswith('Bot behavior:')]
+        self.assertEqual(len(behavior),1);self.assertIn('Hunting; opponent Player 3',behavior[0]);self.assertIn('steer 0.0 ->',behavior[0])
+        self.bridge.update(self.packet,self.wall+.3)
+        self.assertEqual(len([line for line in self.log if line.startswith('Bot behavior:')]),1)
+        self.packet.game_cars[0].physics.location.y=2000;self.packet.game_cars[2].physics.location.y=2100
+        bot.next_status=0;bot.apply(self.packet,SimpleControllerState())
+        self.bridge.update(self.packet,self.wall+1.2)
+        self.assertIn('Waiting for defensive cover',self.log[-1])
+        self.assertIn('original bot controls retained',self.log[-1])
+        status=json.loads((self.bots/'tactics-status-1.json').read_text())
+        self.assertFalse(status['changedControls']);self.assertEqual(status['controlChanges'],{})
     def test_native_callback_and_file_relay_do_not_cancel_each_others_receipts(self):
         bot=LocalTactics(1,{'difficulty':'Medium','performance':{'quality':.9}},command_folder=self.bots)
         bot.prepare(self.packet);self.assertTrue(bot.receive(0,0,Q.Information_Incoming))

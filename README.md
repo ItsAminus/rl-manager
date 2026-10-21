@@ -2,13 +2,22 @@
 
 Build your Rocket League career in **Manager Career** or take a fixed squad from the bottom to the top in **Path To Glory**.
 
-**First official release: 1.0.8 · Windows PC only**
+**Latest version: 1.0.9 · Windows PC only**
+
+## Already installed RLM? Update to 1.0.9
+
+Close RL Manager and Rocket League, then download and run
+**[RL.Manager.1.0.9.Setup.exe](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.9/RL.Manager.1.0.9.Setup.exe)**.
+Keep your existing bot/mod/AI installation. Your RLM saves and settings are preserved.
+
+1.0.9 fixes Steam launcher selection for played matches and adds detailed local
+bot tactical-response logs. [What changed](docs/RELEASE_1.0.9.md).
 
 ## Start here: first-time installation
 
-**New players need the COMPLETE download: all four numbered parts below.**
+**New players need the COMPLETE 1.0.8 download: all four numbered parts below, followed by the 1.0.9 update above.**
 
-The separate `RL.Manager.1.0.8.Setup.exe` file is an update installer. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
+The separate `RL.Manager.1.0.9.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
 
 ### 1. What you need before downloading
 
@@ -23,7 +32,7 @@ The separate `RL.Manager.1.0.8.Setup.exe` file is an update installer. It is **n
 
 ### 2. Download ALL FOUR parts
 
-Open the **[1.0.8 download page](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.0.8)** and expand **Assets**, or use these links:
+Open the **[complete 1.0.8 download page](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.0.8)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.0.9:
 
 | Download | File | Approximate size |
 | --- | --- | --- |
@@ -42,7 +51,7 @@ Open the **[1.0.8 download page](https://github.com/MyMedicalCenters/rl-manager/
 4. Open the extracted **`RL-Manager-Complete-1.0.8`** folder.
 5. Close Rocket League, BakkesMod and any running RL Manager window.
 6. Double-click **`Install RL Manager.exe`**, then click **Install everything**. Allow the included component installers to finish and approve their installation prompts when asked.
-7. When setup finishes, open **RL Manager** from its desktop or Start menu shortcut.
+7. When setup finishes, close RLM if it opened and install the **1.0.9 update** linked above. Then open **RL Manager** from its desktop or Start menu shortcut.
 
 **Keep the extracted folder and its `Packages`, `Setup` and `Tools` subfolders together until setup finishes.** The wizard handles the internal `Runtime.7z` files itself. You do not need to open them or run another RLM installer afterwards.
 
@@ -82,8 +91,14 @@ In Manager Career, **Easy and Medium use local bots**. **Hard is experimental** 
 **Do I install parts 1, 2, 3 and 4 separately?**  
 No. Download all four, extract `.001`, then run **Install RL Manager.exe** inside the extracted folder.
 
-**Do I also download `RL.Manager.1.0.8.Setup.exe`?**  
-Not for a first-time installation. The complete setup already installs RLM. That separate file is for people who already installed the complete kit and only need an app update.
+**Do I also download `RL.Manager.1.0.9.Setup.exe`?**  
+Yes. Existing users only need this update. New users install the complete 1.0.8 kit first, then run the 1.0.9 update. You do not need the separate 1.0.8 app installer.
+
+**Steam launch repeats the Rocket League tutorial or does not keep me signed in.**  
+Install 1.0.9, fully close Rocket League, keep Steam open and signed in, and retry.
+RLM now launches Steam installations through Steam instead of trying the Epic login workaround.
+If it persists, share **Settings → Help → Open support logs → rl-manager.log**.
+Do not delete your saves, unlink accounts or reset your game settings.
 
 **Do I install BakkesMod, Rocket Host, RLBot or the voices myself?**  
 No. The complete wizard includes RLM, local bots/Python, BakkesMod, Rocket Host, the speech/text models and required runtime components.

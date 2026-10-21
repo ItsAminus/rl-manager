@@ -264,7 +264,8 @@ def finish_played_match(packet, result_file, dispatcher, incidents=None):
 
 
 def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Path | None = None, enable_commentary: bool = True, commentary=None, broadcast_context=None,manual_bakkesmod_confirmation=False):
-    from rlbot.setup_manager import SetupManager, RocketLeagueLauncherPreference, ROCKET_LEAGUE_PROCESS_INFO
+    from rlbot.setup_manager import SetupManager, ROCKET_LEAGUE_PROCESS_INFO
+    from game_launcher import launcher_preference
 
     # Align Rocket League packet rate to 120Hz for optimal Nexto neural network physics
     ROCKET_LEAGUE_PROCESS_INFO.get_ideal_args = lambda port: [
@@ -281,11 +282,7 @@ def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Pat
     manager = SetupManager()
     manager.early_start_seconds = 5
 
-    launcher_pref = RocketLeagueLauncherPreference(
-        preferred_launcher="epic",
-        use_login_tricks=True,
-        rocket_league_exe_path=rl_exe if rl_exe.exists() else None
-    )
+    launcher_pref = launcher_preference(rl_exe, lambda message: log_event('STATUS', message=message))
 
     log_event("STATUS", message="Connecting to Rocket League gateway...")
     from bakkesmod_startup import connect_with_hud

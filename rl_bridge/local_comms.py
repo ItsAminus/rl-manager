@@ -11,6 +11,7 @@ class LocalCommsBridge:
     def __init__(self,source,folder,session,emit=lambda _:None):
         self.source=Path(source) if source else None;self.folder=Path(folder);self.session=session;self.emit=emit
         self.last_poll=-1.;self.sequence=0;self.pending=None;self.expected={};self.sent_at=0.;self.reported=False;self.view=None
+        self.behavior_reports={}
     def update(self,packet,clock=None):
         wall=time.time() if clock is None else clock
         if not self.source or wall-self.last_poll<.08:return self.view
@@ -47,6 +48,17 @@ class LocalCommsBridge:
                         age=float(packet.game_info.seconds_elapsed)-float(status['elapsed'])
                         if status.get('sequence')!=self.sequence or not 0<=age<1 or status.get('command')!=COMMANDS[self.pending['quickChat']][0]:continue
                         activity.append({'player':name,**status})
+                        signature=(self.sequence,status.get('command'),status.get('stage'),status.get('target'),bool(status.get('changedControls')))
+                        previous,reported_at=self.behavior_reports.get(index,(None,-100.))
+                        if signature!=previous and wall-reported_at>=1:
+                            changes=status.get('controlChanges') or {}
+                            detail=', '.join(f"{key} {value['from']} -> {value['to']}" for key,value in changes.items())
+                            destination=status.get('driveTarget')
+                            action=(f"driving toward {destination}; {detail}" if destination and changes else
+                                    f"controls changed: {detail}" if changes else 'tactical driving override inactive; original bot controls retained')
+                            target=('; opponent '+status['target']) if status.get('target') else ''
+                            self.emit(f"Bot behavior: {name} | {status['command']} | {status['stage']}{target} | {action}")
+                            self.behavior_reports[index]=(signature,wall)
                     except (OSError,ValueError,KeyError,TypeError):pass
                 self.view['activity']=activity
                 label=COMMANDS[self.pending['quickChat']][2]

@@ -29,6 +29,7 @@ class LocalTactics:
         self.base_command=saved_order(profile);self.orders_by_slot=profile.get('tacticOrdersBySlot') or {}
         self.command_folder=Path(command_folder) if command_folder else None;self.command_sequence=0;self.next_poll=0.
         self.active_command=self.base_command;self.stage='Normal role';self.target_name='';self.changed_controls=False;self.next_status=0.
+        self.drive_target=None;self.control_changes={}
     def poll_command(self):
         if not self.enabled or not self.command_folder or time.monotonic()<self.next_poll:return
         self.next_poll=time.monotonic()+.08
@@ -54,6 +55,7 @@ class LocalTactics:
         return True
     def take_ack(self):result=self.ack;self.ack=None;return result
     def drive(self,car,controls,target,boost=False):
+        self.drive_target=[round(float(v),1) for v in target]
         result=copy_controls(controls);pos=point(car);angle=math.atan2(target[1]-pos[1],target[0]-pos[0])-car.physics.rotation.yaw
         angle=(angle+math.pi)%(2*math.pi)-math.pi
         result.steer=max(-1,min(1,angle*2.4));result.throttle=1 if distance(pos,target)>250 else .1
@@ -79,11 +81,19 @@ class LocalTactics:
         self.next_status=time.monotonic()+.25
         try:
             target_file=self.command_folder/f'tactics-status-{self.index}.json';temporary=target_file.with_suffix('.tmp')
-            temporary.write_text(json.dumps({'command':self.active_command,'stage':self.stage,'target':self.target_name,'changedControls':self.changed_controls,'elapsed':float(self.packet.game_info.seconds_elapsed),'sequence':self.command_sequence}),encoding='utf-8');temporary.replace(target_file)
+            temporary.write_text(json.dumps({'command':self.active_command,'stage':self.stage,'target':self.target_name,'changedControls':bool(self.control_changes),'controlChanges':self.control_changes,'driveTarget':self.drive_target,'elapsed':float(self.packet.game_info.seconds_elapsed),'sequence':self.command_sequence}),encoding='utf-8');temporary.replace(target_file)
         except OSError:pass
     def apply(self,packet,controls):
         if not self.enabled or not hasattr(packet,'num_cars') or self.index>=packet.num_cars:return controls
-        try:return self.apply_order(packet,controls)
+        self.drive_target=None;self.control_changes={}
+        fields=('steer','throttle','boost','jump','pitch','yaw','roll','handbrake')
+        before={key:getattr(controls,key) for key in fields}
+        try:
+            result=self.apply_order(packet,controls)
+            self.control_changes={key:{'from':round(before[key],3) if isinstance(before[key],float) else before[key],
+                                       'to':round(getattr(result,key),3) if isinstance(getattr(result,key),float) else getattr(result,key)}
+                                  for key in fields if abs(float(before[key])-float(getattr(result,key)))>.001}
+            return result
         finally:self.publish_status()
     def apply_order(self,packet,controls):
         self.prepare(packet);car=packet.game_cars[self.index];info=packet.game_info;now=float(info.seconds_elapsed);active=self.active_command

@@ -273,14 +273,15 @@ def _launch_once(context,rl_path,result_path,enable_commentary=True):
     for a in assignments:log_event('CONFIG_PLAYER',name=a['name'],team='Blue' if a['team']==0 else 'Orange',slot=a['slot'],type=a['type'],bot=a['engine'],profile=a)
     log(selected['notice'])
     allow_career_commands()
-    from rlbot.setup_manager import SetupManager,RocketLeagueLauncherPreference,ROCKET_LEAGUE_PROCESS_INFO
+    from rlbot.setup_manager import SetupManager,ROCKET_LEAGUE_PROCESS_INFO
+    from game_launcher import launcher_preference
     import logging
     logging.getLogger('rlbot').setLevel(logging.WARNING)
     ROCKET_LEAGUE_PROCESS_INFO.get_ideal_args=lambda port:['-rlbot',f'RLBot_ControllerURL=127.0.0.1:{port}','RLBot_PacketSendRate=120','-nomovie','-noeac']
     manager=SetupManager()
     dispatcher=None;hud=None;joined=False
     try:
-        connect_with_hud(manager,RocketLeagueLauncherPreference(preferred_launcher='epic',use_login_tricks=True,rocket_league_exe_path=rl_path),log,required=True,
+        connect_with_hud(manager,launcher_preference(rl_path,log),log,required=True,
                          manual_confirmation=bool(context.get('bakkesmodConfirmation')))
         status=json.loads((folder()/'data/rl-manager/plugin-status.json').read_text())
         if not status.get('rocketHostTelemetry'):raise RuntimeError('Update RL Manager HUD to 1.4 before using Rocket Host')
