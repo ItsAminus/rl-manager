@@ -1,3 +1,8 @@
+<img width="1672" height="941" alt="RL Manager_ Stadium Strategy Room" src="https://github.com/user-attachments/assets/2334b544-f6fe-4be6-bad9-2ab27fb9e357" />
+
+
+
+
 # RL Manager
 
 Build your Rocket League career in **Manager Career** or take a fixed squad from the bottom to the top in **Path To Glory**.
