@@ -1,9 +1,53 @@
 #include "../ScoreboardRows.h"
 #include "../FeedNameRefresh.h"
+#include "../NativeUI.h"
+#include <array>
 #include <cassert>
 #include <cstring>
 #include <iostream>
 using namespace career_scoreboard;
+static void nativePublicationTests(){
+    // A real class/field graph is required: a same-name property, inherited
+    // method with the wrong parameters, or a stale unrelated object cannot
+    // be invoked as SetStringValue.
+    std::array<unsigned char,512> object{},type{},field{},functionClass{};
+    auto at=[](auto& buffer){return reinterpret_cast<uintptr_t>(buffer.data());};
+    auto put=[](uintptr_t address,auto value){std::memcpy(reinterpret_cast<void*>(address),&value,sizeof(value));};
+    const auto o=at(object),t=at(type),f=at(field),c=at(functionClass);
+    put(o+0x50,t);put(t+0x88,f);put(f+0x50,c);put(f+0x40,t);put(f+0x146,uint16_t(40));
+    auto read=[&](uintptr_t address,void* out,size_t size){
+        for(auto base:{o,t,f,c})if(address>=base&&address+size<=base+512){std::memcpy(out,reinterpret_cast<void*>(address),size);return true;}return false;
+    };
+    auto name=[&](uintptr_t address){return address==t?std::string("GFxDataStore_X"):address==f?std::string("SetStringValue"):address==c?std::string("Function"):std::string{};};
+    assert(career_native_ui::method(o,"GFxDataStore_X","SetStringValue",40,read,name)==f);
+    assert(career_native_ui::derives(o,"GFxDataStore_X",read,name));
+    assert(!career_native_ui::derives(o,"UnrelatedHUD",read,name));
+    // Gameplay uses GFxHUD_Soccar/Spectator subclasses, not the base HUD.
+    std::array<unsigned char,512> derived{};const auto d=at(derived);put(d+0x50,c);put(c+0x80,t);
+    auto childRead=[&](uintptr_t address,void* out,size_t size){if(address>=d&&address+size<=d+512){std::memcpy(out,reinterpret_cast<void*>(address),size);return true;}return read(address,out,size);};
+    assert(career_native_ui::derives(d,"GFxDataStore_X",childRead,name));
+    assert(!career_native_ui::method(o,"OtherStore","SetStringValue",40,read,name));
+    put(f+0x146,uint16_t(32));assert(!career_native_ui::method(o,"GFxDataStore_X","SetStringValue",40,read,name));
+    put(f+0x146,uint16_t(40));put(f+0x40,o);assert(!career_native_ui::method(o,"GFxDataStore_X","SetStringValue",40,read,name));
+    put(f+0x40,t);put(f+0x50,o);assert(!career_native_ui::method(o,"GFxDataStore_X","SetStringValue",40,read,name));
+    put(f+0x50,c);
+    auto propertyName=[&](uintptr_t address){return address==t?std::string("GFxData_Nameplate_TA"):address==f?std::string("NameplateComponent"):address==c?std::string("ObjectProperty"):std::string{};};
+    // Runtime layout changes must use the engine's field metadata. The old
+    // SDK's D8 component offset failed silently on the running game.
+    put(f+0x98,int32_t(0xE0));
+    assert(career_native_ui::property(o,"NameplateComponent",read,propertyName)==0xE0);
+    assert(career_native_ui::property(d,"NameplateComponent",childRead,propertyName)==0xE0);
+    assert(career_native_ui::property(o,"MissingField",read,propertyName)==-1);
+    put(f+0x40,o);assert(career_native_ui::property(o,"NameplateComponent",read,propertyName)==-1);
+    put(f+0x40,t);put(f+0x98,int32_t(-1));assert(career_native_ui::property(o,"NameplateComponent",read,propertyName)==-1);
+    put(f+0x98,int32_t(0xE0));assert(career_native_ui::property(o,"NameplateComponent",read,name)==-1);
+    wchar_t pro[]=L"ExoTiiK";
+    career_native_ui::SetStringParams params;params.table=123;params.row=4;params.column=789;params.value={reinterpret_cast<uintptr_t>(pro),8,8};
+    uint64_t table=0;int row=0,column=0;career_feed::NameView text{};
+    auto bytes=reinterpret_cast<const unsigned char*>(&params);
+    std::memcpy(&table,bytes,8);std::memcpy(&row,bytes+8,4);std::memcpy(&column,bytes+12,4);std::memcpy(&text,bytes+24,16);
+    assert(table==123&&row==4&&column==789&&std::wstring(reinterpret_cast<wchar_t*>(text.text))==L"ExoTiiK");
+}
 static void feedNameRefreshTests(){
     using career_feed::NameView;
     auto read=[](uintptr_t address,void* out,size_t size){std::memcpy(out,reinterpret_cast<void*>(address),size);return true;};
@@ -39,6 +83,23 @@ static void feedNameRefreshTests(){
     assert(outer.begin(address,read,write));assert(!inner.begin(address,read,write));
     inner.finish(read,write);outer.finish(read,write);
     assert(std::wstring(buffer)==L"Oski"&&field.count==5);
+    // Native GetPlayerName return values retain their allocator, including
+    // when a short hosted policy name maps to a longer career gamertag.
+    std::wcscpy(buffer,L"Byte");field={reinterpret_cast<uintptr_t>(buffer),5,32};
+    const auto engineAllocation=field.text;
+    assert(career_feed::replaceResult(address,L"archie",read,write));
+    assert(std::wstring(buffer)==L"archie"&&field.count==7&&field.capacity==32&&field.text==engineAllocation);
+    field.capacity=7;
+    assert(!career_feed::replaceResult(address,L"a longer career name",read,write));
+    assert(std::wstring(buffer)==L"archie"&&field.count==7&&field.capacity==7);
+    field.capacity=32;
+    auto failHeader=[&](uintptr_t at,const void* in,size_t size){return at!=address&&write(at,in,size);};
+    assert(!career_feed::replaceResult(address,L"zen",read,failHeader));
+    assert(std::wstring(buffer)==L"archie"&&field.count==7);
+    assert(!career_feed::replaceResult(address,std::wstring(L"bad\0name",8),read,write));
+    field.count=33;assert(!career_feed::replaceResult(address,L"zen",read,write));
+    field={0,1,32};assert(!career_feed::replaceResult(address,L"zen",read,write));
+    std::wcscpy(buffer,L"Oski");field={reinterpret_cast<uintptr_t>(buffer),5,32};
     // Malformed descriptors and write failures leave names untouched.
     field.count=33;assert(!refresh.begin(address,read,write));field.count=5;
     auto failDescriptor=[&](uintptr_t at,const void* in,size_t size){return at!=address&&write(at,in,size);};
@@ -46,6 +107,7 @@ static void feedNameRefreshTests(){
     assert(std::wstring(buffer)==L"Oski"&&field.count==5);
 }
 int main(){
+    nativePublicationTests();
     feedNameRefreshTests();
     assert(playerNameBinding("PlayerName",3,3,12,12,"BonkDaddy","BonkDaddy","zen"));
     assert(playerNameBinding("PlayerName",4,4,12,12,"Necto (2)","Necto (2)","Oski"));

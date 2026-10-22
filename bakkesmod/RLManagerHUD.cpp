@@ -26,6 +26,7 @@
 #include "json.hpp"
 #include "ScoreboardRows.h"
 #include "FeedNameRefresh.h"
+#include "NativeUI.h"
 #include "CareerComms.h"
 using json=nlohmann::json;
 
@@ -79,6 +80,10 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
     std::unordered_map<std::string,double> feedNameRefresh;
     std::unordered_map<std::string,std::string> feedRefreshOutcome;
     std::unordered_map<std::string,bool> nativeCarNames;
+    std::unordered_map<std::string,uintptr_t> nameplateObjects;
+    std::string uiDiscovery;
+    uintptr_t currentNativeHUD=0;
+    std::unordered_map<uintptr_t,std::unordered_map<std::string,int32_t>> nativeFieldOffsets;
     std::unordered_map<uintptr_t,double> nameplateCheckedAt;
     double lastRenderAt=0;
     std::atomic<uint64_t> renderCalls{0},renderMicros{0},worstRenderMicros{0},worstFrameMicros{0};
@@ -110,6 +115,9 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
     static constexpr const char* plateNameEvent="Function TAGame.GFxData_Nameplate_TA.UpdatePlayerName";
     static constexpr const char* plateTickEvent="Function TAGame.GFxData_Nameplate_TA.Tick";
     static constexpr const char* plateSetEvent="Function TAGame.GFxData_Nameplate_TA.SetNameplateComponent";
+    static constexpr const char* plateGetEvent="Function TAGame.NameplateComponentCar_TA.GetPlayerName";
+    static constexpr const char* hudNameEvent="Function TAGame.GFxHUD_TA.GetPlayerName";
+    static constexpr const char* hudResolveEvent="Function TAGame.GFxHUD_TA.ResolvePlayerName";
     static constexpr const char* messageEvent="Function TAGame.GFxData_GameEvent_TA.OnGameMessage";
     static constexpr const char* receiveMessageEvent="Function TAGame.GFxHUD_TA.ReceiveMessage";
     static constexpr const char* hudOpenEvent="Function TAGame.GFxHUD_TA.OpenScoreboard";
@@ -157,7 +165,8 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
                     // Hide arriving server bot labels immediately, even before
                     // the bridge has identified this particular career role.
                     const auto nativeId=std::to_string(pri.memory_address);
-                    if(pri.GetbBot()&&car&&!nativeCarNames[nativeId])hideEngineNameplate(car);
+                    auto legacy=cvarManager->getCvar("rlm_legacy_nameplates");
+                    if(pri.GetbBot()&&car&&!nativeCarNames[nativeId]&&legacy&&legacy.getBoolValue())hideEngineNameplate(car);
                     const auto displayName=pri.GetPlayerName().ToString();
                     const auto alias=nameAliases.find(nativeId);
                     // The join/engine verifier sees the original server identity.
@@ -218,7 +227,7 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         auto mesh=car.GetNameplateMeshComponent();if(!mesh)return;auto original=hiddenNameplates.find(mesh.memory_address);if(original==hiddenNameplates.end())return;
         mesh.SetHiddenGame(original->second);auto owner=bool(mesh.GetbOwnerNoSee());mesh.SetOwnerNoSee(!owner);mesh.SetOwnerNoSee(owner);hiddenNameplates.erase(original);
     }
-    void resetScoreboard(){restoreNameplates();scoreboardOpen=false;scoreboardClosedAt=0;sortedIds.clear();nativePlayers.clear();scoreboardReported=false;scoreboardUnavailable=false;nameAliases.clear();namesReported=false;lastNameSync=0;nameBindingError.clear();replayReported.clear();actionFeed.clear();tickerPlayers.clear();playerUIObjects.clear();nativeFeedNames.clear();feedNameRefresh.clear();feedRefreshOutcome.clear();nativeCarNames.clear();nameplateCheckedAt.clear();lastRenderAt=0;goalLabelFallback=false;goalMessageAt=0;goalMessageScorer.clear();}
+    void resetScoreboard(){restoreNameplates();currentNativeHUD=0;uiDiscovery.clear();scoreboardOpen=false;scoreboardClosedAt=0;sortedIds.clear();nativePlayers.clear();scoreboardReported=false;scoreboardUnavailable=false;nameAliases.clear();namesReported=false;lastNameSync=0;nameBindingError.clear();replayReported.clear();actionFeed.clear();tickerPlayers.clear();playerUIObjects.clear();nativeFeedNames.clear();feedNameRefresh.clear();feedRefreshOutcome.clear();nativeCarNames.clear();nameplateObjects.clear();nameplateCheckedAt.clear();lastRenderAt=0;goalLabelFallback=false;goalMessageAt=0;goalMessageScorer.clear();}
     std::string careerName(const std::string& nativeId){
         auto alias=nameAliases.find(nativeId);if(alias!=nameAliases.end())return alias->second.career;
         std::shared_ptr<const json> data;{std::lock_guard<std::mutex> guard(lock);data=latest;}
@@ -241,6 +250,66 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
     static bool writeNameMemory(uintptr_t address,const void* input,size_t size){
         SIZE_T written=0;return address&&WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),input,size,&written)&&written==size;
     }
+    std::string objectName(uintptr_t object){
+        int index=-1,number=-1;
+        if(!object||!readChecked(object+0x48,index)||!readChecked(object+0x4C,number)||index<0||number!=0)return {};
+        return gameWrapper->GetFNameByIndex(index);
+    }
+    int32_t nativeField(uintptr_t object,const std::string& name){
+        uintptr_t type=0;if(!object||!readChecked(object+0x50,type)||!type)return -1;
+        auto& fields=nativeFieldOffsets[type];const auto found=fields.find(name);if(found!=fields.end())return found->second;
+        const auto offset=career_native_ui::property(object,name,readNameMemory,[this](uintptr_t address){return objectName(address);});
+        fields.emplace(name,offset);return offset;
+    }
+    static bool nativeCall(uintptr_t object,uintptr_t function,void* params){
+        uintptr_t vtable=0,entry=0;
+        if(!readChecked(object,vtable)||!readChecked(vtable+67*sizeof(uintptr_t),entry))return false;
+        MEMORY_BASIC_INFORMATION memory{};
+        if(!VirtualQuery(reinterpret_cast<void*>(entry),&memory,sizeof(memory))||memory.State!=MEM_COMMIT||
+           !(memory.Protect&(PAGE_EXECUTE|PAGE_EXECUTE_READ|PAGE_EXECUTE_READWRITE|PAGE_EXECUTE_WRITECOPY)))return false;
+        __try { reinterpret_cast<void(*)(void*,void*,void*)>(entry)(reinterpret_cast<void*>(object),reinterpret_cast<void*>(function),params); }
+        __except(EXCEPTION_EXECUTE_HANDLER){return false;}
+        return true;
+    }
+    bool publishNativeName(uintptr_t row,const std::string& name){
+        if(!row||!feedEnabled()||name.empty())return false;
+        uintptr_t shell=0,store=0;career_native_ui::SetStringParams params;
+        if(!readChecked(row+0x60,params.table)||!params.table||!readChecked(row+0x90,params.row)||params.row<0||params.row>128||
+           !readChecked(row+0x88,shell)||!shell||!readChecked(shell+0xD0,store)||!store)return false;
+        params.column=gameWrapper->GetFNameIndexByString("PlayerName");
+        if(params.column<0||gameWrapper->GetFNameByIndex(params.column)!="PlayerName")return false;
+        const auto function=career_native_ui::method(store,"GFxDataStore_X","SetStringValue",sizeof(params),readNameMemory,[this](uintptr_t address){return objectName(address);});
+        if(!function)return false;
+        const int length=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),nullptr,0);if(length<1||length>128)return false;
+        std::vector<wchar_t> text(length+1,0);MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),text.data(),length);
+        params.value={reinterpret_cast<uintptr_t>(text.data()),length+1,length+1};
+        return nativeCall(store,function,&params);
+    }
+    void recoverCurrentUI(){
+        auto field=[this](uintptr_t object,const std::string& name){return nativeField(object,name);};
+        auto isHUD=[this](uintptr_t object){return object&&career_native_ui::derives(object,"GFxHUD_TA",readNameMemory,[this](uintptr_t address){return objectName(address);});};
+        uintptr_t hud=isHUD(currentNativeHUD)?currentNativeHUD:0;
+        auto controller=gameWrapper->GetPlayerController();
+        if(!hud&&controller)for(uintptr_t offset:{uintptr_t(0x4F8),uintptr_t(0x500)}){uintptr_t candidate=0;if(readChecked(controller.memory_address+offset,candidate)&&isHUD(candidate)){hud=candidate;break;}}
+        if(!hud)return;
+        currentNativeHUD=hud;
+        struct Array {uintptr_t data;int32_t count,capacity;};Array rows{};
+        auto valid=[](const Array& a){return a.data&&a.count>=0&&a.count<=128&&a.capacity>=a.count&&a.capacity<=1024;};
+        const auto priOffset=field(hud,"PRIData");
+        if(priOffset>=0&&readChecked(hud+priOffset,rows)&&valid(rows))for(int i=0;i<rows.count;i++){uintptr_t row=0;if(readChecked(rows.data+i*sizeof(uintptr_t),row)&&row)capturePRIData(ActorWrapper(row));}
+        uintptr_t manager=0;
+        int plates=-1;
+        const auto managerOffset=field(hud,"NameplatesManager");
+        if(managerOffset>=0)readChecked(hud+managerOffset,manager);
+        const auto rowsOffset=manager?field(manager,"NameplateRows"):-1;
+        if(rowsOffset>=0&&readChecked(manager+rowsOffset,rows)&&valid(rows)){
+            plates=rows.count;for(int i=0;i<rows.count;i++){uintptr_t row=0;if(readChecked(rows.data+i*sizeof(uintptr_t),row)&&row)captureNameplate(ActorWrapper(row),true);}
+        }
+        uintptr_t type=0;readChecked(hud+0x50,type);
+        uintptr_t managerType=0;if(manager)readChecked(manager+0x50,managerType);
+        const auto status=objectName(type)+"; manager="+objectName(managerType)+" "+std::to_string(manager)+" @"+std::to_string(managerOffset)+"; rows offset="+std::to_string(rowsOffset)+"; plate rows="+std::to_string(plates)+"; verified plates="+std::to_string(nameplateObjects.size());
+        if(status!=uiDiscovery){uiDiscovery=status;cvarManager->log("RL Manager native UI discovery: "+status);}
+    }
     uintptr_t verifiedNameRow(uintptr_t priId){
         auto found=playerUIObjects.find(std::to_string(priId));if(found==playerUIObjects.end())return 0;
         int row=-1;uintptr_t id=0,shell=0,store=0;uint64_t table=0;
@@ -257,23 +326,11 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         PriWrapper target(0);for(auto pri:server.GetPRIs())if(pri&&pri.memory_address==priId){target=pri;break;}
         if(!target)return;
         const auto row=verifiedNameRow(priId);if(!row)return;
-        prepareMessageName(&priId);
-        career_feed::NameRefresh destination;
-        // PRI and Persona inputs now supply the career tag. Force a native
-        // changed-property copy even if the GFx cache already equals that tag.
-        // A previous publication flag cannot confirm a reused Flash row.
-        if(!nameInputs.empty()&&nameInputs.back()->borrowed){
-            destination.begin(row+0x98,readNameMemory,writeNameMemory);
-            target.EventPlayerNameChanged(target);
-            destination.finish(readNameMemory,writeNameMemory);
-            const auto result=readString(row+0x98);
-            auto& previous=feedRefreshOutcome[std::to_string(priId)];
-            if(previous!=result){
-                previous=result;cvarManager->log("RL Manager native feed row refresh: "+alias->second.career+
-                    (result==alias->second.career?" (engine cache refreshed)":" (native updater did not accept the career name)"));
-            }
-        }
-        restoreUINameInput();
+        const bool published=publishNativeName(row,alias->second.career);
+        auto& previous=feedRefreshOutcome[std::to_string(priId)];
+        const auto result=published?"published":"failed";
+        nativeFeedNames[std::to_string(priId)]=published;
+        if(previous!=result){previous=result;cvarManager->log("RL Manager native feed text "+std::string(result)+": "+alias->second.career);}
     }
     static std::string readString(uintptr_t address){
         struct FStringView{uintptr_t text;int32_t count,capacity;};FStringView field{};
@@ -346,6 +403,8 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         // UI rows can be created before the hosted career handshake is armed.
         // Remember verified identities then; presentation edits remain career-only.
         if(!caller)return;
+        uintptr_t outer=0;
+        if(readChecked(caller.memory_address+0x40,outer)&&outer&&career_native_ui::derives(outer,"GFxHUD_TA",readNameMemory,[this](uintptr_t address){return objectName(address);}))currentNativeHUD=outer;
         int index=-1;uintptr_t id=0;
         // Read the UI row's own index and PRI, rather than pairing separate
         // events by time. Offsets are from the public GFxData_PRI_TA layout.
@@ -376,11 +435,15 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         const auto columnName=gameWrapper->GetFNameByIndex(column);
         if(columnName!="PlayerName")return;
         const auto current=readString(address+0x18);
-        for(const auto& object:playerUIObjects){
+        std::vector<std::pair<std::string,uintptr_t>> objects(playerUIObjects.begin(),playerUIObjects.end());
+        objects.insert(objects.end(),nameplateObjects.begin(),nameplateObjects.end());
+        for(const auto& object:objects){
             const auto alias=nameAliases.find(object.first);if(alias==nameAliases.end())continue;
             uint64_t actualTable=0;int actualRow=-1;uintptr_t pri=0,shell=0,store=0;
+            const bool plate=career_native_ui::derives(object.second,"GFxData_Nameplate_TA",readNameMemory,[this](uintptr_t address){return objectName(address);});
+            if(plate){auto owner=nameplatePRI(ActorWrapper(object.second));if(!owner||std::to_string(owner.memory_address)!=object.first)continue;}
+            else if(!readChecked(object.second+0x140,pri)||std::to_string(pri)!=object.first)continue;
             if(!readChecked(object.second+0x60,actualTable)||!readChecked(object.second+0x90,actualRow)||
-               !readChecked(object.second+0x140,pri)||std::to_string(pri)!=object.first||
                !readChecked(object.second+0x88,shell)||!shell||!readChecked(shell+0xD0,store)||store!=caller.memory_address)continue;
             if(!career_scoreboard::playerNameBinding(columnName,row,actualRow,table,actualTable,current,alias->second.original,alias->second.career))continue;
             const auto& name=alias->second.career;
@@ -400,6 +463,31 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
     void restoreBoundPlayerName(){
         if(boundNameInputs.empty())return;auto input=std::move(boundNameInputs.back());boundNameInputs.pop_back();
         if(input->borrowed){SIZE_T written=0;WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(input->address),&input->original,sizeof(input->original),&written);}
+    }
+    void lendNameSource(NameInput* input,uintptr_t address,const NameView& loan){
+        if(!address)return;
+        for(const auto& saved:input->personaInputs)if(saved.first==address)return;
+        NameView original{};
+        if(!readChecked(address,original)||!original.text||original.count<1||original.count>original.capacity||original.capacity>1024)return;
+        if(readString(address).empty())return;
+        SIZE_T written=0;
+        if(WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),&loan,sizeof(loan),&written)&&written==sizeof(loan))input->personaInputs.emplace_back(address,original);
+    }
+    void lendPersonaNames(NameInput* input,uintptr_t row,bool nameplate,const NameView& loan){
+        // All four names can be selected by platform/anonymization settings.
+        // Only personas reached through an identity-verified UI row are lent.
+        for(uintptr_t offset:nameplate?std::vector<uintptr_t>{0xE8}:std::vector<uintptr_t>{0x218,0x220}){
+            uintptr_t persona=0;if(!readChecked(row+offset,persona)||!persona)continue;
+            for(uintptr_t nameOffset:{uintptr_t(0x60),uintptr_t(0x70),uintptr_t(0x120),uintptr_t(0x130)})lendNameSource(input,persona+nameOffset,loan);
+        }
+    }
+    void lendCarName(NameInput* input,PriWrapper pri,const NameView& loan){
+        auto car=pri.GetCar();uintptr_t component=0,owner=0;
+        if(car&&readChecked(car.memory_address+0xAC8,component)&&component&&readChecked(component+0xE0,owner)&&owner==car.memory_address)
+            lendNameSource(input,component+0xA8,loan);
+        auto row=nameplateObjects.find(std::to_string(pri.memory_address));
+        if(row!=nameplateObjects.end()&&nameplatePRI(ActorWrapper(row->second)).memory_address==pri.memory_address)
+            lendPersonaNames(input,row->second,true,loan);
     }
     void prepareUIName(ActorWrapper caller,bool nameplate=false,bool refresh=false){
         // Never overwrite PlayerName after the updater: that bypasses Flash
@@ -427,19 +515,11 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         input->value.resize(length+1);MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),input->value.data(),length);input->value[length]=0;
         NameView loan{reinterpret_cast<uintptr_t>(input->value.data()),length+1,length+1};SIZE_T written=0;
         input->borrowed=bool(WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(input->address),&loan,sizeof(loan),&written))&&written==sizeof(loan);
-        if(input->borrowed&&!nameplate){
-            // GFx PRI rows can prefer Persona.PlayerName to PRI.PlayerName.
-            // Lend those read-only inputs the same name for this UI copy only.
-            for(uintptr_t offset:{uintptr_t(0x218),uintptr_t(0x220)}){
-                uintptr_t persona=0;if(!readChecked(caller.memory_address+offset,persona)||!persona)continue;
-                for(uintptr_t nameOffset:{uintptr_t(0x60),uintptr_t(0x70)}){
-                    const auto address=persona+nameOffset;NameView original{};
-                    if(!readChecked(address,original)||original.count<1||original.count>original.capacity||original.capacity>1024||readString(address)!=alias->second.original)continue;
-                    if(WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),&loan,sizeof(loan),&written)&&written==sizeof(loan))input->personaInputs.emplace_back(address,original);
-                }
-            }
-            if(refresh&&verifiedNameRow(priId)==caller.memory_address)
-                input->destination.begin(caller.memory_address+0x98,readNameMemory,writeNameMemory);
+        if(input->borrowed){
+            lendPersonaNames(input,caller.memory_address,nameplate,loan);
+            if(nameplate)lendCarName(input,target,loan);
+            if(refresh&&(nameplate||verifiedNameRow(priId)==caller.memory_address))
+                input->destination.begin(caller.memory_address+(nameplate?0xA8:0x98),readNameMemory,writeNameMemory);
         }
     }
     void restoreUINameInput(){
@@ -461,13 +541,9 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         NameView loan{reinterpret_cast<uintptr_t>(input->value.data()),length+1,length+1};SIZE_T written=0;
         input->borrowed=bool(WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(input->address),&loan,sizeof(loan),&written))&&written==sizeof(loan);
         auto ui=playerUIObjects.find(std::to_string(object));
-        if(input->borrowed&&ui!=playerUIObjects.end())for(uintptr_t offset:{uintptr_t(0x218),uintptr_t(0x220)}){
-            uintptr_t persona=0;if(!readChecked(ui->second+offset,persona)||!persona)continue;
-            for(uintptr_t nameOffset:{uintptr_t(0x60),uintptr_t(0x70)}){
-                const auto address=persona+nameOffset;NameView original{};
-                if(!readChecked(address,original)||original.count<1||original.count>original.capacity||original.capacity>1024||readString(address)!=alias->second.original)continue;
-                if(WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),&loan,sizeof(loan),&written)&&written==sizeof(loan))input->personaInputs.emplace_back(address,original);
-            }
+        if(input->borrowed){
+            if(ui!=playerUIObjects.end()&&verifiedNameRow(object)==ui->second)lendPersonaNames(input,ui->second,false,loan);
+            lendCarName(input,target,loan);
         }
     }
     PriWrapper nameplatePRI(ActorWrapper caller){
@@ -476,10 +552,44 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         // GFxData_Nameplate.NameplateComponent and NameplateComponentCar.Car.
         // Check both directions against SDK-owned cars; never infer identity
         // from the bot family, row order or nearest vehicle.
-        if(!readChecked(caller.memory_address+0xD8,component)||!component||!readChecked(component+0xE0,carOwner))return PriWrapper(0);
+        const auto componentOffset=nativeField(caller.memory_address,"NameplateComponent");
+        if(componentOffset<0||!readChecked(caller.memory_address+componentOffset,component)||!component)return PriWrapper(0);
+        const auto carOffset=nativeField(component,"Car");
+        if(carOffset<0||!readChecked(component+carOffset,carOwner))return PriWrapper(0);
         auto server=gameWrapper->GetCurrentGameState();if(!server)return PriWrapper(0);
-        for(auto pri:server.GetPRIs())if(pri){auto car=pri.GetCar();uintptr_t expected=0;if(car&&car.memory_address==carOwner&&readChecked(car.memory_address+0xAC8,expected)&&expected==component)return pri;}
+        for(auto pri:server.GetPRIs())if(pri){auto car=pri.GetCar();uintptr_t expected=0;const auto offset=car?nativeField(car.memory_address,"NameplateComponentCar"):-1;if(car&&car.memory_address==carOwner&&offset>=0&&readChecked(car.memory_address+offset,expected)&&expected==component)return pri;}
         return PriWrapper(0);
+    }
+    PriWrapper componentPRI(ActorWrapper caller){
+        if(!caller||!feedEnabled())return PriWrapper(0);
+        uintptr_t owner=0;const auto carOffset=nativeField(caller.memory_address,"Car");if(carOffset<0||!readChecked(caller.memory_address+carOffset,owner)||!owner)return PriWrapper(0);
+        auto server=gameWrapper->GetCurrentGameState();if(!server)return PriWrapper(0);
+        for(auto pri:server.GetPRIs())if(pri){auto car=pri.GetCar();uintptr_t component=0;
+            const auto offset=car?nativeField(car.memory_address,"NameplateComponentCar"):-1;
+            if(car&&car.memory_address==owner&&offset>=0&&readChecked(car.memory_address+offset,component)&&component==caller.memory_address)return pri;
+        }
+        return PriWrapper(0);
+    }
+    bool replaceNativeName(uintptr_t field,uintptr_t priId){
+        if(!field||!feedEnabled())return false;
+        auto alias=nameAliases.find(std::to_string(priId));if(alias==nameAliases.end())return false;
+        const auto& name=alias->second.career;
+        int length=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),nullptr,0);if(length<1)return false;
+        std::wstring text(length,0);MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),text.data(),length);
+        return career_feed::replaceResult(field,text,readNameMemory,writeNameMemory);
+    }
+    void resolveHUDName(void* params){
+        if(!params||!feedEnabled())return;
+        struct Result {uintptr_t pri;NameView name;};Result value{};
+        const auto address=reinterpret_cast<uintptr_t>(params);
+        if(!readChecked(address,value)||!replaceNativeName(address+sizeof(uintptr_t),value.pri)||!readChecked(address,value))return;
+        gameWrapper->OverrideParams(&value,sizeof(value));
+    }
+    void resolvePlateName(ActorWrapper caller,void* params){
+        auto pri=componentPRI(caller);if(!pri||!params)return;
+        const auto address=reinterpret_cast<uintptr_t>(params);NameView value{};
+        if(!replaceNativeName(address,pri.memory_address)||!readChecked(address,value))return;
+        gameWrapper->OverrideParams(&value,sizeof(value));
     }
     void captureNameplate(ActorWrapper caller,bool immediate=false){
         if(!caller||!feedEnabled())return;
@@ -490,20 +600,11 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         nameplateCheckedAt[caller.memory_address]=now;
         auto pri=nameplatePRI(caller);if(!pri)return;
         const auto id=std::to_string(pri.memory_address);auto alias=nameAliases.find(id);if(alias==nameAliases.end())return;
-        const auto address=caller.memory_address+0xA8;auto current=readString(address);
-        if(current==alias->second.original){
-            NameView field{};const auto& name=alias->second.career;
-            int length=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),nullptr,0);
-            if(readChecked(address,field)&&field.text&&field.count>0&&field.count<=field.capacity&&field.capacity<=1024&&length>0&&length+1<=field.capacity){
-                std::vector<wchar_t> text(length+1,0);MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,name.data(),(int)name.size(),text.data(),length);SIZE_T written=0;
-                if(WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(field.text),text.data(),text.size()*sizeof(wchar_t),&written)&&written==text.size()*sizeof(wchar_t)){
-                    field.count=length+1;WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),&field,sizeof(field),&written);
-                }
-            }
-        }
-        const bool renamed=readString(address)==alias->second.career;
-        if(renamed&&!nativeCarNames[id])cvarManager->log("RL Manager native car nameplate: "+alias->second.original+" -> "+alias->second.career);
-        nativeCarNames[id]=renamed;if(!renamed)return;
+        if(nameplateObjects[id]!=caller.memory_address)nativeCarNames[id]=false;
+        nameplateObjects[id]=caller.memory_address;
+        // The C++ cache is not evidence that text reached Flash. Only the
+        // explicit native datastore publication below releases a hidden plate.
+        if(!nativeCarNames[id])return;
         restoreEngineNameplate(pri.GetCar());
         auto local=gameWrapper->GetPlayerController();auto own=local?local.GetPRI():PriWrapper(0);auto setting=cvarManager->getCvar("rlm_teammate_boost");
         if(own&&!own.IsSpectator()&&own.GetTeamNum2()==pri.GetTeamNum2()&&own.memory_address!=pri.memory_address&&setting&&setting.getBoolValue()){
@@ -512,6 +613,7 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
     }
     void prepareTickerHUD(ActorWrapper caller,void* params){
         if(feedEnabled()&&caller){
+            currentNativeHUD=caller.memory_address;
             // The HUD owns the authoritative GFx PRI rows (public SDK PRIData
             // array). Recover them after a game reset before the ticker copies
             // any names; row creation hooks alone miss reused UI objects.
@@ -565,7 +667,7 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
         // arrive together. Never deduplicate one and shift subsequent names.
         actionFeed.push_back(item);while(actionFeed.size()>5)actionFeed.pop_front();
         if(event=="Goal"){goalMessageAt=clockNow();goalMessageScorer=name;}
-        cvarManager->log("RL Manager native ticker name: "+item.receiver+" / "+item.event+(item.victim.empty()?"":" / "+item.victim));
+        cvarManager->log("RL Manager ticker identity: "+item.receiver+" / "+item.event+(item.victim.empty()?"":" / "+item.victim));
     }
     float textWidth(CanvasWrapper& c,const std::string& value,float size){
         auto font=fontFor(size);if(!font)return c.GetStringSize(value,size*scale,size*scale).X/scale;
@@ -632,38 +734,29 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
             changes.push_back({found,key,previous==nameAliases.end()?actual:previous->second.original,desired,side});
         }
         if(changes.empty())return;
+        for(const auto& target:changes)nameAliases[target.nativeId]={target.original,target.career,target.team};
+        recoverCurrentUI();
         int verified=0;
         for(auto& target:changes){
-            nameAliases[target.nativeId]={target.original,target.career,target.team};
-            if(target.pri.GetPlayerName().ToString()!=target.career){
-                // SDK client presentation update, restricted to armed career
-                // offline/LAN games. No server rename request or policy edit.
-                // Use the base presentation setter, then notify the UI.
-                if(target.pri.GetbBot()){
-                    auto presentation=PlayerReplicationInfoWrapper(target.pri.memory_address);
-                    bool renamed=gameWrapper->IsInReplay()&&presentation.ChangeNameForScoreboardAndNameplateInReplay(target.career);
-                    if(!renamed)presentation.eventSetPlayerName(target.career);
-                }
+            // Publish to the actual Flash-bound table on the current HUD.
+            // Do not rename a network PRI or wait for an unbound notification.
+            refreshFeedName(target.pri.memory_address);
+            auto plate=nameplateObjects.find(target.nativeId);
+            if(plate!=nameplateObjects.end()&&nameplatePRI(ActorWrapper(plate->second)).memory_address==target.pri.memory_address){
+                const bool previous=nativeCarNames[target.nativeId];
+                nativeCarNames[target.nativeId]=publishNativeName(plate->second,target.career);
+                if(!previous&&nativeCarNames[target.nativeId])cvarManager->log("RL Manager native nameplate text published: "+target.career);
             }
-            // Reused Flash rows can retain a previous bot's name even when
-            // this local PRI already has the correct career name. Republish
-            // through the native updater, never a drawn name-cover rectangle.
-            auto ui=verifiedNameRow(target.pri.memory_address);
-            if((!nativeFeedNames[target.nativeId]||(ui&&readString(ui+0x98)!=target.career))&&clockNow()-feedNameRefresh[target.nativeId]>1.){
-                feedNameRefresh[target.nativeId]=clockNow();
-                // The SDK notification can invoke native UI updaters directly,
-                // without going through their ProcessEvent hooks. Supply the
-                // presentation input across that complete synchronous call.
-                refreshFeedName(target.pri.memory_address);
-            }
-            if(target.pri.GetPlayerName().ToString()==target.career||nativeCarNames[target.nativeId])verified++;
+            if(nativeFeedNames[target.nativeId]&&(nativeCarNames[target.nativeId]||!target.pri.GetCar()))verified++;
         }
         if(verified==(int)changes.size()&&!namesReported){
-            namesReported=true;nameBindingError.clear();cvarManager->log("RL Manager: "+std::to_string(verified)+" native car labels now use verified career player identities.");
+            namesReported=true;nameBindingError.clear();cvarManager->log("RL Manager: native text publication completed for "+std::to_string(verified)+" career players; live appearance requires visual verification.");
         }
-        else if(verified!=(int)changes.size()&&!namesReported)blocked("client setter accepted "+std::to_string(verified)+" of "+std::to_string(changes.size())+" names; using presentation labels");
+        else if(verified!=(int)changes.size()&&!namesReported)blocked("native text publication incomplete for "+std::to_string(changes.size()-verified)+" players; no legacy labels enabled");
     }
     void drawCareerNameplates(CanvasWrapper& c){
+        auto legacy=cvarManager->getCvar("rlm_legacy_nameplates");
+        if(!legacy||!legacy.getBoolValue()){if(!hiddenNameplates.empty())restoreNameplates();return;}
         if(hiddenNameplates.empty()&&nameAliases.empty())return;
         auto server=gameWrapper->GetCurrentGameState();auto camera=gameWrapper->GetCamera();if(!server||!camera)return;
         auto eye=camera.GetLocation();auto rotation=camera.GetRotation();const float yaw=rotation.Yaw*3.14159265f/32768.f,pitch=rotation.Pitch*3.14159265f/32768.f;
@@ -1075,7 +1168,7 @@ class RLManagerHUD : public BakkesMod::Plugin::BakkesModPlugin {
             if(now-data.value("updated",0.)>(ended?120.:2.))return;
             const auto& context=data.at("context");
             auto current=data.value("session",std::string{});
-            if(current!=session){session=current;loadImages(context);scoreboardReported=false;scoreboardUnavailable=false;nameAliases.clear();nativeFeedNames.clear();feedNameRefresh.clear();feedRefreshOutcome.clear();nameplateCheckedAt.clear();namesReported=false;lastNameSync=0;}
+            if(current!=session){session=current;loadImages(context);scoreboardReported=false;scoreboardUnavailable=false;nameAliases.clear();nativeFeedNames.clear();feedNameRefresh.clear();feedRefreshOutcome.clear();nativeCarNames.clear();nameplateObjects.clear();nameplateCheckedAt.clear();namesReported=false;lastNameSync=0;}
             syncCareerNames(data);
             drawCareerNameplates(c);
             drawScoreboard(c,data);
@@ -1168,6 +1261,7 @@ public:
         cvarManager->registerCvar("rlm_scoreboard_y","0","Scoreboard portrait vertical calibration in pixels",true,true,-500,true,500);
         cvarManager->registerCvar("rlm_scoreboard_scale","1","Scoreboard portrait/text calibration",true,true,.5,true,1.5);
         cvarManager->registerCvar("rlm_teammate_boost","1","Show live boost of your two career teammates",true,true,0,true,1);
+        cvarManager->registerCvar("rlm_legacy_nameplates","0","Opt in to old rectangular nameplate fallback",true,true,0,true,1);
         cvarManager->registerCvar("rlm_ticker_x","0","Native ticker name horizontal calibration",true,true,-400,true,400);
         cvarManager->registerCvar("rlm_ticker_y","0","Native ticker name vertical calibration",true,true,-200,true,200);
         cvarManager->registerNotifier("rlm_scoreboard",[this](std::vector<std::string>){detailed=!detailed;},"Toggle RL Manager player panel",PERMISSION_ALL);
@@ -1195,11 +1289,18 @@ public:
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(updateNameEvent,[this](ActorWrapper caller,void*,std::string){restoreUINameInput();capturePRIData(caller);});
         gameWrapper->HookEventWithCaller<ActorWrapper>(boundStringEvent,[this](ActorWrapper caller,void* params,std::string){prepareBoundPlayerName(caller,params);});
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(boundStringEvent,[this](ActorWrapper,void*,std::string){restoreBoundPlayerName();});
-        gameWrapper->HookEventWithCaller<ActorWrapper>(plateNameEvent,[this](ActorWrapper caller,void*,std::string){prepareUIName(caller,true);});
+        gameWrapper->HookEventWithCaller<ActorWrapper>(plateNameEvent,[this](ActorWrapper caller,void*,std::string){prepareUIName(caller,true,true);});
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(plateNameEvent,[this](ActorWrapper caller,void*,std::string){restoreUINameInput();captureNameplate(caller,true);});
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(plateTickEvent,[this](ActorWrapper caller,void*,std::string){captureNameplate(caller);});
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(plateSetEvent,[this](ActorWrapper caller,void*,std::string){captureNameplate(caller,true);});
+        gameWrapper->HookEventWithCaller<ActorWrapper>(plateGetEvent,[this](ActorWrapper caller,void*,std::string){auto pri=componentPRI(caller);auto id=pri.memory_address;prepareMessageName(&id);});
+        gameWrapper->HookEventWithCallerPost<ActorWrapper>(plateGetEvent,[this](ActorWrapper caller,void* params,std::string){restoreUINameInput();resolvePlateName(caller,params);});
+        for(auto event:{hudNameEvent,hudResolveEvent}){
+            gameWrapper->HookEventWithCaller<ActorWrapper>(event,[this](ActorWrapper,void* params,std::string){prepareMessageName(params);});
+            gameWrapper->HookEventWithCallerPost<ActorWrapper>(event,[this](ActorWrapper,void* params,std::string){restoreUINameInput();resolveHUDName(params);});
+        }
         gameWrapper->HookEventWithCaller<ActorWrapper>(tickerEvent,[this](ActorWrapper caller,void* params,std::string){prepareTickerHUD(caller,params);});
+        gameWrapper->HookEventWithCaller<ActorWrapper>("Function TAGame.GFxHUD_TA.DrawHUD",[this](ActorWrapper caller,void*,std::string){currentNativeHUD=caller.memory_address;});
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(tickerEvent,[this](ActorWrapper,void*,std::string){restoreUINameInput();restoreUINameInput();});
         gameWrapper->HookEventWithCaller<ActorWrapper>(tickerUIEvent,[this](ActorWrapper,void* params,std::string){prepareTickerUI(params);});
         gameWrapper->HookEventWithCallerPost<ActorWrapper>(tickerUIEvent,[this](ActorWrapper,void*,std::string){restoreUINameInput();restoreUINameInput();});
@@ -1247,15 +1348,16 @@ public:
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
             }
         });
-        std::ofstream(folder/"plugin-status.json")<<json{{"version","1.8.0"},{"loaded",true},{"nativeFonts",true},{"nativeScoreboard",true},{"rocketHostTelemetry",true},{"performanceMetrics",true},{"pid",GetCurrentProcessId()}};
-        cvarManager->log("RL Manager HUD 1.8.0 loaded: native feed names force-refreshed before each event; bound properties remain engine-owned.");
+        std::ofstream(folder/"plugin-status.json")<<json{{"version","1.8.2"},{"loaded",true},{"nativeFonts",true},{"nativeScoreboard",true},{"rocketHostTelemetry",true},{"performanceMetrics",true},{"pid",GetCurrentProcessId()}};
+        cvarManager->log("RL Manager HUD 1.8.2 loaded: native datastore publication, runtime car-label identities and per-update name binding; legacy nameplates disabled by default.");
     }
     void onUnload() override{
+        gameWrapper->UnhookEvent("Function TAGame.GFxHUD_TA.DrawHUD");
         gameWrapper->UnhookEvent(localChatEvent);gameWrapper->UnhookEvent(localChatInternalEvent);
         *tickAlive=false;running=false;if(reader.joinable())reader.join();gameWrapper->UnregisterDrawables();
-        for(auto event:{openEvent,closeEvent,destroyEvent,changeTeamEvent,serverTeamEvent,tickerEvent,tickerUIEvent,messageEvent,receiveMessageEvent,hudOpenEvent,hudCloseEvent,updateNameEvent,plateNameEvent,messageNameEvent,priDataEvent,boundStringEvent})gameWrapper->UnhookEvent(event);
-        for(auto event:{sortEvent,priDataEvent,setPriEvent,updateNameEvent,messageNameEvent,messageTextEvent,plateNameEvent,plateTickEvent,plateSetEvent,tickerEvent,tickerUIEvent,boundStringEvent})gameWrapper->UnhookEventPost(event);resetScoreboard();
-        std::ofstream(folder/"plugin-status.json")<<json{{"version","1.8.0"},{"loaded",false},{"pid",GetCurrentProcessId()}};
+        for(auto event:{openEvent,closeEvent,destroyEvent,changeTeamEvent,serverTeamEvent,tickerEvent,tickerUIEvent,messageEvent,receiveMessageEvent,hudOpenEvent,hudCloseEvent,updateNameEvent,plateNameEvent,messageNameEvent,priDataEvent,boundStringEvent,plateGetEvent,hudNameEvent,hudResolveEvent})gameWrapper->UnhookEvent(event);
+        for(auto event:{sortEvent,priDataEvent,setPriEvent,updateNameEvent,messageNameEvent,messageTextEvent,plateNameEvent,plateTickEvent,plateSetEvent,tickerEvent,tickerUIEvent,boundStringEvent,plateGetEvent,hudNameEvent,hudResolveEvent})gameWrapper->UnhookEventPost(event);resetScoreboard();
+        std::ofstream(folder/"plugin-status.json")<<json{{"version","1.8.2"},{"loaded",false},{"pid",GetCurrentProcessId()}};
     }
 };
-BAKKESMOD_PLUGIN(RLManagerHUD,"RL Manager Fullscreen Broadcast","1.8.0",PLUGINTYPE_FREEPLAY)
+BAKKESMOD_PLUGIN(RLManagerHUD,"RL Manager Fullscreen Broadcast","1.8.2",PLUGINTYPE_FREEPLAY)

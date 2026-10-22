@@ -1,5 +1,25 @@
 # RL Manager fullscreen HUD
 
+Version 1.8.2 publishes career names through the native GFx datastore and
+intercepts subsequent PlayerName updates for both PRI and car-label rows. The
+previous correction reached the native spectator panel but left car labels
+showing bot names: fixed SDK offsets missed the running game's nameplate
+components, and later native updates could overwrite published career names.
+Car/component ownership now uses reflected runtime fields and validates both
+directions against each PRI's actual car. Class field lookups are cached.
+The native datastore call validates its owning class and parameter layout.
+Server identities and bot policy verification remain unchanged.
+
+The launcher requires 1.8.2. The old rectangular labels remain disabled by
+default (`rlm_legacy_nameplates 0`). Local exhibition visual checks show pro
+names in all six original floating car labels, the spectator panel and goal
+replay card, including after a goal/reset. A player-view check also visually
+confirmed the native top-right demolition feed displaying NASS and STIZZY.
+These disposable matches use no career database or saved result. Native
+regression tests and 25 startup tests pass. A remote Rocket Host match has
+not been visually exercised in this check; publication/identity logs alone
+do not establish visual correctness.
+
 Version 1.8.0 reads career commands directly from D-pad input, including offline exhibition games with chat disabled. Up presses, Down defends, Right seeks passes and Left applies brief demo pressure. F1–F4 are equivalent; F5 resumes the saved plan. Inputs require a fresh local career session, game foreground and active human control. The 1.5-second cooldown prevents double captures through the optional native chat hooks. A small control hint and real teammate receipts appear in the HUD. The command relay and tactical scenarios pass automated checks; hardware controller input still requires a live player test.
 
 Version 1.7.9 adds native human quick-chat capture for local Easy/Medium and

@@ -15,7 +15,7 @@ import queue
 import uuid
 from contextlib import contextmanager
 
-MIN_HUD_VERSION = '1.8.0'
+MIN_HUD_VERSION = '1.8.2'
 HUD_STARTUP_TIMEOUT = 90
 
 
