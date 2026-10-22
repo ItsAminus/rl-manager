@@ -370,6 +370,7 @@ export interface Fixture {
   id: string;
   competitionId: string;
   competitionName?: string;
+  competitionType?: string;
   round: number;
   homeTeamId: string;
   homeTeamName?: string;

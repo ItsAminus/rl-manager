@@ -697,7 +697,7 @@ export function setupIpcHandlers() {
   handle('fixtures:getById', async (_, id: string) => {
     try {
       const fixture = db.prepare(`
-        SELECT f.*, ht.name as homeTeamName, at.name as awayTeamName, c.name as competitionName
+        SELECT f.*, ht.name as homeTeamName, at.name as awayTeamName, c.name as competitionName, c.type as competitionType
         FROM fixtures f
         LEFT JOIN teams ht ON f.homeTeamId = ht.id
         LEFT JOIN teams at ON f.awayTeamId = at.id

@@ -14,6 +14,9 @@ import {botDifficulty} from '../../game/bot-difficulty';
 import {isPath} from '../../game/career-mode';
 import {PathMatchProgress} from '../components/SeriesTimeoutPanel';
 import {TimedSeriesTimeout as SeriesTimeoutPanel} from '../components/TimedSeriesTimeout';
+import {CompetitionIntro} from '../components/CompetitionIntro';
+import {competitionPresentation} from '../utils/competition-presentation';
+import {publicAssetUrl} from '../utils/public-assets';
 
 interface TeamStarters {
   teamName: string;
@@ -476,9 +479,13 @@ export const MatchDayPage: React.FC = () => {
   const oppTeamName = isHome ? fixture.awayTeamName : fixture.homeTeamName;
   const myScore = isHome ? homeScore : awayScore;
   const oppScore = isHome ? awayScore : homeScore;
+  const presentation = competitionPresentation(fixture);
 
   return (
-    <div className="matchday-page">
+    <div className={`matchday-page${presentation ? ' competition-matchday' : ''}`} data-competition={presentation?.id}
+      style={presentation ? {backgroundImage: `linear-gradient(180deg,rgba(5,12,23,.42),rgba(5,12,23,.83) 62%,#080f19),url("${publicAssetUrl(presentation.background)}")`} : undefined}>
+      {presentation && fixture.status !== 'completed' && completedGames.length === 0 && !matchRunning && !bridgeBusy && !playedResultPending &&
+        <CompetitionIntro key={`${career?.id}:${fixture.id}`} fixtureKey={`${career?.id}:${fixture.id}`} presentation={presentation} eventName={fixture.competitionName || presentation.label}/>}
       {/* Top Breadcrumb & Header */}
       <div className="matchday-topbar">
         <button className="back-btn" onClick={() => navigate('/dashboard')}>
@@ -493,6 +500,10 @@ export const MatchDayPage: React.FC = () => {
         </div>
       </div>
 
+      {presentation && <section className="competition-matchday-heading" aria-label="Competition matchday">
+        <div><span>{presentation.label} · MATCHDAY</span><h1>{fixture.competitionName || presentation.label}</h1><p>{myTeamName} <span aria-hidden="true">/</span> {oppTeamName}</p></div>
+        {presentation.detailImage && <img src={publicAssetUrl(presentation.detailImage)} alt="FIFAe World Cup trophy"/>}
+      </section>}
       <div className="matchday-map-rotation">{SERIES_MAPS.slice(0,seriesFormatNum).map((arena,i)=><span key={arena.code} className={i+1===currentGameNum&&!isSeriesOver?'current':''}><small>GAME {i+1}</small>{arena.name}</span>)}<small>Broadcast HUD supports Fullscreen with BakkesMod running. Hold Tab for player details.</small></div>
       {career&&(isPath(career)||botDifficulty(career.difficulty)!=='Hard')&&<details className="notice"><summary>In-game commands · D-pad Up: press · Down: defend · Right: pass · Left: demo</summary><p>Tap once. These controls work independently of exhibition chat. Keyboard: F1 press, F2 defend, F3 pass, F4 demo, F5 resume your saved plan. Orders expire automatically. Look for TEAM COMMS CONFIRMED and your teammates’ names.</p></details>}
       {(completedGames.length===0||isSeriesOver)&&<TeamTalkPanel fixtureId={fixtureId!} phase={isSeriesOver ? 'postgame' : 'pregame'} revision={completedGames.length} disabled={matchRunning || simulating || bridgeBusy} />}
