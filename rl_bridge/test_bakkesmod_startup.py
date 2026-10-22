@@ -91,6 +91,7 @@ class HUDStartupTests(unittest.TestCase):
         self.assertFalse(hud_is_loaded({'loaded':True,'version':'1.7.7','pid':200},{200}))
         self.assertFalse(hud_is_loaded({'loaded':True,'version':'1.8.0','pid':200},{200}))
         self.assertFalse(hud_is_loaded({'loaded':True,'version':'1.8.1','pid':200},{200}))
+        self.assertFalse(hud_is_loaded({'loaded':True,'version':'1.8.2','pid':200},{200}))
         self.assertTrue(hud_is_loaded({'loaded':True,'version':MIN_HUD_VERSION,'pid':200},{200}))
 
     def test_command_list_preserves_existing_rules_and_is_idempotent(self):

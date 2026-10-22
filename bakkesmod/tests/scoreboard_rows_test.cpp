@@ -1,11 +1,41 @@
 #include "../ScoreboardRows.h"
 #include "../FeedNameRefresh.h"
 #include "../NativeUI.h"
+#include "../NativeNameBindings.h"
+#include "../HudWork.h"
 #include <array>
 #include <cassert>
 #include <cstring>
 #include <iostream>
 using namespace career_scoreboard;
+static void cachedNativeNamesTests(){
+    using namespace career_names;
+    Bindings bindings;Binding a;a.object=1000;a.pri=2000;a.nativeId="2000";a.career="zen";a.text=L"zen";
+    const Key first{10,20,3},second{11,20,3},otherTable{10,21,3};
+    assert(bindings.remember(first,a));assert(!bindings.remember(first,a));
+    Binding b=a;b.object=1001;b.pri=2001;b.career="Oski";b.text=L"Oski";
+    assert(bindings.remember(second,b));
+    Binding c=b;c.object=1002;c.pri=2002;c.career="archie";assert(bindings.remember(otherTable,c));
+    assert(bindings.find(first)->career=="zen"&&bindings.find(second)->career=="Oski"&&bindings.find(otherTable)->career=="archie");
+    assert(!bindings.find({99,20,3}));
+    // A recycled native row must not retain the previous player's text.
+    Binding recycled=a;recycled.object=1003;recycled.pri=2003;recycled.career="nass";
+    assert(bindings.remember(first,recycled));assert(!bindings.findObject(a.object));
+    assert(bindings.findObject(recycled.object)->career=="nass");
+    const Key moved{10,20,4};assert(bindings.remember(moved,recycled));assert(!bindings.find(first));
+    // Steady-state routing validates the recorded car links with three bounded
+    // pointer reads, independent of the six-player roster and class field graph.
+    Binding plate;plate.object=3000;plate.pri=2000;plate.component=4000;plate.car=5000;
+    plate.componentOffset=16;plate.carOffset=24;plate.carComponentOffset=32;
+    std::unordered_map<uintptr_t,uintptr_t> memory{{3016,4000},{4024,5000},{5032,4000}};size_t reads=0;
+    auto read=[&](uintptr_t at,void* out,size_t bytes){reads++;auto it=memory.find(at);if(it==memory.end()||bytes!=sizeof(uintptr_t))return false;std::memcpy(out,&it->second,bytes);return true;};
+    for(int i=0;i<10000;i++)assert(valid(plate,read));assert(reads==30000);
+    memory[5032]=4001;assert(!valid(plate,read));memory[5032]=4000;
+    memory[3016]=4001;assert(!valid(plate,read));
+    bindings.clear();assert(bindings.empty()&&!bindings.find(moved)&&!bindings.findObject(1003));
+    career_work::Counter counter;counter.record(5);counter.record(20);counter.record(7);
+    assert(counter.calls==3&&counter.micros==32&&counter.worst==20);
+}
 static void nativePublicationTests(){
     // A real class/field graph is required: a same-name property, inherited
     // method with the wrong parameters, or a stale unrelated object cannot
@@ -107,6 +137,7 @@ static void feedNameRefreshTests(){
     assert(std::wstring(buffer)==L"Oski"&&field.count==5);
 }
 int main(){
+    cachedNativeNamesTests();
     nativePublicationTests();
     feedNameRefreshTests();
     assert(playerNameBinding("PlayerName",3,3,12,12,"BonkDaddy","BonkDaddy","zen"));

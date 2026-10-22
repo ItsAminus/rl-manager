@@ -1,5 +1,37 @@
 # RL Manager fullscreen HUD
 
+Version 1.8.4 ships in RLM 1.1.0 as a correction for intermittent bot names after native
+nameplate refreshes/rebinding. A completed publication now expires after one
+second instead of permanently suppressing recovery. Name/component/persona,
+game-state, shell and object-bind events republish verified career names in
+the same callback. Periodic discovery repairs all current rows, including
+multiple rows for one PRI. A stale component on a detached car cannot reuse
+its former player's binding; datastore writes also validate the current slot.
+After publishing to Flash, the nameplate's engine-owned PlayerName cache is
+updated only when its existing allocation fits, so later bulk binding can
+retain the same text. Network PRI names and bot identities remain unchanged.
+The development launcher installs the compiled local HUD before opening the
+game, just as the packaged launcher installs its bundled HUD. Startup requires
+1.8.4. No automated or live game tests were run for this correction, at the
+user's request; live confirmation is pending. The user authorized publication
+as RLM 1.1.0 on October 22, 2026.
+
+Version 1.8.3 is a local performance candidate pending the user's Rocket Host
+confirmation. Native PlayerName hooks now use a datastore/table/row index of
+verified identities, reject unrelated columns before doing game-state work,
+and allocate temporary text only when replacing a changed name. Field/function
+lookups and completed name publications are cached. Per-frame nameplate ticks
+and the superseded PRI/persona/getter rewrite hooks are no longer registered.
+Goal-message handling remains event-based. The name-binding cache is cleared
+on a session reset and validates bidirectional car/component links before use.
+
+An isolated same-match comparison with six cars and the user's team images
+measured median average HUD draw costs of 4.924 ms on 1.8.2 and 0.187 ms on
+1.8.3; maximum draw costs were 125.385 ms and 1.674 ms respectively. These are
+local measurements, not proof of remote server/network performance. Detailed
+name-sync, name-update and hosted-export timings are included in performance.json.
+This comparison predates the 1.8.4 correction included in RLM 1.1.0.
+
 Version 1.8.2 publishes career names through the native GFx datastore and
 intercepts subsequent PlayerName updates for both PRI and car-label rows. The
 previous correction reached the native spectator panel but left car labels

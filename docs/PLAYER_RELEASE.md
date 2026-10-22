@@ -1,7 +1,7 @@
 # RL Manager player release
 
 Build the Windows installer with `npm run package:win`. Output is
-`release/1.0.7/RL.Manager.1.0.7.Setup.exe`. The installer creates desktop and Start
+`release/1.1.0/RL.Manager.1.1.0.Setup.exe`. The installer creates desktop and Start
 menu shortcuts, supports a per-user installation and preserves AppData careers
 when uninstalling. Open the installed RL Manager executable; no development
 server or terminal is needed.

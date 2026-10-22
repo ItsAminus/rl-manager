@@ -28,5 +28,9 @@ export function installedAiRuntime(){
   const bundled=path.join(process.resourcesPath,'rl_bridge','local_runtime');
   return fs.existsSync(bundled)?bundled:'';
 }
-export function playerBridgeEnvironment(){return {...process.env,...speechEnvironment(new PlayerPreferences(app.getPath('userData')).read().integration),RLM_AI_RUNTIME:installedAiRuntime()||path.resolve(__dirname,'../rl_bridge/local_runtime'),
-  ...(app.isPackaged?{RLM_AUDIO_DEPS:path.join(process.resourcesPath,'audio-deps'),RLM_HUD_SOURCE:path.join(process.resourcesPath,'career-hud')}: {})};}
+export function playerBridgeEnvironment(){
+  const localHud=path.resolve(__dirname,'../bakkesmod/build');
+  return {...process.env,...speechEnvironment(new PlayerPreferences(app.getPath('userData')).read().integration),RLM_AI_RUNTIME:installedAiRuntime()||path.resolve(__dirname,'../rl_bridge/local_runtime'),
+    ...(app.isPackaged?{RLM_AUDIO_DEPS:path.join(process.resourcesPath,'audio-deps'),RLM_HUD_SOURCE:path.join(process.resourcesPath,'career-hud')}:
+      fs.existsSync(path.join(localHud,'RLManagerHUD.dll'))&&fs.existsSync(path.join(localHud,'fonts','glyphs.json'))?{RLM_HUD_SOURCE:process.env.RLM_HUD_SOURCE||localHud}: {})};
+}
