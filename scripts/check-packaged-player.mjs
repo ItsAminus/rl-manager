@@ -1,9 +1,19 @@
-import fs from 'node:fs';import path from 'node:path';import cp from 'node:child_process';import net from 'node:net';
+import fs from 'node:fs';import path from 'node:path';import cp from 'node:child_process';import net from 'node:net';import crypto from 'node:crypto';
 const screenshots=!process.argv.includes('--no-screenshots');
 const root=process.cwd(),scratch=path.join(root,'scratch'),folder=fs.mkdtempSync(path.join(scratch,'packaged-check-'));
 const port=await new Promise(resolve=>{const s=net.createServer();s.listen(0,'127.0.0.1',()=>{const value=s.address().port;s.close(()=>resolve(value));});});
 const version=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version;
 const exe=path.join(root,'release',version,'win-unpacked/RL Manager.exe');
+const resources=path.join(path.dirname(exe),'resources');
+const mediaFiles=['rlcs.mp4','worlds.mp4','ewc.mp4','fifae.mp4','rlcs-major.jpg','worlds.jpg','ewc.png','fifae.png','fifae-trophy.jpg'];
+const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+for(const file of mediaFiles){
+ if(hash(path.join(root,'public/competitions',file))!==hash(path.join(resources,'app.asar.unpacked/public/competitions',file)))throw Error('Packaged competition asset differs: '+file);
+}
+for(const file of ['game_launcher.py','launcher.py','rocket_host.py','bakkesmod_startup.py']){
+ if(hash(path.join(root,'rl_bridge',file))!==hash(path.join(resources,'rl_bridge',file)))throw Error('Packaged bridge differs: '+file);
+}
+if(hash(path.join(root,'bakkesmod/build/RLManagerHUD.dll'))!==hash(path.join(resources,'career-hud/RLManagerHUD.dll')))throw Error('Packaged HUD differs from the verified build');
 const proc=cp.spawn(exe,[`--remote-debugging-port=${port}`,'--remote-debugging-address=127.0.0.1'],{env:{...process.env,RLM_USER_DATA:folder},windowsHide:true,stdio:'ignore'});
 const delay=ms=>new Promise(r=>setTimeout(r,ms));let socket;
 try{
@@ -43,6 +53,19 @@ try{
  await run("document.querySelectorAll('.settings-tabs button')[1].click()");await wait("document.querySelector('#speech-device')?.value==='cpu'");
  if(screenshots){const voiceShot=await command('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(scratch,'release-review/caster-compute-settings.png'),Buffer.from(voiceShot.data,'base64'));}
  if(!await run("window.api.app.saveIntegration({speechDevice:'windows'}).then(()=>false,()=>true)"))throw Error('Unsupported voice substitution accepted');
+ const decodedVideos=[];
+ for(const file of mediaFiles.filter(name=>name.endsWith('.mp4'))){
+  decodedVideos.push(await run(`new Promise((resolve,reject)=>{
+   const video=document.createElement('video');video.muted=true;video.preload='auto';
+   const timer=setTimeout(()=>{video.pause();reject(Error('Packaged video decode timed out: '+${JSON.stringify(file)}));},20000);
+   video.onerror=()=>{clearTimeout(timer);reject(Error('Packaged video cannot play: '+${JSON.stringify(file)}));};
+   video.requestVideoFrameCallback(()=>{clearTimeout(timer);video.pause();resolve({file:${JSON.stringify(file)},width:video.videoWidth,height:video.videoHeight,duration:video.duration});});
+   video.src=new URL('../public/competitions/'+${JSON.stringify(file)},location.href).href;
+   video.play().catch(error=>{clearTimeout(timer);reject(error);});
+  })`));
+ }
  await run('window.api.app.quit()');
- console.log(JSON.stringify({passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,folder}));
+ const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,competitionAssetHashes:mediaFiles.length,bridgeHashes:4,nativeHUDHash:true,decodedVideos};
+ fs.writeFileSync(path.join(root,'release',version,'release-check.json'),JSON.stringify(result,null,2));
+ console.log(JSON.stringify({...result,folder}));
 }catch(error){console.error(error.stack);process.exitCode=1;}finally{socket?.close();if(proc.exitCode===null)proc.kill();}
