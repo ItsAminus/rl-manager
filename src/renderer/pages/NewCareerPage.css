@@ -200,6 +200,8 @@
 }
 
 .team-select-card {
+  align-items:stretch;
+  width:100%;
   font:inherit;
   text-align:left;
   color:inherit;
@@ -233,6 +235,7 @@
 }
 
 .team-select-header {
+  gap:12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -259,6 +262,8 @@
 }
 
 .team-select-stats {
+  gap:12px;
+  flex-wrap:wrap;
   display: flex;
   justify-content: space-between;
   font-size: 12px;

@@ -24,7 +24,7 @@ The separate `RL.Manager.1.5.0.Setup.exe` file updates the app. It is **not the 
 - **Windows 10 or Windows 11, 64-bit.**
 - **Rocket League already installed** through Epic Games or Steam. Launch it once and sign in to your account.
 - **[7-Zip for Windows x64](https://www.7-zip.org/)** installed, to extract the download.
-- **At least 30 GB of free space** for the download, extraction and installation, in addition to Rocket League. The four-part download is about **8 GB**.
+- **At least 30 GB of free space** for the download, extraction and installation, in addition to Rocket League. The four-part download is about **7 GB**.
 - An internet connection for downloading, game sign-in, BakkesMod checks and Rocket Host matches, plus working graphics/audio drivers.
 - A PC capable of running Rocket League. **An NVIDIA GPU is not required:** AMD/Intel users can use CPU-generated commentary with the same Caster One and Caster Two voices. CPU voice generation can be slower.
 
@@ -39,7 +39,7 @@ Open the **[complete 1.5.0 download page](https://github.com/MyMedicalCenters/rl
 | [Part 1](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.001) | `RL-Manager-Complete-1.5.0.7z.001` | 1.99 GB |
 | [Part 2](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.002) | `RL-Manager-Complete-1.5.0.7z.002` | 1.99 GB |
 | [Part 3](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.003) | `RL-Manager-Complete-1.5.0.7z.003` | 1.99 GB |
-| [Part 4](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | About 2 GB |
+| [Part 4](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | Remaining part; see GitHub size |
 
 **Put all four files in the same folder. Keep their original names.** They are four pieces of one download, not four installers.
 

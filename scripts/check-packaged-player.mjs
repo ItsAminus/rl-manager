@@ -52,7 +52,7 @@ try{
  await run("(()=>{const input=document.querySelector('#team-search');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'vitality');input.dispatchEvent(new Event('input',{bubbles:true}));})()");
  await wait("document.querySelectorAll('.team-select-card').length===1&&document.querySelector('.team-select-card').textContent.includes('Vitality')");
  const options=await run("Array.from(document.querySelector('#team-sort').options).map(o=>o.value)");if(!['name','budget','popularity','reputation','facilities'].every(v=>options.includes(v)))throw Error('Packaged team sort options missing');
- if(screenshots){const shot=await command('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(scratch,'release-review/manager-team-search-1.5.0.png'),Buffer.from(shot.data,'base64'));}
+ if(screenshots){await delay(350);const shot=await command('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(scratch,'release-review/manager-team-search-1.5.0.png'),Buffer.from(shot.data,'base64'));}
  await run("location.hash='/settings'");await wait("!!document.querySelector('.settings-tabs')");if(await run("/Developer Mode|INJECT TREASURY|Force Advance/.test(document.body.textContent)"))throw Error('Cheats remain');
  if(!await run("typeof window.api.rlbot.testAudio==='function'&&document.body.textContent.includes('Test match audio')"))throw Error('Packaged match audio test missing');
  await run("document.querySelectorAll('.settings-tabs button')[1].click()");await wait("!!document.querySelector('#speech-device')");
