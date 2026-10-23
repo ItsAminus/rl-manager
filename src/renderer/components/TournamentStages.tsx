@@ -8,7 +8,7 @@ export function TournamentStages({competition,teamId,onOpen,groupsOnly=false}:{c
   const allNodes:any[]=event.nodes||[],groups:any[]=event.groups||[];
   const nodes=allNodes.filter(n=>n.homeTeamId!=='__bye__'&&n.awayTeamId!=='__bye__'&&(history||event.phase==='completed'||
     !event.config.nodeStages?.[n.id.slice(competition.id.length+1)]||event.config.nodeStages[n.id.slice(competition.id.length+1)]===event.phase)&&(!mine||[n.homeTeamId,n.awayTeamId].includes(teamId)));
-  const stageRows:any[]=event.stageStandings||[],shownStage=event.phase==='swiss'?'swiss':stageRows.some(r=>r.stage==='gsl')?'gsl':'ewc_pools';
+  const stageRows:any[]=event.stageStandings||[],shownStage=event.phase==='swiss'?'swiss':stageRows.some(r=>r.stage==='gsl')?'gsl':stageRows.some(r=>r.stage==='swiss')?'swiss':'ewc_pools';
   const stageGroups=[...new Set(stageRows.filter(r=>history||r.stage===shownStage).map(r=>r.stage+':'+r.groupName))];
   useLayoutEffect(()=>{
     const el=root.current;if(!el)return;

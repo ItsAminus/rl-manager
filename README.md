@@ -7,24 +7,24 @@
 
 Build your Rocket League career in **Manager Career** or take a fixed squad from the bottom to the top in **Path To Glory**.
 
-**Latest version: 1.1.0 · Windows PC only**
+**Latest version: 1.5.0 · MAJOR RELEASE · Windows PC only**
 
-**[Download the 1.1.0 update installer](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.1.0/RL.Manager.1.1.0.Setup.exe)** · [Release notes](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.1.0)
+**[Download the 1.5.0 update installer](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL.Manager.1.5.0.Setup.exe)** · [Release notes](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.0)
 
-Includes the HUD performance improvements, a correction for pro car labels reverting after native refreshes and respawns, the Steam launch fix, and competition-specific matchday introductions and backgrounds. Close RL Manager and Rocket League before updating. Existing saves and settings are preserved.
+Major career expansion: national management and playable FIFAe finals, the RLCS 2027 Club Championship, deeper finances and agent negotiations, hidden scouting information, livelier transfer activity, animated player introductions, native scoreboard portraits, and searchable/sortable club selection. Financial dismissals now require prolonged unpaid obligations and explicit warnings, with trophy protection and recovery archives for future dismissals. Existing playable saves and settings are preserved; this update cannot restore saves already deleted by earlier dismissal logic. Close RL Manager and Rocket League before updating.
 
 ## Start here: first-time installation
 
-**New players need the COMPLETE 1.0.8 download: all four numbered parts below, followed by the 1.1.0 update above.**
+**New players need the COMPLETE 1.5.0 download: all four numbered parts below. The latest app is already included.**
 
-The separate `RL.Manager.1.1.0.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
+The separate `RL.Manager.1.5.0.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
 
 ### 1. What you need before downloading
 
 - **Windows 10 or Windows 11, 64-bit.**
 - **Rocket League already installed** through Epic Games or Steam. Launch it once and sign in to your account.
 - **[7-Zip for Windows x64](https://www.7-zip.org/)** installed, to extract the download.
-- **At least 30 GB of free space** for the download, extraction and installation, in addition to Rocket League. The four-part download is about **7.3 GB**.
+- **At least 30 GB of free space** for the download, extraction and installation, in addition to Rocket League. The four-part download is about **8 GB**.
 - An internet connection for downloading, game sign-in, BakkesMod checks and Rocket Host matches, plus working graphics/audio drivers.
 - A PC capable of running Rocket League. **An NVIDIA GPU is not required:** AMD/Intel users can use CPU-generated commentary with the same Caster One and Caster Two voices. CPU voice generation can be slower.
 
@@ -32,26 +32,26 @@ The separate `RL.Manager.1.1.0.Setup.exe` file updates the app. It is **not the 
 
 ### 2. Download ALL FOUR parts
 
-Open the **[complete 1.0.8 download page](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.0.8)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.1.0:
+Open the **[complete 1.5.0 download page](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.0)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.5.0:
 
 | Download | File | Approximate size |
 | --- | --- | --- |
-| [Part 1](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.001) | `RL-Manager-Complete-1.0.8.7z.001` | 1.99 GB |
-| [Part 2](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.002) | `RL-Manager-Complete-1.0.8.7z.002` | 1.99 GB |
-| [Part 3](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.003) | `RL-Manager-Complete-1.0.8.7z.003` | 1.99 GB |
-| [Part 4](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.004) | `RL-Manager-Complete-1.0.8.7z.004` | 1.33 GB |
+| [Part 1](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.001) | `RL-Manager-Complete-1.5.0.7z.001` | 1.99 GB |
+| [Part 2](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.002) | `RL-Manager-Complete-1.5.0.7z.002` | 1.99 GB |
+| [Part 3](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.003) | `RL-Manager-Complete-1.5.0.7z.003` | 1.99 GB |
+| [Part 4](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | About 2 GB |
 
 **Put all four files in the same folder. Keep their original names.** They are four pieces of one download, not four installers.
 
 ### 3. Extract, then install
 
 1. Wait until **all four downloads have finished**.
-2. Right-click **`RL-Manager-Complete-1.0.8.7z.001`** and select **7-Zip → Extract Here**. On Windows 11, you may need **Show more options** first.
+2. Right-click **`RL-Manager-Complete-1.5.0.7z.001`** and select **7-Zip → Extract Here**. On Windows 11, you may need **Show more options** first.
 3. 7-Zip automatically reads parts `.002`, `.003` and `.004`. **Extract only `.001`; do not extract each part separately.**
-4. Open the extracted **`RL-Manager-Complete-1.0.8`** folder.
+4. Open the extracted **`RL-Manager-Complete-1.5.0`** folder.
 5. Close Rocket League, BakkesMod and any running RL Manager window.
 6. Double-click **`Install RL Manager.exe`**, then click **Install everything**. Allow the included component installers to finish and approve their installation prompts when asked.
-7. When setup finishes, close RLM if it opened and install the **1.1.0 update** linked above. Then open **RL Manager** from its desktop or Start menu shortcut.
+7. When setup finishes, open **RL Manager** from its desktop or Start menu shortcut. The complete kit already installs version 1.5.0.
 
 **Keep the extracted folder and its `Packages`, `Setup` and `Tools` subfolders together until setup finishes.** The wizard handles the internal `Runtime.7z` files itself. You do not need to open them or run another RLM installer afterwards.
 
@@ -91,12 +91,12 @@ In Manager Career, **Easy and Medium use local bots**. **Hard is experimental** 
 **Do I install parts 1, 2, 3 and 4 separately?**  
 No. Download all four, extract `.001`, then run **Install RL Manager.exe** inside the extracted folder.
 
-**Do I also download `RL.Manager.1.1.0.Setup.exe`?**
+**Do I also download `RL.Manager.1.5.0.Setup.exe`?**
 
-Yes. Existing users only need this update. New users install the complete 1.0.8 kit first, then run the 1.1.0 update. You do not need the separate 1.0.8 app installer.
+Existing users only need this update. New users who install the complete 1.5.0 kit do not need to run it again. If you already have the complete 1.0.8 runtime, the update installer reuses it.
 
 **Steam launch repeats the Rocket League tutorial or does not keep me signed in.**  
-Install 1.1.0, fully close Rocket League, keep Steam open and signed in, and retry.
+Install 1.5.0, fully close Rocket League, keep Steam open and signed in, and retry.
 RLM now launches Steam installations through Steam instead of trying the Epic login workaround.
 If it persists, share **Settings → Help → Open support logs → rl-manager.log**.
 Do not delete your saves, unlink accounts or reset your game settings.

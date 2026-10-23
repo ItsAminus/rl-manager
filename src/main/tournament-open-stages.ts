@@ -2,6 +2,7 @@ import type {AppDatabase} from './database';
 import type {Tournament} from './tournament';
 import {addDays} from '../game/career-rules';
 import {swissPairings} from '../game/official-competition-rules';
+import {ClubTournamentStages} from './club-tournament-stages';
 const parse=(s:string)=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 const unique=(a:string[])=>[...new Set(a)].filter(x=>x&&x!=='__bye__');
 const orderedSeeds=(size:number):number[]=>size===1?[1]:orderedSeeds(size/2).flatMap(s=>[s,size+1-s]);
@@ -20,6 +21,7 @@ export class OpenStages {
     this.db.prepare('INSERT OR REPLACE INTO tournament_state(competitionId,phase,drawDate,startDate,config) VALUES (?,?,?,?,?)')
       .run(id,'registration',addDays(start,-2),start,JSON.stringify(config));
     if(config.kind==='REGIONAL')this.swiss(id,teams,start,config);
+    else if(config.kind==='CLUB_FINALE')this.swiss(id,teams,start,config);
     else if(config.kind==='INVITATIONAL')this.ewc(id,teams,start,config);
     else if(config.kind==='TIEBREAKER')this.tie(id,teams,start,config);
   }
@@ -75,9 +77,15 @@ export class OpenStages {
       r.wins+=Number(a>b);r.losses+=Number(a<b);r.gamesWon+=a;r.gamesLost+=b;r.opponents.push(home?f.awayTeamId:f.homeTeamId);
     }
     for(const r of rows){r.buchholz=r.opponents.reduce((sum:number,id:string)=>sum+(rows.find(p=>p.stage===r.stage&&p.teamId===id)?.wins||0),0);}
-    return rows.sort((a,b)=>a.stage.localeCompare(b.stage)||a.groupName.localeCompare(b.groupName)||b.wins-a.wins||a.losses-b.losses||b.buchholz-a.buchholz||a.seed-b.seed);
+    const club=parse(this.db.prepare('SELECT config FROM tournament_state WHERE competitionId=?').get(id)?.config).clubRules;
+    return rows.sort((a,b)=>a.stage.localeCompare(b.stage)||a.groupName.localeCompare(b.groupName)||b.wins-a.wins||a.losses-b.losses||(club?(b.gamesWon-b.gamesLost)-(a.gamesWon-a.gamesLost):0)||b.buchholz-a.buchholz||a.seed-b.seed);
   }
   private swiss(id:string,teams:string[],date:string,config:any){
+    if(config.clubRules)config.swissSeeds=[...teams];
+    if(config.kind==='CLUB_FINALE'){
+      if(teams.length!==16)throw Error('The Club Finale requires exactly sixteen qualified teams.');
+      this.stageTeams(id,'swiss',[teams]);config.swissRound=0;this.save(id,config,'swiss');this.swissRound(id,date,config);return;
+    }
     if(teams.length<32){
       // Real-only worlds may not contain 32 eligible squads in every region.
       // Keep the short field visible; do not create fictional entrants.
@@ -106,6 +114,7 @@ export class OpenStages {
   }
   private swissRound(id:string,date:string,config:any){
     const round=++config.swissRound;
+    if(config.kind==='CLUB_FINALE'){const scheduled=addDays(config.eventStart,Math.floor((round-1)/2));if(scheduled>date)date=scheduled;}
     for(const group of ['A','B']){
       const rows=this.standings(id,'swiss').filter(r=>r.groupName===group);
       for(const [a,b] of swissPairings(rows))this.tournament.fixture(id,a,b,date,round,'BO5','swiss',group);
@@ -207,7 +216,8 @@ export class OpenStages {
       const resolved=(config.endpoints||[]).map((s:string)=>this.tournament.resolve(id,s));
       if(resolved.some((s:string|null)=>s===null))return true;
       const teams=unique(resolved),seeds:string[]=config.entrants||[];
-      teams.sort((a,b)=>seeds.indexOf(a)-seeds.indexOf(b));
+      const upper=config.clubRules?(config.upperEndpoints||[]).map((s:string)=>this.tournament.resolve(id,s)):[];
+      teams.sort((a,b)=>(config.clubRules?Number(!upper.includes(a))-Number(!upper.includes(b)):0)||seeds.indexOf(a)-seeds.indexOf(b));
       if(state.phase==='tiebreaker'||config.kind==='QUALIFIER'){this.finish(id,[...(config.directTeams||[]),...teams],config);return true;}
       if(config.kind==='EWC_LCQ'){
         if(!config.grandFinal){
@@ -226,9 +236,13 @@ export class OpenStages {
       const pending=this.db.prepare("SELECT f.id FROM fixtures f JOIN fixture_stages s ON s.fixtureId=f.id WHERE s.competitionId=? AND s.stage='swiss' AND f.status<>'completed' LIMIT 1").get(id);if(pending)return true;
       const rows=this.standings(id,'swiss');
       if(rows.some(r=>r.wins<3&&r.losses<3)){this.swissRound(id,date,config);return true;}
+      if(config.kind==='CLUB_FINALE'){
+        rows.filter(r=>r.losses===3).forEach(r=>config.placements[r.teamId]=r.wins===2?9:r.wins===1?12:15);
+        new ClubTournamentStages(this.db,this.tournament).hybrid(id,rows.filter(r=>r.wins===3).map(r=>r.teamId),config.eventStart>date?addDays(config.eventStart,3):[addDays(config.eventStart,3),date].sort().pop()!,config);return true;
+      }
       const a=rows.filter(r=>r.groupName==='A'&&r.wins===3),b=rows.filter(r=>r.groupName==='B'&&r.wins===3),teams:string[]=[];
       for(let i=0;i<8;i++){if(a[i])teams.push(a[i].teamId);if(b[i])teams.push(b[i].teamId);}
-      rows.filter(r=>r.losses===3).forEach(r=>config.placements[r.teamId]=17);
+      rows.filter(r=>r.losses===3).forEach(r=>config.placements[r.teamId]=config.clubRules?(r.wins===2?17:r.wins===1?23:29):17);
       this.gsl(id,teams,config.schedule?.gsl>date?config.schedule.gsl:date,config);return true;
     }
     if(state.phase==='gsl'){
@@ -239,6 +253,9 @@ export class OpenStages {
       for(const group of outcomes){group.splice(0,2,...group.slice(0,2).sort((a:string,b:string)=>(records.find(r=>r.teamId===a)?.seed||99)-(records.find(r=>r.teamId===b)?.seed||99)));
         group.splice(2,2,...group.slice(2).sort((a:string,b:string)=>(records.find(r=>r.teamId===a)?.seed||99)-(records.find(r=>r.teamId===b)?.seed||99)));}
       for(const r of records)if(r.losses===2)config.placements[r.teamId]=r.wins?9:13;
+      if(config.kind==='CLUB_OPEN'){
+        new ClubTournamentStages(this.db,this.tournament).hybrid(id,unique([0,1,2,3].flatMap(i=>outcomes.map((g:string[])=>g[i]))),config.schedule?.playoffs>date?config.schedule.playoffs:date,config,config.clubAdvanceSpots||1);return true;
+      }
       if(config.kind==='INVITATIONAL'){
         const [a,b]=outcomes;
         const lowerA=[...a.slice(2)].sort(()=>Math.random()-.5),lowerB=[...b.slice(2)].sort(()=>Math.random()-.5);

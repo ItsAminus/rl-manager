@@ -31,6 +31,8 @@ rl_bridge/runtime/
 /rl_bridge/commentary/hybrid_voice_bank/
 /rl_bridge/commentary/references/
 /rl_bridge/commentary/prepared_audio/
+/rl_bridge/commentary/player_intros/*.wav
+/rl_bridge/commentary/player_intros/*.receipt.json
 /rl_bridge/commentary/rvc_models/
 /rl_bridge/commentary/test_*.wav
 /rl_bridge/commentary/test_*.mp3

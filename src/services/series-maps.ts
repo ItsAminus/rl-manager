@@ -9,6 +9,6 @@ export const SERIES_MAPS = [
 ] as const;
 export function seriesMap(gameNumber:number,bestOf:number){
   if(!Number.isInteger(gameNumber)||gameNumber<1||gameNumber>bestOf)throw new Error('Game number is outside this series.');
-  if(![1,3,5,7,9].includes(bestOf))throw new Error('Unsupported series format.');
+  if(![1,2,3,5,7,9].includes(bestOf))throw new Error('Unsupported series format.');
   return SERIES_MAPS[Math.min(gameNumber-1,6)];
 }

@@ -49,6 +49,18 @@ describe('independent career worlds',()=>{
     expect(restarted.get('b').prepare("SELECT morale FROM players WHERE id='archie'").get().morale).toBe(70);
     restarted.close();s.master.close();
   });
+  it('removes only the dismissed playable save and prevents legacy resurrection after restarting',()=>{
+    const s=sample(),a=s.worlds.get('a'),b=s.worlds.get('b');s.worlds.sync('b');
+    expect(fs.existsSync(path.join(s.folder,'a.sqlite'))).toBe(true);
+    a.exec("INSERT INTO manager_employment(careerId,status,dismissedDate,reason) VALUES('a','dismissed','2027-02-04','Repeated financial breaches')");
+    s.worlds.sync('a');expect(fs.existsSync(path.join(s.folder,'a.sqlite'))).toBe(false);
+    const archive=path.join(s.folder,'recovery','a.dismissed.sqlite');expect(fs.existsSync(archive)).toBe(true);
+    const recovery=s.factory(fs.readFileSync(archive),'');expect(recovery.prepare("SELECT managerName FROM careers WHERE id='a'").get().managerName).toBe('Coach');expect(recovery.prepare("SELECT status FROM manager_employment WHERE careerId='a'").get().status).toBe('dismissed');recovery.close();
+    expect(s.worlds.list().map(c=>c.id)).toEqual(['b']);expect(()=>s.worlds.get('a')).toThrow(/dismissed/);
+    expect(b.prepare("SELECT cashBalance FROM teams WHERE id='mates'").get().cashBalance).toBe(800000);s.worlds.close();
+    const base=sqlAdapter(new SQL.Database());runMigration(base);const restarted=new CareerWorlds(s.master,base,s.folder,s.factory);
+    expect(()=>restarted.get('a')).toThrow(/dismissed/);expect(restarted.list().map(c=>c.id)).toEqual(['b']);restarted.close();s.master.close();
+  });
   it('creates a new world from the baseline, never another save’s mutations',()=>{
     const s=sample();s.worlds.get('a').exec("UPDATE players SET overall=30 WHERE id='atomic'");
     const fresh=s.worlds.get('new',true);

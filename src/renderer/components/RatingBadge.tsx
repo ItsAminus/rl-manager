@@ -25,7 +25,7 @@ export const RatingBadge: React.FC<RatingBadgeProps> = ({
   return (
     <div className={`rating-badge ${getTierClass(rating)} size-${size}`}>
       {showLabel && <span className="rating-badge-label">{label}</span>}
-      <span className="rating-badge-value">{rating}</span>
+      <span className="rating-badge-value">{rating==null?'?':rating}</span>
     </div>
   );
 };

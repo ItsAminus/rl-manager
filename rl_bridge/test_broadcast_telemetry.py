@@ -12,6 +12,13 @@ def packet(ended=False):
             score_info=Obj(score=350,goals=2,assists=1,saves=3,shots=4),boost=42)])
 
 class FullscreenHUDTelemetryTests(unittest.TestCase):
+    def test_equipped_career_award_is_not_replaced_by_an_account_snapshot(self):
+        context={'blue':{'players':[{'playerId':'player_1','gamertag':'zen','title':'RLCS 2028 Contender',
+                                    'titleSource':'Career award · 2028-02-01'}]},'orange':{'players':[]}}
+        hud=BroadcastTelemetry(Mock(),context)
+        try:self.assertEqual(hud.context['blue']['players'][0]['title'],'RLCS 2028 Contender')
+        finally:hud.close()
+
     def test_zen_title_is_pinned_across_stale_launch_titles_and_bot_changes(self):
         registry=json.loads((Path(__file__).resolve().parents[1]/'data/player-titles.json').read_text(encoding='utf-8'))
         expected=registry['player_1']['title']

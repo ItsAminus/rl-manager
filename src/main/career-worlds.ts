@@ -107,6 +107,7 @@ export class CareerWorlds {
     return [...map.values()].sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
   }
   get(id:string,fresh=false){
+    if(this.index[id]?.employment==='dismissed')throw Error('Career ended: this manager was dismissed and the playable save was removed.');
     const existing=this.loaded.get(id);if(existing)return existing;
     if(!fresh&&!this.list().some(c=>c.id===id))throw new Error('Career not found');
     const filename=this.filename(id),onDisk=fs.existsSync(filename);
@@ -120,6 +121,18 @@ export class CareerWorlds {
     const world=this.loaded.get(id);if(!world)return;
     const row=world.prepare("SELECT c.*,COALESCE(m.mode,'Manager Career') AS mode,t.name AS teamName,s.number AS seasonNumber FROM careers c LEFT JOIN career_modes m ON m.careerId=c.id LEFT JOIN teams t ON t.id=c.teamId LEFT JOIN seasons s ON s.careerId=c.id AND s.isActive=1 WHERE c.id=?").get(id);
     if(!row)return;
+    const employment=world.prepare('SELECT * FROM manager_employment WHERE careerId=?').get(id);
+    row.employment=employment?.status||'employed';
+    if(row.employment==='dismissed'){
+      // Retain forensic recovery data before ending access to the playable save.
+      const archiveFolder=path.join(this.folder,'recovery');fs.mkdirSync(archiveFolder,{recursive:true});
+      const archive=path.join(archiveFolder,id+'.dismissed.sqlite');
+      if(!fs.existsSync(archive)){const temp=archive+'.tmp';fs.writeFileSync(temp,Buffer.from(world.exportBinary()));fs.renameSync(temp,archive);}
+      this.index[id]={...row,deleted:true,dismissalReason:employment.reason};this.saveIndex();
+      this.loaded.delete(id);world.close();
+      const file=this.filename(id);if(fs.existsSync(file))fs.unlinkSync(file);
+      return;
+    }
     if(JSON.stringify(row)!==JSON.stringify(this.index[id])){this.index[id]=row;this.saveIndex();}
   }
   delete(id:string){this.index[id]={deleted:true};this.saveIndex();}

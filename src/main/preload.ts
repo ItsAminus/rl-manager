@@ -37,12 +37,16 @@ const api = {
 
   // Team Operations
   teams: {
+    getSelectable:()=>ipcRenderer.invoke('teams:getSelectable'),
     getAll: () => ipcRenderer.invoke('teams:getAll'),
     getById: (id: string) => ipcRenderer.invoke('teams:getById', id),
   },
 
   // Competition & Fixtures
   competitions: {
+    configureClubChampionship:(id:string,setup:import('./club-championship').ClubSetup)=>ipcRenderer.invoke('competitions:configureClubChampionship',id,setup),
+    ceremony:(eventId?:string)=>ipcRenderer.invoke('competitions:ceremony',eventId),
+    dismissCeremony:(id:string)=>ipcRenderer.invoke('competitions:dismissCeremony',id),
     getAll: () => ipcRenderer.invoke('competitions:getAll'),
     getById: (id: string) => ipcRenderer.invoke('competitions:getById', id),
     repairFormat:(id:string)=>ipcRenderer.invoke('competitions:repairFormat',id),
@@ -83,6 +87,11 @@ const api = {
 
   // Settings
   management: {
+    simulation:(id:string,fixture:string)=>ipcRenderer.invoke('management:simulation',id,fixture),
+    finances:(id:string)=>ipcRenderer.invoke('management:finances',id),
+    scoutingRegions:(id:string)=>ipcRenderer.invoke('management:scoutingRegions',id),
+    dispatchRegion:(id:string,region:string,months:number)=>ipcRenderer.invoke('management:dispatchRegion',id,region,months),
+    approachAgent:(id:string,player:string,role:string)=>ipcRenderer.invoke('management:approachAgent',id,player,role),
     clubBranding:(id:string)=>ipcRenderer.invoke('management:clubBranding',id),
     saveClubBranding:(id:string,design:any)=>ipcRenderer.invoke('management:saveClubBranding',id,design),
     resetClubBranding:(id:string)=>ipcRenderer.invoke('management:resetClubBranding',id),
@@ -130,6 +139,14 @@ const api = {
     shortlist: (careerId: string, playerId: string, add: boolean) => ipcRenderer.invoke('management:shortlist', careerId, playerId, add),
     social: (careerId: string) => ipcRenderer.invoke('management:social', careerId),
     supportPlayer: (careerId: string, postId: string) => ipcRenderer.invoke('management:supportPlayer', careerId, postId),
+  },
+  national: {
+    status:()=>ipcRenderer.invoke('national:status'),
+    appoint:(code:string)=>ipcRenderer.invoke('national:appoint',code),
+    resign:()=>ipcRenderer.invoke('national:resign'),
+    callUp:(ids:string[])=>ipcRenderer.invoke('national:callUp',ids),
+    saveTactics:(plan:any)=>ipcRenderer.invoke('national:saveTactics',plan),
+    match:(id:string)=>ipcRenderer.invoke('national:match',id),
   },
   settings: {
     get: (key: string) => ipcRenderer.invoke('settings:get', key),

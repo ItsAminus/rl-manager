@@ -62,7 +62,7 @@ def write_manifest(runtime_bytes, runtime_version=None):
     files=[]
     for file in sorted(OUT.rglob('*')):
         if file.is_file() and file.name!='manifest.json':files.append({'path':file.relative_to(OUT).as_posix(),'bytes':file.stat().st_size,'sha256':digest(file)})
-    manifest={'version':VERSION,'runtimeVersion':runtime_version or VERSION,'format':1,'runtimeId':f'RLM-Runtime-{runtime_version or VERSION}','files':files,'runtimeBytes':runtime_bytes,'sources':{
+    manifest={'version':VERSION,'releaseType':json.loads((ROOT/'package.json').read_text()).get('releaseType','stable'),'runtimeVersion':runtime_version or VERSION,'format':1,'runtimeId':f'RLM-Runtime-{runtime_version or VERSION}','files':files,'runtimeBytes':runtime_bytes,'sources':{
         'bakkesmodInstaller':'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip',
         'bakkesmodCore':'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/bakkesmod.zip',
         'rocketHost':'https://bakkesplugins.com/plugin/216','rlbot':'https://github.com/RLBot/RLBotGUI',
@@ -82,6 +82,7 @@ def reuse_runtime(source_version):
     for entry in manifest['files']:
         relative=Path(entry['path']);original=(source/relative).resolve()
         if not original.is_relative_to(source.resolve()):raise ValueError('Unsafe source manifest path')
+        if relative.as_posix()=='Packages/RLManagerSetup.exe':continue
         target=OUT/relative;target.parent.mkdir(parents=True,exist_ok=True)
         if re.fullmatch(r'Runtime\.7z\.\d{3}',relative.name):
             if digest(original)!=entry['sha256']:raise RuntimeError(f'Runtime part failed checksum: {relative}')

@@ -42,6 +42,17 @@ try{
   const width=await run("(async()=>{const i=new Image();i.src=getComputedStyle(document.querySelector('.welcome-art')).backgroundImage.slice(5,-2);await i.decode();return i.naturalWidth;})()");if(width<1000)throw Error('Missing packaged scene: '+name);
  }
  const saved=await run('window.api.app.playerInfo()');if(saved.preferences.tutorialOutcome!=='skipped')throw Error('Skip not remembered');
+ if(!await run("typeof window.api.national.status==='function'&&typeof window.api.national.callUp==='function'"))throw Error('National management API missing');
+ const selectable=await run('window.api.teams.getSelectable()');
+ if(!selectable.length||selectable.some(t=>['inactive','incomplete','disbanded'].includes(t.rosterStatus)||t.name==='No Balls Just Chase'))throw Error('Ineligible team remains in packaged selection pool');
+ if(!selectable.some(t=>t.rosterStatus==='historical'))throw Error('Labelled unverified teams were removed');
+ await run("location.hash='/career/new'");await wait("!!document.querySelector('.wizard-footer .btn-primary')");
+ await run("document.querySelector('.wizard-footer .btn-primary').click()");await wait("!!document.querySelector('.region-grid')");
+ await run("document.querySelector('.wizard-footer .btn-primary').click()");await wait("!!document.querySelector('#team-search')&&document.querySelectorAll('.team-select-card').length>0");
+ await run("(()=>{const input=document.querySelector('#team-search');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'vitality');input.dispatchEvent(new Event('input',{bubbles:true}));})()");
+ await wait("document.querySelectorAll('.team-select-card').length===1&&document.querySelector('.team-select-card').textContent.includes('Vitality')");
+ const options=await run("Array.from(document.querySelector('#team-sort').options).map(o=>o.value)");if(!['name','budget','popularity','reputation','facilities'].every(v=>options.includes(v)))throw Error('Packaged team sort options missing');
+ if(screenshots){const shot=await command('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(scratch,'release-review/manager-team-search-1.5.0.png'),Buffer.from(shot.data,'base64'));}
  await run("location.hash='/settings'");await wait("!!document.querySelector('.settings-tabs')");if(await run("/Developer Mode|INJECT TREASURY|Force Advance/.test(document.body.textContent)"))throw Error('Cheats remain');
  if(!await run("typeof window.api.rlbot.testAudio==='function'&&document.body.textContent.includes('Test match audio')"))throw Error('Packaged match audio test missing');
  await run("document.querySelectorAll('.settings-tabs button')[1].click()");await wait("!!document.querySelector('#speech-device')");
@@ -65,7 +76,7 @@ try{
   })`));
  }
  await run('window.api.app.quit()');
- const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,competitionAssetHashes:mediaFiles.length,bridgeHashes:4,nativeHUDHash:true,decodedVideos};
+ const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,nationalManagementAPI:true,managerTeamSearch:true,teamSorts:options,selectableTeams:selectable.length,competitionAssetHashes:mediaFiles.length,bridgeHashes:4,nativeHUDHash:true,decodedVideos};
  fs.writeFileSync(path.join(root,'release',version,'release-check.json'),JSON.stringify(result,null,2));
  console.log(JSON.stringify({...result,folder}));
 }catch(error){console.error(error.stack);process.exitCode=1;}finally{socket?.close();if(proc.exitCode===null)proc.kill();}

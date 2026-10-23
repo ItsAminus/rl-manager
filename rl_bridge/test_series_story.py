@@ -9,6 +9,16 @@ def series(best, blue, orange, history=()):
                                    'gameNumber': blue+orange+1, 'history': history}}, ('NIP','PWR'))
 
 class SeriesTests(unittest.TestCase):
+    def test_two_game_group_match_always_plays_both_and_can_draw(self):
+        first = series(2,0,0)
+        self.assertIn('two-game group matchup', first.stakes())
+        self.assertIn('second game still has to be played', first.postgame((4,0)))
+        second = series(2,1,0)
+        self.assertNotIn('series point', second.stakes())
+        self.assertIn('Each nation earns one group point', second.postgame((0,2)))
+        self.assertIn('all three group points', second.postgame((2,0)))
+        with self.assertRaises(ValueError): series(2,1,1)
+
     def test_match_point_and_decider_follow_best_of(self):
         self.assertIn('PWR have to win', series(3,1,0).stakes())
         self.assertIn('deciding', series(5,2,2).stakes())

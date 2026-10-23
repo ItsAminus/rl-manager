@@ -1,3 +1,4 @@
+import {RecruitmentNetwork} from '../src/main/recruitment-network';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import initSqlJs from 'sql.js';
 import { runMigration } from '../src/database/migrations/001_initial_schema';
@@ -30,6 +31,7 @@ beforeEach(() => {
     db.prepare('INSERT INTO player_traits (playerId, confidence, pressureResistance, tiltTendency, developmentRate, professionalism) VALUES (?, 60, 60, 40, 70, 70)').run(id);
     db.prepare('INSERT INTO player_attributes (playerId, mechanical, groundControl, aerial, recovery, shooting, shotAccuracy, passing, rotations, positioning, gameSense, clutch, defense, goalkeeping, boostManagement, speed) VALUES (?, 80,80,80,80,80,80,80,80,80,80,80,80,80,80,80)').run(id);
   }
+  for(const id of ['them0','them1','them2'])new RecruitmentNetwork(db).approach(management.career('career'),id);
 });
 function fixture(id = 'match', away = false) {
   db.exec("INSERT OR IGNORE INTO competitions (id, name, type, status, config) VALUES ('event','Test Event','REGIONAL','scheduled','{}'); INSERT OR IGNORE INTO career_competitions VALUES ('event','career','REGIONAL',1,'2025-09-01','[]'); INSERT OR IGNORE INTO competition_entries (competitionId,teamId) VALUES ('event','us'),('event','them');");
@@ -93,6 +95,7 @@ describe('outgoing club negotiations',()=>{
     db.exec("UPDATE outgoing_offers SET expiresDate='2025-10-31';UPDATE teams SET reputation=100 WHERE id='them'");
     expect(sales.respond('career','consenting-offer','accept').status).toBe('player_talks');
     const d=management.signingQuote('career','them0').demands;
+    new RecruitmentNetwork(db).approach(management.career('career'),'them0');
     management.sign('career','them0',{salary:d.salary,bonus:d.bonus,duration:12,buyout:50000});
     expect(sales.overview('career').offers[0].status).toBe('completed');
     expect(db.prepare("SELECT COUNT(*) n FROM players WHERE teamId='us'").get().n).toBe(3);
@@ -251,7 +254,7 @@ describe('Career rules and persistence', () => {
     const quote=management.signingQuote('career','them0');
     expect(quote.fee).toBe(87480);expect(quote.clubFunds).toBe(61904);
     const offer={salary:quote.demands.salary,bonus:quote.demands.bonus,duration:24,buyout:150000};
-    const shortfall=quote.fee+offer.salary+offer.bonus-quote.clubFunds;
+    const shortfall=quote.fee-quote.clubFunds;
     expect(()=>management.sign('career','them0',offer)).toThrow(`short by $${shortfall.toLocaleString()}`);
     expect(db.prepare("SELECT teamId FROM players WHERE id='them0'").get().teamId).toBe('them');
     expect(db.prepare("SELECT isActive FROM contracts WHERE id='atomic-contract'").get().isActive).toBe(1);
@@ -267,13 +270,13 @@ describe('Career rules and persistence', () => {
     expect(()=>management.sign('career','them0',accepted)).toThrow('Insufficient');
     expect(db.prepare('SELECT * FROM transfers').all()).toHaveLength(0);
   });
-  it('scouting charges once, completes after three days, and survives reload', () => {
+  it('scouting charges once, completes after four weeks, and survives reload', () => {
     management.dispatchScout('career', 'them0'); expect(() => management.dispatchScout('career', 'them0')).toThrow('already');
     expect(management.scouting('career')[0].status).toBe('pending');
-    for (let i = 1; i <= 3; i++) (management as any).processDay('career', addDays('2025-09-01', i));
+    for (let i = 1; i <= 28; i++) (management as any).processDay('career', addDays('2025-09-01', i));
     expect(management.scouting('career')[0].status).toBe('completed');
     const restored = new CareerManagement(adapter(new SQL.Database(raw.export())) as any);
-    expect(restored.scouting('career')[0].estOvr).toBe('76–84');
+    expect(restored.scouting('career')[0].estOvr).toBe('75–89');
     expect(db.prepare("SELECT cashBalance FROM teams WHERE id = 'us'").get().cashBalance).toBe(495000);
     expect(db.prepare("SELECT * FROM inbox_items WHERE type = 'scout_report'").all()).toHaveLength(1);
   });

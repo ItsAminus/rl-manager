@@ -1,3 +1,4 @@
+import {settleSellOn} from './club-economy';
 import type { AppDatabase } from './database';
 import { v4 as uuid } from 'uuid';
 import { addDays, wageDemands } from '../game/career-rules';
@@ -257,6 +258,7 @@ export class OutgoingTransfers {
       }
       const end = new Date(c.currentDate + 'T12:00:00Z');
       end.setUTCMonth(end.getUTCMonth() + o.duration);
+      settleSellOn(this.db,id,p.id,c.teamId,buyer.id,o.fee);
       this.db.prepare('UPDATE contracts SET isActive=0 WHERE playerId=?').run(p.id);
       this.db
         .prepare(
@@ -348,7 +350,7 @@ export class OutgoingTransfers {
         .prepare(
           `SELECT t.*,COUNT(p.id) AS size,COALESCE(AVG(p.overall),0) AS strength,COALESCE(MIN(p.overall),0) AS weakest FROM teams t
         LEFT JOIN players p ON p.teamId=t.id LEFT JOIN team_roster_sources rs ON rs.teamId=t.id
-        WHERE t.id!=? AND t.region=? AND (rs.status IS NULL OR rs.status='active') AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id=t.id)
+        WHERE t.id!=? AND t.region=? AND (rs.status IS NULL OR rs.status IN ('active','historical')) AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id=t.id)
         GROUP BY t.id HAVING size BETWEEN 2 AND 5 AND weakest <= ? AND strength BETWEEN ? AND ? ORDER BY reputation DESC LIMIT 120`
         )
         .all(c.teamId, l.region, l.overall + 2, l.overall - 18, l.overall + 8);

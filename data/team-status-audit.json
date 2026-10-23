@@ -1,0 +1,98 @@
+{
+  "version": "2026-10-23-team-status-v1",
+  "checkedAt": "2026-10-23",
+  "teams": [
+    {
+      "id": "sg_team_3128700",
+      "name": "no saiko just feik",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/No_SAIKO_Just_FEIK",
+      "disbandedAt": "2026-07-17",
+      "note": "Rocket League team disbanded on 2026-07-17. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3124479",
+      "name": "Chippy Chips",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/Chippy_Chips",
+      "disbandedAt": "2026-07-31",
+      "note": "Rocket League team disbanded on 2026-07-31. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3129572",
+      "name": "TTTinhos",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/TTTinhos",
+      "disbandedAt": "2026-07-25",
+      "note": "Rocket League team disbanded on 2026-07-25. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3128048",
+      "name": "The Bricks",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/The_Bricks",
+      "disbandedAt": "2026-07-24",
+      "note": "Rocket League team disbanded on 2026-07-24. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3128868",
+      "name": "GhostWhite",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/GhostWhite",
+      "disbandedAt": "2026-08-09",
+      "note": "Rocket League team disbanded on 2026-08-09. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3125019",
+      "name": "Next2Nu Esports",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/Next2Nu_Esports",
+      "disbandedAt": "2026-08-10",
+      "note": "Rocket League team disbanded on 2026-08-10. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3122094",
+      "name": "VOLARE",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/Volare",
+      "disbandedAt": "2026-09-22",
+      "note": "Rocket League team disbanded on 2026-09-22. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3120890",
+      "name": "Kaydop Corp",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/Kaydop_Corp",
+      "disbandedAt": "2026-09-21",
+      "note": "Rocket League team disbanded on 2026-09-21. Historical event registration is retained for records, not active eligibility."
+    },
+    {
+      "id": "sg_team_3129938",
+      "name": "No Balls Just Chase",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/Portal%3ATeams/Europe",
+      "note": "Listed among disbanded European teams. Its July 2026 tournament registration does not establish current activity."
+    },
+    {
+      "id": "sg_team_3119682",
+      "name": "Magnolia",
+      "status": "inactive",
+      "source": "https://liquipedia.net/rocketleague/Magnolia_%28European_Team%29",
+      "note": "European Magnolia team disbanded on 2026-07-26. Distinct from the older German team of the same name."
+    },
+    {
+      "id": "sg_team_3127902",
+      "name": "Team BSK",
+      "status": "incomplete",
+      "source": "https://liquipedia.net/rocketleague/Team_BSK",
+      "note": "The July 2026 registered trio is no longer complete: rysfox left on 2026-07-31. No replacement is confirmed in this audit. Earlier disband dates must not obscure its July revival."
+    },
+    {
+      "id": "sg_team_3125196",
+      "name": "Triple pop",
+      "status": "active",
+      "source": "https://liquipedia.net/rocketleague/Triple_pop",
+      "note": "Current active trio confirmed: bibbaba, motion and osaft. Coach departure does not disband the playing squad."
+    }
+  ]
+}

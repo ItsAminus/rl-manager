@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCareerStore } from '../../stores/careerStore';
 import { Region, Difficulty, Team, matchesRegion } from '../../types';
 import './NewCareerPage.css';
+import {selectableTeam,selectTeams,TEAM_SORTS,type TeamSort} from '../../game/team-selection';
 
 export const NewCareerPage: React.FC = () => {
   const navigate = useNavigate();
@@ -18,13 +19,16 @@ export const NewCareerPage: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [teamSearch,setTeamSearch]=useState('');
+  const [teamSort,setTeamSort]=useState<TeamSort>('reputation');
+  const [ascending,setAscending]=useState(false);
 
   useEffect(() => {
     async function load() {
       await initialize();
       if (window.api?.teams) {
-        const t = await window.api.teams.getAll();
-        const selectable = (t as Team[]).filter(item => item.rosterStatus !== 'inactive' && item.roster.length >= 3);
+        const t = await window.api.teams.getSelectable();
+        const selectable = (t as Team[]).filter(selectableTeam);
         setTeams(selectable);
         const inReg = selectable.filter((item: Team) => matchesRegion(item.region, selectedRegion));
         if (inReg.length > 0) {
@@ -37,7 +41,8 @@ export const NewCareerPage: React.FC = () => {
     load();
   }, [initialize]);
 
-  const filteredTeams = teams.filter((t) => matchesRegion(t.region, selectedRegion));
+  const filteredTeams = selectTeams(teams,selectedRegion,teamSearch,teamSort,ascending);
+  const regionTeams=teams.filter(t=>matchesRegion(t.region,selectedRegion));
 
   const handleNext = () => {
     setError(null);
@@ -55,7 +60,7 @@ export const NewCareerPage: React.FC = () => {
         setSelectedTeamId(inReg[0].id);
       }
     }
-    if (step === 3 && !isCustomOrg && !selectedTeamId) {
+    if (step === 3 && !isCustomOrg && !regionTeams.some(t=>t.id===selectedTeamId)) {
       setError('Please select an organization.');
       return;
     }
@@ -156,7 +161,7 @@ export const NewCareerPage: React.FC = () => {
                   onClick={() => {
                     setSelectedRegion(reg);
                     const inReg = teams.filter((t) => matchesRegion(t.region, reg));
-                    if (inReg.length > 0) setSelectedTeamId(inReg[0].id);
+                    setSelectedTeamId(inReg[0]?.id||'');setTeamSearch('');
                   }}
                 >
                   <div className="region-name">{reg}</div>
@@ -194,15 +199,22 @@ export const NewCareerPage: React.FC = () => {
             </div>
 
             {!isCustomOrg ? (
+              <>
+              <div className="team-selection-controls">
+                <label htmlFor="team-search">Search teams<input id="team-search" className="input-text" type="search" placeholder="Team name or abbreviation…" value={teamSearch} onChange={e=>setTeamSearch(e.target.value)}/></label>
+                <label htmlFor="team-sort">Sort by<select id="team-sort" value={teamSort} onChange={e=>{const sort=e.target.value as TeamSort;setTeamSort(sort);setAscending(sort==='name');}}>{Object.entries(TEAM_SORTS).map(([key,label])=><option value={key} key={key}>{label}</option>)}</select></label>
+                <button type="button" className="org-tab" onClick={()=>setAscending(v=>!v)} aria-label={'Change sort direction, currently '+(ascending?'ascending':'descending')}>{teamSort==='name'?(ascending?'A → Z':'Z → A'):(ascending?'Lowest first ↑':'Highest first ↓')}</button>
+              </div>
+              <div className="team-selection-summary"><span role="status">{filteredTeams.length} of {regionTeams.length} teams in {selectedRegion}</span>{selectedTeam&&<span>Selected: <strong>{selectedTeam.name}</strong></span>}{teamSearch&&<button className="text-link" onClick={()=>setTeamSearch('')}>Clear search</button>}</div>
+              <p className="team-pool-note">“Last registered lineup” teams remain available, but their current status is unverified. Confirmed disbanded teams and incomplete rosters are excluded.</p>
               <div className="teams-selection-grid">
                 {filteredTeams.length === 0 ? (
                   <div className="empty-teams-notice">
-                    No registered teams in {selectedRegion}. You can create a custom organization or
-                    pick Europe / North America.
+                    {teamSearch?'No teams match your search in this region. Try another name or clear the search.':`No eligible teams in ${selectedRegion}. Choose another region or create a custom organization.`}
                   </div>
                 ) : (
                   filteredTeams.map((t) => (
-                    <div
+                    <button type="button" aria-pressed={selectedTeamId===t.id}
                       key={t.id}
                       className={`team-select-card ${selectedTeamId === t.id ? 'selected' : ''}`}
                       onClick={() => setSelectedTeamId(t.id)}
@@ -213,16 +225,18 @@ export const NewCareerPage: React.FC = () => {
                       </div>
                       <div className="team-select-name">{t.name}</div>
                       {t.rosterVerifiedAt && <div className="text-muted" style={{ fontSize: 12, marginBottom: 8 }} title={t.rosterNote}>
-                        Confirmed roster · {t.rosterVerifiedAt}
+                        {t.rosterStatus==='historical'?'Last registered lineup':'Confirmed roster'} · {t.rosterVerifiedAt}
                       </div>}
                       <div className="team-select-stats">
-                        <span>Budget: ${(t.budget || 250000).toLocaleString()}</span>
+                        <span>Budget: ${(t.budget ?? 0).toLocaleString()}</span>
                         <span>Facilities: Tier {t.facilityLevel || 1}</span>
                       </div>
-                    </div>
+                      <small className="text-muted">Fanbase: {(t.fanbase??0).toLocaleString()}</small>
+                    </button>
                   ))
                 )}
               </div>
+              </>
             ) : (
               <div className="custom-org-panel">
                 <div className="input-field-group">
@@ -320,7 +334,7 @@ export const NewCareerPage: React.FC = () => {
         )}
       </div>
 
-      <div className="wizard-footer">
+      <p className="notice">The board monitors debt, wages and cash reserves. Financial mismanagement can get you fired and permanently end this career.</p><div className="wizard-footer">
         {step > 1 && (
           <button className="btn btn-secondary wizard-btn" onClick={handleBack}>
             Back

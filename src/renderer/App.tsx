@@ -31,6 +31,9 @@ import {PathChallengesPage} from './pages/PathChallengesPage';
 import {useCareerStore} from '../stores/careerStore';
 import {isPath} from '../game/career-mode';
 import {GuidedTour} from './onboarding/GuidedTour';
+import {TrophyCeremony} from './components/TrophyCeremony';
+import {NationalTeamPage} from './pages/NationalTeamPage';
+import {NationalMatchDayPage} from './pages/NationalMatchDayPage';
 function ModeRoutes({children}:{children:React.ReactNode}){const {pathname}=useLocation(),career=useCareerStore(s=>s.career);if(isPath(career)&&/^\/(social|chirp|scouting|transfers|negotiate|finances)(\/|$)/.test(pathname))return <Navigate to="/dashboard" replace/>;return <>{children}</>;}
 function CareerDashboard(){return isPath(useCareerStore(s=>s.career))?<PathToGloryPage/>:<DashboardPage/>;}
 function CareerPlayer(){return isPath(useCareerStore(s=>s.career))?<PathPlayerPage/>:<PlayerProfilePage/>;}
@@ -42,9 +45,12 @@ function ChirpRedirect() {
 }
 
 export default function App() {
+  const ended=useCareerStore(s=>s.careerEnded),unload=useCareerStore(s=>s.unloadCareer);
+  if(ended)return <main className="management-page"><section className="panel" role="alert"><span className="eyebrow">Board decision · Final</span><h1>You have been dismissed.</h1><p>{ended}</p><p>Your job is gone. This career has ended permanently and cannot be resumed.</p><button className="btn btn-primary" onClick={()=>{unload();window.location.hash='/';}}>Return to main menu</button></section></main>;
   return (
     <HashRouter>
       <GuidedTour/>
+      <TrophyCeremony/>
       <MainLayout>
         <ModeRoutes><Routes>
           {/* Main Menu & Save Management */}
@@ -77,6 +83,8 @@ export default function App() {
 
           {/* Match Day Experience (RLBot / Simulated 3v3) */}
           <Route path="/match-day/:fixtureId" element={<MatchDayPage />} />
+          <Route path="/national-team" element={<NationalTeamPage/>}/>
+          <Route path="/national-match-day/:matchId" element={<NationalMatchDayPage/>}/>
 
           {/* Live Contract Negotiations */}
           <Route path="/negotiate/:id" element={<NegotiationPage />} />

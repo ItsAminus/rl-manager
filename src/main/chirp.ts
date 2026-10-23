@@ -1,3 +1,4 @@
+import {RecruitmentNetwork} from './recruitment-network';
 import type { AppDatabase } from './database';
 import { v4 as uuid } from 'uuid';
 import { addDays, socialImpact } from '../game/career-rules';
@@ -478,6 +479,10 @@ export class Chirp {
     const a = this.db.prepare('SELECT a.*,p.overall,p.morale,p.form,p.teamId AS currentTeamId,t.name AS club,EXISTS(SELECT 1 FROM chirp_follows f WHERE f.careerId=a.careerId AND f.accountId=a.id) AS following FROM chirp_accounts a LEFT JOIN players p ON p.id=a.playerId LEFT JOIN teams t ON t.id=COALESCE(p.teamId,a.teamId) WHERE a.careerId=? AND a.id=?').get(id, account);
     if (!a) throw new Error('Chirp profile not found.');
     if (a.kind === 'Player') { a.club = a.currentTeamId ? a.club : 'Free agent'; a.bio = 'Rocket League player · ' + a.club; }
+    if(a.playerId){
+      const c=this.db.prepare('SELECT teamId FROM careers WHERE id=?').get(id);
+      if(a.currentTeamId!==c?.teamId){const view=new RecruitmentNetwork(this.db).visible({...c,id,currentDate:this.db.prepare('SELECT currentDate FROM careers WHERE id=?').get(id)?.currentDate},{...a,id:a.playerId,teamId:a.currentTeamId});a.overall=view.overall;a.morale=null;a.form=view.form;}
+    }
     const identity=officialProfile(a);
     const club=a.kind==='Club'?new ClubStudio(this.db).decorate({id:a.teamId},id)?.branding:null;
     const custom=club?{displayName:club.name,color:club.primary,...(club.logo?{avatarUrl:club.logo,avatarSource:'Career club design',coverLogo:club.logo}:{}),...(club.banner?{bannerUrl:club.banner,bannerSource:'Career club design',bannerKind:'career-banner'}:{})}:{};

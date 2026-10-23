@@ -32,7 +32,7 @@ The fixture detail API includes `competitionType` so stage identity is available
 
 On entering a major competition matchday, greet the participating manager with a short, full-screen introduction specific to that competition, then transition into the existing matchday screen. Target 10–15 seconds, with sound and a visible Skip control.
 
-The supplied reference, `C:/Users/amine/Downloads/Video Project 16.mp4`, is 33.8 seconds at 1280 × 720. Sampled frames show a Barcelona pre-match press conference with subtitles and a Skip control. It does not show the UCL opener described in the request; the written description defines the desired competition-introduction behavior.
+The supplied reference, `Video Project 16.mp4`, is 33.8 seconds at 1280 × 720. Sampled frames show a Barcelona pre-match press conference with subtitles and a Skip control. It does not show the UCL opener described in the request; the written description defines the desired competition-introduction behavior.
 
 ## Earlier source shortlist
 

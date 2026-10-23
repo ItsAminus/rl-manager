@@ -7,19 +7,22 @@ class SeriesStory:
         if not data:
             return
         self.best_of = int(data['bestOf'])
-        if self.best_of not in (1, 3, 5, 7, 9):
+        if self.best_of not in (1, 2, 3, 5, 7, 9):
             raise ValueError('Invalid best-of format')
         self.required = self.best_of // 2 + 1
         self.wins = (int(data['blueWins']), int(data['orangeWins']))
         self.history = data.get('history', [])
         self.game = int(data['gameNumber'])
-        if min(self.wins) < 0 or max(self.wins) >= self.required or self.game != sum(self.wins)+1:
+        if min(self.wins) < 0 or max(self.wins) >= self.required or self.game != sum(self.wins)+1 or (self.best_of == 2 and self.game > 2):
             raise ValueError('Series is complete or game number is inconsistent')
 
     def stakes(self):
         if not self.enabled:
             return ''
         a, b = self.wins
+        if self.best_of == 2:
+            return (f'Game {self.game} of this two-game group matchup. Both games count. '
+                    'A two-nil win earns three points; a one-one split earns each nation one point.')
         opening = f'Game {self.game} of this best of {self.best_of}. '
         if a == b:
             opening += f'The series is level at {a} apiece. '
@@ -44,6 +47,12 @@ class SeriesStory:
         wins = list(self.wins)
         wins[winner] += 1
         opening = f'{name} take game {self.game}! '
+        if self.best_of == 2:
+            if self.game == 1:
+                return opening + 'The second game still has to be played. Three points or a shared point are still on the line!'
+            if wins[0] == wins[1]:
+                return opening + 'The matchup finishes one-one. Each nation earns one group point!'
+            return opening + f'{name} win the matchup two-nil and earn all three group points!'
         if any(e.get('type') == 'goal' and e.get('score', (0,0))[1-winner] - e.get('score', (0,0))[winner] >= 2 for e in events):
             opening += 'They have turned a two-goal deficit into a game win! '
         if wins[winner] >= self.required:

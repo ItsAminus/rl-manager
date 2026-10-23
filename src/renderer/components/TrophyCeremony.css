@@ -1,0 +1,7 @@
+.trophy-ceremony{position:fixed;inset:32px 0 0;width:100vw;height:calc(100dvh - 32px);max-width:none;max-height:none;margin:0;border:0;padding:0;background:#030a12;color:#f6f1e7;overflow:auto}
+.trophy-ceremony::backdrop{background:#030a12}.trophy-ceremony video,.trophy-ceremony-backdrop{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.trophy-ceremony-backdrop{background:radial-gradient(ellipse at 50% 42%,#79552c66,transparent 60%),linear-gradient(135deg,#071727,#030a12)}
+.trophy-ceremony-content{position:relative;display:flex;min-height:calc(100% - 110px);padding:clamp(28px,5vw,70px);align-items:center;justify-content:center;flex-direction:column;text-align:center;animation:ceremony-reveal .7s ease-out both}
+.trophy-ceremony-content.with-video{justify-content:flex-end;background:linear-gradient(transparent 60%,#000c)}.ceremony-cup{width:clamp(90px,14vw,180px);height:180px;color:#edc67d;margin:18px}
+.ceremony-kicker{font-size:clamp(18px,3vw,32px);letter-spacing:.3em;text-transform:uppercase;color:#edc67d;margin:24px 0 4px}.trophy-ceremony h1{font-size:clamp(32px,6vw,88px);margin:0;overflow-wrap:anywhere}.trophy-ceremony footer{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:20px 30px 36px}.ceremony-error{position:relative;text-align:center;color:#ffb2a3}
+@keyframes ceremony-reveal{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.trophy-ceremony-content{animation:none}}

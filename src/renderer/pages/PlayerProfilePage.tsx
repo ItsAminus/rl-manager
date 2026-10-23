@@ -60,6 +60,7 @@ export const PlayerProfilePage: React.FC = () => {
 
   const isMyPlayer = player.teamId === team?.id;
   const a = player.attributes;
+  const known=isMyPlayer||player.scoutKnowledge==='Full';
   const market = transferWindow(currentDate,career?.transferWindows);
 
   // Compute 6 radar categories
@@ -118,7 +119,7 @@ export const PlayerProfilePage: React.FC = () => {
           <PlayerAvatar playerId={player.id} gamertag={player.gamertag} overall={player.overall} size="xl" showBadge />
           <div className="header-ovr-wrap">
             <RatingBadge rating={player.overall} size="xl" showLabel label="OVR" />
-            <div className="header-pot-badge">POT {player.potential}</div>
+            <div className="header-pot-badge">POT {player.estimatedPotential||player.potential||"?"}</div>
           </div>
 
           <div className="header-title-group">
@@ -144,15 +145,15 @@ export const PlayerProfilePage: React.FC = () => {
           </div>
           <div className="contract-col">
             <span className="contract-label">MONTHLY SALARY</span>
-            <span className="contract-val">${(player.salary || 6500).toLocaleString()}/mo</span>
+            <span className="contract-val">{player.salary==null?'Ask agent':`$${player.salary.toLocaleString()}/mo`}</span>
           </div>
           <div className="contract-col">
             <span className="contract-label">BUYOUT CLAUSE</span>
-            <span className="contract-val">${(player.buyout || 250000).toLocaleString()}</span>
+            <span className="contract-val">{player.buyout==null?'Ask agent':`$${player.buyout.toLocaleString()}`}</span>
           </div>
           <div className="contract-col">
             <span className="contract-label">FORM</span>
-            <FormIndicator form={player.form || 50} showNumber />
+            {player.form==null?<span>Not observed</span>:<FormIndicator form={player.form} showNumber />}
           </div>
         </div>
       </div>
@@ -198,13 +199,14 @@ export const PlayerProfilePage: React.FC = () => {
       </div>
 
       {/* Main Attributes Grid & Radar */}
-      <div className="profile-attributes-grid">
+      {!known&&<section className="panel"><h3>Scouting knowledge: {player.scoutKnowledge}</h3><p>Overall: {player.estimatedOverall||'Unscouted'} · Potential: {player.estimatedPotential||'Unknown'}</p><p>Last observation: {player.lastScouted||'None'}. Reports lose precision after 120 days.</p><p>Exact attributes, personality and condition are unavailable. Assign a scout to observe this player over several weeks.</p></section>}
+      {known&&<div className="profile-attributes-grid">
         {/* Radar & Summary Column */}
         <div className="profile-radar-panel">
           <h3 className="panel-title">CORE ATTRIBUTE RADAR</h3>
           <RadarChart data={radarData} size={280} />
 
-          <div className="condition-bars-group">
+          {isMyPlayer&&<div className="condition-bars-group">
             <div className="condition-row">
               <span>Morale</span>
               <div className="progress-track">
@@ -237,7 +239,7 @@ export const PlayerProfilePage: React.FC = () => {
               </div>
               <span className="condition-val">{player.consistency || 75}%</span>
             </div>
-          </div>
+          </div>}
         </div>
 
         {/* Detailed 6 Attributes Panels */}
@@ -291,7 +293,7 @@ export const PlayerProfilePage: React.FC = () => {
             <AttributeBar label="Clutch Factor" value={a?.clutch || 50} />
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

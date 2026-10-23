@@ -9,7 +9,7 @@ export function ensurePlayableRoster(db: AppDatabase, teamId: string, date: stri
   const team = db.prepare('SELECT * FROM teams WHERE id = ?').get(teamId);
   if (!team) throw new Error('Team not found.');
   const source = db.prepare('SELECT status FROM team_roster_sources WHERE teamId = ?').get(teamId);
-  if (source?.status === 'inactive' || db.prepare('SELECT id FROM generated_entities WHERE id = ? AND kind = ?').get(teamId,'team')) return false;
+  if (['inactive','incomplete','disbanded'].includes(source?.status) || db.prepare('SELECT id FROM generated_entities WHERE id = ? AND kind = ?').get(teamId,'team')) return false;
   const roster = db.prepare('SELECT * FROM players WHERE teamId = ?').all(teamId);
   if (roster.length >= 3) return true;
   const career=db.prepare('SELECT id FROM careers LIMIT 1').get();

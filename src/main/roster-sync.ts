@@ -114,13 +114,13 @@ export function repairFutureRosterEntries(db: AppDatabase, careerId: string) {
   if (!career) return;
   db.transaction(() => {
     const pool = db.prepare(`SELECT t.* FROM teams t LEFT JOIN team_roster_sources rs ON rs.teamId = t.id
-      WHERE COALESCE(rs.status,'active') != 'inactive' AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id = t.id)
+      WHERE COALESCE(rs.status,'') NOT IN ('inactive','incomplete','disbanded') AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id = t.id)
         AND (SELECT COUNT(*) FROM players p WHERE p.teamId = t.id) >= 3 ORDER BY t.reputation DESC, t.id`).all();
     const competitions = db.prepare("SELECT c.id FROM competitions c JOIN career_competitions cc ON cc.competitionId = c.id WHERE cc.careerId = ? AND c.status != 'completed'").all(careerId);
     const used = new Map(competitions.map(c => [c.id,new Set(db.prepare('SELECT teamId FROM competition_entries WHERE competitionId = ?').all(c.id).map(t => t.teamId))]));
     const entries = db.prepare(`SELECT ce.*, c.region FROM competition_entries ce JOIN career_competitions cc ON cc.competitionId = ce.competitionId JOIN competitions c ON c.id = ce.competitionId
       LEFT JOIN team_roster_sources rs ON rs.teamId = ce.teamId WHERE cc.careerId = ? AND c.status != 'completed' AND ce.teamId != ?
-      AND (rs.status = 'inactive' OR EXISTS(SELECT 1 FROM generated_entities g WHERE g.id = ce.teamId)
+      AND (rs.status IN ('inactive','incomplete','disbanded') OR EXISTS(SELECT 1 FROM generated_entities g WHERE g.id = ce.teamId)
         OR (SELECT COUNT(*) FROM players p WHERE p.teamId = ce.teamId) < 3)`).all(careerId,career.teamId);
     for (const entry of entries) {
       const started = db.prepare("SELECT id FROM fixtures WHERE competitionId = ? AND (homeTeamId = ? OR awayTeamId = ?) AND status = 'in_progress'").get(entry.competitionId,entry.teamId,entry.teamId);

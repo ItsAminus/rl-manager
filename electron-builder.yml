@@ -38,6 +38,8 @@ extraResources:
       - commentary/story_lines.py
       - commentary/windows_audio.py
       - commentary/voice_bank/*.wav
+      - commentary/player_intros/*.wav
+      - commentary/player_intros/bank.json
       - commentary/voice_bank/manifest.json
       - commentary/cache/caster_one_conds.pt
       - commentary/cache/caster_two_conds.pt

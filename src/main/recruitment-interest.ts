@@ -15,7 +15,10 @@ export function recruitmentInterest(db:AppDatabase,careerId:string,buyerId:strin
   const reasons:string[]=[];
   const affiliation=db.prepare('SELECT status FROM player_affiliations WHERE playerId=?').get(p.id)?.status;
   if(!p.teamId&&['unverified','inactive'].includes(affiliation))reasons.push('This player is not a confirmed available free agent.');
+  const international=db.prepare("SELECT COUNT(*) n FROM fixtures f JOIN competitions co ON co.id=f.competitionId WHERE co.type IN ('MAJOR','WORLDS','INVITATIONAL') AND f.status='completed' AND ((f.homeTeamId=? AND f.homeScore>f.awayScore) OR (f.awayTeamId=? AND f.awayScore>f.homeScore))").get(buyerId,buyerId).n;
+  const continentalReputation=Math.min(100,reputation+Math.min(10,international*2));
   if(p.teamId!==buyerId){
+    if(p.overall>=85&&continentalReputation<p.overall-15)reasons.push(`Your continental reputation (${Math.round(continentalReputation)}/100) does not meet the player's ambitions. Establish the club at international events first.`);
     if(p.overall>=94&&!((reputation>=88&&quality>=p.overall-10)||(reputation>=70&&quality>=p.overall-4&&established)))reasons.push('The squad strength and competitive track record do not match this player’s championship ambitions.');
     else if(p.overall>=85&&((p.reputation??p.overall)-reputation>22||p.overall-quality>15))reasons.push('This would be too large a step down in club stature or teammate quality.');
     if(seller&&p.overall>=94&&!unhappy&&!expiring&&reputation<(seller.reputation??50)+4&&quality<squad(seller.id)+3)reasons.push('The player is committed to their current club and does not want a sideways or weaker move.');
@@ -25,6 +28,6 @@ export function recruitmentInterest(db:AppDatabase,careerId:string,buyerId:strin
   }
   const base=wageDemands(p),relocation=buyer?.region!==p.region?1.15:1,downward=quality<p.overall-5?1.15:1;
   const salary=Math.round(Math.max(base.salary,current?.salary?current.salary*1.05:0)*relocation*downward);
-  return {willing:!reasons.length,reasons,demands:{salary,bonus:Math.round(salary*2.5)},minimumDuration:p.overall>=94?24:12,
+  return {willing:!reasons.length,reasons,continentalReputation,demands:{salary,bonus:Math.round(salary*2.5)},minimumDuration:p.overall>=94?24:12,
     explanation:reasons[0]||`${p.gamertag} is willing to discuss a ${role.toLowerCase()} role. Salary, contract security and club finances still need agreement.`};
 }

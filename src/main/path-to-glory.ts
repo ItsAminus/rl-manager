@@ -25,7 +25,7 @@ export class PathToGlory {
   candidates(region?: string) {
     const teams = this.db
       .prepare(
-        "SELECT t.id,t.name,t.region,COUNT(p.id) AS n,AVG(p.overall) AS average,MAX(p.overall) AS highest,MIN(p.overall) AS lowest FROM teams t JOIN players p ON p.teamId=t.id LEFT JOIN team_roster_sources rs ON rs.teamId=t.id WHERE COALESCE(rs.status,'')<>'inactive' GROUP BY t.id HAVING n=3 AND highest<=65 AND lowest>=40 ORDER BY ABS(average-55),t.id"
+        "SELECT t.id,t.name,t.region,COUNT(p.id) AS n,AVG(p.overall) AS average,MAX(p.overall) AS highest,MIN(p.overall) AS lowest FROM teams t JOIN players p ON p.teamId=t.id LEFT JOIN team_roster_sources rs ON rs.teamId=t.id WHERE COALESCE(rs.status,'') NOT IN ('inactive','incomplete','disbanded') GROUP BY t.id HAVING n=3 AND highest<=65 AND lowest>=40 ORDER BY ABS(average-55),t.id"
       )
       .all();
     return teams
@@ -280,7 +280,7 @@ export class PathToGlory {
       chapter = state.unlockedCutoff;
     const opponents = this.db
       .prepare(
-        "SELECT t.id,t.name,AVG(p.overall) AS average FROM teams t JOIN players p ON p.teamId=t.id LEFT JOIN team_roster_sources rs ON rs.teamId=t.id WHERE t.id<>? AND COALESCE(rs.status,'')<>'inactive' AND p.id IN (SELECT s.id FROM players s WHERE s.teamId=t.id ORDER BY s.overall DESC,s.id LIMIT 3) GROUP BY t.id HAVING COUNT(p.id)=3"
+        "SELECT t.id,t.name,AVG(p.overall) AS average FROM teams t JOIN players p ON p.teamId=t.id LEFT JOIN team_roster_sources rs ON rs.teamId=t.id WHERE t.id<>? AND COALESCE(rs.status,'') NOT IN ('inactive','incomplete','disbanded') AND p.id IN (SELECT s.id FROM players s WHERE s.teamId=t.id ORDER BY s.overall DESC,s.id LIMIT 3) GROUP BY t.id HAVING COUNT(p.id)=3"
       )
       .all(c.teamId);
     const selectedRank = this.db

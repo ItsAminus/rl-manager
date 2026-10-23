@@ -1,3 +1,4 @@
+import {RecruitmentNetwork} from '../src/main/recruitment-network';
 import {beforeAll,beforeEach,it,expect} from 'vitest';
 import initSqlJs from 'sql.js';
 import {sqlAdapter} from './sql-fixture';
@@ -20,7 +21,7 @@ beforeEach(()=>{
   db.exec("INSERT INTO players(id,gamertag,teamId,region,overall,reputation,morale,marketValue) VALUES('free','Free',NULL,'Europe',80,70,60,50000); INSERT INTO contracts(id,playerId,teamId,salary,duration,startDate,endDate,buyout,isActive) VALUES('zen-contract','elite0','elite',40000,24,'2025-09-01','2027-09-01',200000,1)");
 });
 const c=()=>db.prepare("SELECT * FROM careers WHERE id='c'").get();
-const terms=(id:string)=>{const q=m.signingQuote('c',id);return {salary:q.demands.salary,bonus:q.demands.bonus,duration:24,buyout:100000,role:'Core Starter'};};
+const terms=(id:string)=>{new RecruitmentNetwork(db).approach(c(),id);const q=m.signingQuote('c',id);return {salary:q.demands.salary,bonus:q.demands.bonus,duration:24,buyout:100000,role:'Core Starter'};};
 it('uses the same closed window in the UI, manager signing, NPC deals and sale acceptance',()=>{
   db.exec("UPDATE careers SET currentDate='2025-09-26'");
   const dates=transferDates(db,'c');expect(transferWindow(c().currentDate,dates).open).toBe(false);expect(careerWindow(db,'c',c().currentDate).open).toBe(false);
@@ -36,14 +37,14 @@ it('closes before qualifiers and opens a saved break before split two',()=>{
   syncTransferCalendar(db,c());const n=db.prepare('SELECT COUNT(*) AS n FROM calendar_events').get().n;syncTransferCalendar(db,c());expect(db.prepare('SELECT COUNT(*) AS n FROM calendar_events').get().n).toBe(n);
 });
 it('an enormous salary cannot buy an elite player into an unsuitable project',()=>{
-  const q=m.signingQuote('c','elite0');expect(q.unavailableReason).toContain('championship');
-  expect(()=>m.sign('c','elite0',{...terms('elite0'),salary:10000000,bonus:10000000})).toThrow(/championship/);
+  const a=new RecruitmentNetwork(db).approach(c(),'elite0');expect(a.reasons.join(' ')).toContain('championship');
+  expect(()=>m.sign('c','elite0',{...terms('elite0'),salary:10000000,bonus:10000000})).toThrow();
   expect(db.prepare("SELECT teamId FROM players WHERE id='elite0'").get().teamId).toBe('elite');
 });
 it('a settled elite player declines a sideways move even to a strong club',()=>{
   db.exec("UPDATE teams SET reputation=94 WHERE id='us'; UPDATE players SET overall=97 WHERE teamId='us'");
-  expect(m.signingQuote('c','elite0').unavailableReason).toContain('committed');
-  db.exec("UPDATE players SET morale=30 WHERE id='elite0'");expect(m.signingQuote('c','elite0').unavailableReason).toBe('');
+  expect(new RecruitmentNetwork(db).approach(c(),'elite0').reasons.join(' ')).toContain('committed');
+  db.exec("UPDATE players SET morale=30 WHERE id='elite0';DELETE FROM agent_approaches");new RecruitmentNetwork(db).approach(c(),'elite0');expect(m.signingQuote('c','elite0').unavailableReason).toBe('');
   expect(()=>m.sign('c','elite0',{...terms('elite0'),role:'Substitute'})).toThrow(/starting role/);
   expect(()=>m.sign('c','elite0',{...terms('elite0'),duration:12})).toThrow(/24 months/);
 });

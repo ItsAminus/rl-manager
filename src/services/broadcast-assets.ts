@@ -4,6 +4,7 @@ import {broadcastColor} from './broadcast-colors';
 import {scoreboardPortrait} from './scoreboard-portrait';
 import {playerTitle} from './player-title';
 import teamLogos from '../../data/team-broadcast-logos.json';
+import {playerIntroduction} from './player-introduction';
 const assets=registry as Record<string,Record<string,any>>;
 const timerLogos=teamLogos as Record<string,{logo:string;kind:string;source:string|null}>;
 export function broadcastShortName(team:{shortName?:string;name?:string}):string{
@@ -29,7 +30,8 @@ export function broadcastTeam(team:any,players:any[]) {
       const portrait=scoreboardPortrait(p.gamertag,p.playerId);
       return {playerId:p.playerId,gamertag:p.gamertag,isHuman:!!p.isHuman,photo:portrait?.url||null,
         photoSource:portrait?.source||null,photoKind:portrait?.kind||null,
-        title:p.careerTitle?.title||title?.title||null,titleSource:p.careerTitle?`Career award · ${p.careerTitle.earnedDate}`:title?.source||null, rating:p.rating};
+        title:p.careerTitle?.title||title?.title||null,titleSource:p.careerTitle?`Career award · ${p.careerTitle.earnedDate}`:title?.source||null, rating:p.rating,
+        introduction:playerIntroduction(p)};
     })};
 }
 

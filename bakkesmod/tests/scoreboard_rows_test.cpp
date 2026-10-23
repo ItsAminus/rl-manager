@@ -1,6 +1,7 @@
 #include "../ScoreboardRows.h"
 #include "../FeedNameRefresh.h"
 #include "../NativeUI.h"
+#include "../NativeScoreboard.h"
 #include "../NativeNameBindings.h"
 #include "../HudWork.h"
 #include <array>
@@ -136,7 +137,29 @@ static void feedNameRefreshTests(){
     assert(!refresh.begin(address,read,failDescriptor));
     assert(std::wstring(buffer)==L"Oski"&&field.count==5);
 }
+static void nativeScoreboardStyleTests(){
+    using namespace career_native_scoreboard;
+    std::unordered_map<std::string,Style> catalog;
+    catalog[normalized("RLCS 2026 CONTENDER")]={0xFF123456,0xFF654321};
+    catalog[normalized("RLCS 2024 CONTENDER")]={0xFF112233,0xFF332211};
+    catalog[normalized("Standard title")]={0xFFEEEEEE,0};
+    assert(style(catalog,"rlcs 2026 contender").glow==0xFF654321);
+    assert(style(catalog,"RLCS 2028 CONTENDER").color==0xFF123456);
+    assert(style(catalog,"Standard title").glow==0);
+    assert(style(catalog,"Unknown award").glow==0);
+    assert(style(catalog,"RLCS 2028 WORLD CHAMPION").glow==0);
+    TextureParams texture;texture.table=42;texture.row=3;texture.column=71;texture.value=0x12345678;
+    IntParams color;color.table=42;color.row=3;color.column=72;color.value=(int32_t)0xFFAABBCC;
+    uint64_t copy=0;std::memcpy(&copy,reinterpret_cast<char*>(&texture)+0x18,8);assert(copy==texture.value);
+    uint32_t packed=0;std::memcpy(&packed,reinterpret_cast<char*>(&color)+0x14,4);assert(packed==0xFFAABBCC);
+}
 int main(){
+    using career_native_scoreboard::replaceToken;
+    assert(replaceToken("Bot_Byte (2),Bot_Byte,Epic|human|0","Bot_Byte","Unknown|42|0")=="Bot_Byte (2),Unknown|42|0,Epic|human|0");
+    assert(replaceToken("[\"Bot_Byte\",\"Bot_Byte (2)\"]","Bot_Byte","Unknown|42|0")=="[\"Unknown|42|0\",\"Bot_Byte (2)\"]");
+    assert(replaceToken("Bot_Byte_extra;Bot_Byte","Bot_Byte","Unknown|42|0")=="Bot_Byte_extra;Unknown|42|0");
+    assert(replaceToken("Bot_Byte","","Unknown|42|0")=="Bot_Byte");
+    nativeScoreboardStyleTests();
     cachedNativeNamesTests();
     nativePublicationTests();
     feedNameRefreshTests();

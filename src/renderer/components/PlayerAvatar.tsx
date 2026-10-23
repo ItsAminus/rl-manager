@@ -56,7 +56,7 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
       </div>
       {showBadge && (
         <div className={`player-avatar-ovr-tag ${tierClass}`}>
-          {overall}
+          {overall??'?'}
         </div>
       )}
     </div>

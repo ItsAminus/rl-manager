@@ -1,3 +1,4 @@
+import {realismSchema} from '../../main/club-economy';
 export function runMigration(db: any) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS careers (
@@ -407,6 +408,14 @@ export function runMigration(db: any) {
       earnedDate TEXT,year INTEGER,source TEXT,
       PRIMARY KEY(careerId,competitionId,playerId)
     );
+    CREATE TABLE IF NOT EXISTS trophy_ceremonies (
+      careerId TEXT,competitionId TEXT,winnerId TEXT,winnerName TEXT,earnedDate TEXT,seen INTEGER DEFAULT 0,
+      PRIMARY KEY(careerId,competitionId)
+    );
+    CREATE TABLE IF NOT EXISTS national_management (
+      careerId TEXT PRIMARY KEY,countryCode TEXT,nationId TEXT,nationName TEXT,
+      appointedDate TEXT,callups TEXT,tactics TEXT
+    );
     CREATE TABLE IF NOT EXISTS tournament_nodes (
       id TEXT PRIMARY KEY, competitionId TEXT, lane TEXT, round INTEGER, label TEXT,
       homeSource TEXT, awaySource TEXT, homeTeamId TEXT, awayTeamId TEXT, fixtureId TEXT
@@ -472,4 +481,5 @@ export function runMigration(db: any) {
     CREATE INDEX IF NOT EXISTS idx_fixtures_status_date ON fixtures(competitionId, status, scheduledDate);
   `);
   if(!db.prepare('PRAGMA table_info(transfers)').all().some((c:any)=>c.name==='careerId'))db.exec('ALTER TABLE transfers ADD COLUMN careerId TEXT');
+  realismSchema(db);
 }

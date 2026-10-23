@@ -3,6 +3,7 @@ import {v4 as uuid} from 'uuid';
 import {addDays} from '../game/career-rules';
 import {OpenStages} from './tournament-open-stages';
 import {seededGroupDraw} from '../game/official-competition-rules';
+import {ClubTournamentStages} from './club-tournament-stages';
 const parse=(s:string|null)=>{try{return s?JSON.parse(s):{};}catch{return {};}};
 const names=['A','B','C','D'];
 export const groupSeedBands=[[0,7,8,15],[1,6,9,14],[2,5,10,13],[3,4,11,12]];
@@ -22,7 +23,8 @@ export class Tournament {
   }
   prepare(id:string,teams:string[],start:string,config:any){
     config={...config,eventStart:config.eventStart||start};
-    if(config.rulesVersion&&['QUALIFIER','REGIONAL','LCQ','INVITATIONAL','EWC_LCQ','TIEBREAKER'].includes(config.kind)){
+    if(config.kind==='CLUB_KICKOFF'){new ClubTournamentStages(this.db,this).prepareKickoff(id,teams,start,config);return;}
+    if(config.rulesVersion&&['QUALIFIER','REGIONAL','LCQ','INVITATIONAL','EWC_LCQ','TIEBREAKER','CLUB_OPEN','CLUB_FINALE'].includes(config.kind)){
       new OpenStages(this.db,this).prepare(id,teams,start,config);return;
     }
     if(config.kind==='KICKOFF'&&teams.length===8){
@@ -183,6 +185,7 @@ export class Tournament {
   }
   progress(id:string,date:string){
     const state=this.db.prepare('SELECT * FROM tournament_state WHERE competitionId=?').get(id);if(!state)return;
+    if(parse(state.config).clubRules&&new ClubTournamentStages(this.db,this).progress(id,date,state))return;
     if(parse(state.config).rulesVersion&&new OpenStages(this.db,this).progress(id,date,state))return;
     if(state.phase==='play_in'){
       this.materialize(id,date,'play_in');
@@ -217,7 +220,7 @@ export class Tournament {
   placements(id:string){
     const details=this.details(id);if(!details)return null;
     const config=details.config,positions=new Map<string,number>(Object.entries(config.placements||{}).map(([id,p])=>[id,Number(p)]));
-    const nodes:any[]=details.nodes,final=nodes.find(n=>n.id===id+':F')||nodes.find(n=>n.id===id+':GF');
+    const nodes:any[]=details.nodes,final=nodes.find(n=>n.id===id+':RESET')||nodes.find(n=>n.id===id+':F')||nodes.find(n=>n.id===id+':GF');
     const loser=(n:any)=>n.homeScore>n.awayScore?n.awayTeamId:n.homeTeamId;
     if(final?.status==='completed'){positions.set(loser(final),2);positions.set(final.homeScore>final.awayScore?final.homeTeamId:final.awayTeamId,1);}
     for(const node of nodes)if(node.status==='completed'){

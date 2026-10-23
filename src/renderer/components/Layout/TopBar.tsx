@@ -8,13 +8,15 @@ import {playUiSound} from '../../audio/ui-sounds';
 export default function TopBar() {
   const navigate = useNavigate(), location = useLocation();
   const { toggleSidebar } = useUiStore();
-  const { isLoaded, currentDate, advanceToNextEvent, upcomingFixtures, unreadInboxCount } = useCareerStore();
+  const { isLoaded, currentDate, advanceToNextEvent, upcomingFixtures, unreadInboxCount,nationalStatus } = useCareerStore();
   const [busy, setBusy] = useState(false);
   const canGoBack = Number(window.history.state?.idx || 0) > 0;
   const goBack = () => { if (canGoBack) navigate(-1); };
-  const today = upcomingFixtures.find(f => f.scheduledDate <= currentDate);
+  const clubToday=upcomingFixtures.find(f=>f.scheduledDate<=currentDate);
+  const nationalToday=nationalStatus?.fixtures?.find((f:any)=>f.status!=='completed'&&f.scheduledDate<=currentDate);
+  const today=clubToday&&(!nationalToday||clubToday.scheduledDate<=nationalToday.scheduledDate)?clubToday:nationalToday;
   const continueCareer = async () => {
-    if (today) { navigate(`/match-day/${today.id}`); return; }
+    if (today) { navigate(`/${today.isNational?'national-match-day':'match-day'}/${today.id}`); return; }
     setBusy(true); try { await advanceToNextEvent();playUiSound('success'); } finally { setBusy(false); }
   };
   useEffect(() => {

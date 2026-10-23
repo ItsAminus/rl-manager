@@ -1,6 +1,7 @@
 {
   "name": "rl-manager",
-  "version": "1.1.0",
+  "version": "1.5.0",
+  "releaseType": "major",
   "description": "Rocket League esports management game",
   "main": "dist-electron/main.js",
   "author": "RL Manager Team",

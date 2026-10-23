@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCareerStore } from '../../stores/careerStore';
 import './LoadCareerPage.css';
-
 interface SaveMeta {
+  employment?: string;
   mode?:string;
   id: string;
   managerName: string;
@@ -14,14 +14,12 @@ interface SaveMeta {
   currentDate: string;
   updatedAt: string;
 }
-
 export const LoadCareerPage: React.FC = () => {
   const navigate = useNavigate();
-  const { loadCareer } = useCareerStore();
+  const { loadCareer, error } = useCareerStore();
   const [saves, setSaves] = useState<SaveMeta[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
   useEffect(() => {
     async function fetchSaves() {
       setLoading(true);
@@ -41,15 +39,13 @@ export const LoadCareerPage: React.FC = () => {
     }
     fetchSaves();
   }, []);
-
   const handleLoad = async () => {
-    if (!selectedId) return;
+    if (!selectedId||saves.find(s=>s.id===selectedId)?.employment==='dismissed') return;
     const ok = await loadCareer(selectedId);
     if (ok) {
       navigate('/dashboard');
     }
   };
-
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm('Are you sure you want to delete this career save?')) return;
@@ -66,7 +62,6 @@ export const LoadCareerPage: React.FC = () => {
       console.error('Failed to delete save', err);
     }
   };
-
   return (
     <div className="load-career-page">
       <div className="load-career-header">
@@ -78,8 +73,7 @@ export const LoadCareerPage: React.FC = () => {
           + NEW CAREER
         </button>
       </div>
-
-      <div className="load-career-content">
+      <div className="load-career-content">{error&&<p className="notice notice-error" role="alert">{error}</p>}
         {loading ? (
           <div className="loading-saves">Scanning career database...</div>
         ) : saves.length === 0 ? (
@@ -103,14 +97,12 @@ export const LoadCareerPage: React.FC = () => {
                   <div className="save-manager-name">{s.managerName}</div>
                   <div className="save-team-name">{s.teamName || s.teamId}</div>
                 </div>
-
                 <div className="save-meta-info">
                   <span className="save-badge region-badge">{s.region}</span>
-                  <span className="save-badge">{s.mode||'Manager Career'}</span>
+                  <span className="save-badge">{s.employment==='dismissed'?'Dismissed · career over':s.mode||'Manager Career'}</span>
                   <span className="save-badge difficulty-badge">{s.difficulty}</span>
                   <span className="save-date">In-Game: {s.currentDate}</span>
                 </div>
-
                 <div className="save-actions">
                   <span className="save-last-saved">
                     Saved: {new Date(s.updatedAt).toLocaleDateString()}
@@ -128,14 +120,13 @@ export const LoadCareerPage: React.FC = () => {
           </div>
         )}
       </div>
-
       <div className="load-footer">
         <button className="btn btn-secondary" onClick={() => navigate('/')}>
           Cancel
         </button>
         <button
           className="btn btn-primary load-btn"
-          disabled={!selectedId || saves.length === 0}
+          disabled={!selectedId || saves.length === 0 || saves.find(s=>s.id===selectedId)?.employment==='dismissed'}
           onClick={handleLoad}
         >
           RESUME CAREER

@@ -13,6 +13,11 @@ class BroadcastTelemetry:
                 titles=json.loads((Path(__file__).resolve().parents[1]/'data/player-titles.json').read_text(encoding='utf-8'))
                 for side in ('blue','orange'):
                     for player in self.context.get(side,{}).get('players',[]):
+                        # The main process resolves an equipped, earned career
+                        # award before constructing this payload. Preserve that
+                        # selection; an IRL account snapshot must not replace it.
+                        if player.get('title') and str(player.get('titleSource', '')).startswith('Career award · '):
+                            continue
                         record=titles.get(player.get('playerId'),{})
                         title=record.get('title','')
                         player['title']=title if title in record.get('titles',[]) else ''
@@ -20,6 +25,7 @@ class BroadcastTelemetry:
                 pass  # Retain the supplied context if the registry is unavailable.
         self.native_names={}
         self.comms=None
+        self.presentation=None
         self.native_ids={}
         self.target=Path(context['nativeStatePath']) if context and context.get('nativeStatePath') else None
         self.session=str(time.time_ns())
@@ -97,7 +103,7 @@ class BroadcastTelemetry:
             if p.get('playerId') in self.native_ids:p['nativeId']=self.native_ids[p['playerId']]
         data=dict(blue=int(packet.teams[0].score),orange=int(packet.teams[1].score),
                   remaining=float(info.game_time_remaining),overtime=bool(info.is_overtime),
-                  kickoff=bool(info.is_kickoff_pause),ended=bool(info.is_match_ended),players=players,comms=self.comms)
+                  kickoff=bool(info.is_kickoff_pause),ended=bool(info.is_match_ended),players=players,comms=self.comms,presentation=self.presentation)
         if self.target:
             self.latest={**data,'updated':time.time(),'session':self.session,'context':self.context}
             self.wake.set()

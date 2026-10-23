@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RatingBadge } from '../components/RatingBadge';
 import './StatisticsPage.css';
+import {useCareerStore} from '../../stores/careerStore';
 
 interface StatRow {
   rank: number;
@@ -18,16 +19,9 @@ interface StatRow {
 
 export const StatisticsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'goals' | 'assists' | 'saves' | 'demos'>('goals');
-  const [statsData, setStatsData] = useState<StatRow[]>([
-    { rank: 1, gamertag: 'zen', teamName: 'Team Vitality', ovr: 95, games: 12, goals: 21, assists: 14, saves: 28, shots: 44, demos: 11, mvps: 8 },
-    { rank: 2, gamertag: 'Vatira', teamName: 'Karmine Corp', ovr: 94, games: 12, goals: 18, assists: 16, saves: 31, shots: 39, demos: 8, mvps: 7 },
-    { rank: 3, gamertag: 'dralii', teamName: 'BDS', ovr: 92, games: 11, goals: 17, assists: 11, saves: 22, shots: 35, demos: 14, mvps: 5 },
-    { rank: 4, gamertag: 'Atow', teamName: 'Karmine Corp', ovr: 91, games: 12, goals: 15, assists: 18, saves: 19, shots: 31, demos: 12, mvps: 4 },
-    { rank: 5, gamertag: 'Firstkiller', teamName: 'Gen.G Mobil1', ovr: 93, games: 10, goals: 15, assists: 9, saves: 20, shots: 33, demos: 9, mvps: 5 },
-    { rank: 6, gamertag: 'BeastMode', teamName: 'G2 Stride', ovr: 93, games: 10, goals: 14, assists: 15, saves: 23, shots: 30, demos: 7, mvps: 4 },
-    { rank: 7, gamertag: 'Daniel', teamName: 'G2 Stride', ovr: 93, games: 10, goals: 13, assists: 12, saves: 27, shots: 28, demos: 10, mvps: 4 },
-    { rank: 8, gamertag: 'Rw9', teamName: 'Team Falcons', ovr: 92, games: 11, goals: 11, assists: 14, saves: 35, shots: 24, demos: 6, mvps: 5 },
-  ]);
+  const [statsData,setStatsData]=useState<StatRow[]>([]);
+  const {career,currentDate}=useCareerStore();
+  useEffect(()=>{if(career)window.api.stats.getPlayerLeaderboard(activeTab,100).then((rows:any[])=>setStatsData(rows.map((r,i)=>({...r,rank:i+1,ovr:r.overall}))));},[career?.id,currentDate,activeTab]);
 
   const sortedData = [...statsData].sort((a, b) => {
     if (activeTab === 'goals') return b.goals - a.goals;

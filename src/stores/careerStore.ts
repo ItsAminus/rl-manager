@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { Career, Team, Player, Fixture, CalendarEvent, InboxItem } from '../types';
 
 interface CareerState {
+  nationalStatus:any;
+  refreshNational:()=>Promise<void>;
+  careerEnded: string | null;
   career: Career | null;
   currentDate: string;
   team: Team | null;
@@ -25,6 +28,9 @@ interface CareerState {
 }
 
 export const useCareerStore = create<CareerState>((set, get) => ({
+  nationalStatus:null,
+  refreshNational:async()=>{if(!get().career)return;const res=await window.api.national.status();if(res.error)throw Error(res.error);set({nationalStatus:res});},
+  careerEnded: null,
   career: null,
   currentDate: '2025-09-01',
   team: null,
@@ -77,6 +83,7 @@ export const useCareerStore = create<CareerState>((set, get) => ({
           const fixtures = await window.api.fixtures.getUpcoming(res.career.teamId, res.career.currentDate);
           const unreadCount = await window.api.inbox.getUnreadCount(id);
           const teams = await window.api.teams.getAll();
+          const nationalStatus=await window.api.national.status();
 
           set({
             career: res.career,
@@ -84,6 +91,7 @@ export const useCareerStore = create<CareerState>((set, get) => ({
             team: res.team,
             roster: res.players,
             allTeams: teams,
+            nationalStatus:nationalStatus.error?null:nationalStatus,
             upcomingFixtures: fixtures,
             unreadInboxCount: unreadCount,
             isLoaded: true,
@@ -92,7 +100,7 @@ export const useCareerStore = create<CareerState>((set, get) => ({
           return true;
         }
       }
-      set({ loading: false });
+      set({ loading: false, error: 'This career cannot be loaded. Dismissed careers cannot be resumed.' });
       return false;
     } catch (err: any) {
       set({ loading: false, error: err.message });
@@ -115,12 +123,14 @@ export const useCareerStore = create<CareerState>((set, get) => ({
     if (!career || !window.api?.calendar) return null;
     try {
       const res = await window.api.calendar.advanceDay(career.id);
+      if(res.careerEnded){set({careerEnded:res.reason,currentDate:res.newDate});return null;}
       if (res.success && res.newDate) {
         set({ currentDate: res.newDate, career: { ...career, currentDate: res.newDate }, error: null });
         // Refresh upcoming fixtures and roster fatigue
         const fixtures = await window.api.fixtures.getUpcoming(career.teamId, res.newDate);
         const unreadCount = await window.api.inbox.getUnreadCount(career.id);
         await get().reloadRoster();
+        await get().refreshNational();
         set({ upcomingFixtures: fixtures, unreadInboxCount: unreadCount });
         return { events: res.events || [], fixtures: res.fixtures || [] };
       }
@@ -137,11 +147,13 @@ export const useCareerStore = create<CareerState>((set, get) => ({
     if (!career || !window.api?.calendar) return null;
     try {
       const res = await window.api.calendar.advanceToEvent(career.id);
+      if(res.careerEnded){set({careerEnded:res.reason,currentDate:res.newDate});return null;}
       if (res.success && res.newDate) {
         set({ currentDate: res.newDate, career: { ...career, currentDate: res.newDate }, error: null });
         const fixtures = await window.api.fixtures.getUpcoming(career.teamId, res.newDate);
         const unreadCount = await window.api.inbox.getUnreadCount(career.id);
         await get().reloadRoster();
+        await get().refreshNational();
         set({ upcomingFixtures: fixtures, unreadInboxCount: unreadCount });
         return { events: res.events || [], fixtures: res.fixtures || [] };
       }
@@ -168,6 +180,8 @@ export const useCareerStore = create<CareerState>((set, get) => ({
 
   unloadCareer: () => {
     set({
+      nationalStatus:null,
+      careerEnded: null,
       career: null,
       currentDate: '2025-09-01',
       team: null,

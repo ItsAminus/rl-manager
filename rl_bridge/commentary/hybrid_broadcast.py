@@ -181,6 +181,13 @@ class HybridBroadcast(ClipBroadcast):
         self.prepared_review = {}
         self.review_milestones = {}
         self.intro_enabled = bool((context or {}).get("blueTeam"))
+        from player_introductions import introduction_plan
+        self.presentation_plan = introduction_plan(context or {})
+        self.presentation_lines = {}
+        self.presentation_prepared = threading.Event()
+        self.presentation_finished = threading.Event()
+        if not self.presentation_plan:
+            self.presentation_finished.set()
         self.generation = 0
         self.history = deque(maxlen=40)
         self.topic_history = deque(maxlen=6)
@@ -287,6 +294,44 @@ class HybridBroadcast(ClipBroadcast):
         self.loading_thread = threading.Thread(target=self._loading_intro, name='loading-intro', daemon=True)
         self.loading_thread.start()
         self.log("Hybrid commentary: intro preparing in background; match launch continues")
+
+    def presentation_audio(self, index):
+        with self.story_lock:
+            return self.presentation_lines.get(index)
+
+    def play_presentation_audio(self, pcm):
+        if not self.player.busy:
+            self.player.play(pcm, interruptible=True)
+
+    def finish_player_showcase(self, played=False):
+        # Only showcase speech is playing at this point. A skip must not leave
+        # an introduction talking over the hosted connection or first kickoff.
+        self.player.interrupt()
+        self.presentation_finished.set()
+        if played:
+            self.intro_done = True
+            self.intro_enabled = False
+
+    def _prepare_player_showcase(self):
+        try:
+            for index, player in enumerate(self.presentation_plan):
+                if self.stopped.is_set() or self.presentation_finished.is_set():
+                    break
+                from introduction_voice_bank import load_player_audio, assemble_player_audio
+                pieces = load_player_audio(ROOT / 'player_intros', player, index,
+                         lambda path:self.bank._load(path, self.player.sample_rate, preserve_full=True))
+                if not pieces:
+                    continue
+                pcm = assemble_player_audio(pieces,self.player.sample_rate)
+                if 1 <= len(pcm) / self.player.sample_rate <= 59:
+                    with self.story_lock:
+                        self.presentation_lines[index] = pcm
+        except Exception as exc:
+            self.log(f'Player introduction speech unavailable ({exc}); player cards remain available')
+        finally:
+            self.presentation_prepared.set()
+        while not self.stopped.is_set() and not self.presentation_finished.wait(.1):
+            pass
 
     def _loading_intro(self):
         while not self.stopped.is_set() and not self.intro_done:
@@ -404,6 +449,7 @@ class HybridBroadcast(ClipBroadcast):
 
     def _generate(self):
         try:
+            self._prepare_player_showcase()
             self.speech = SpeechWorker(self.log, self.stopped)
             if self.intro_enabled:
                 self._make_script("caster_one", self.story.intro(), "intro", 0)
@@ -477,6 +523,7 @@ class HybridBroadcast(ClipBroadcast):
             self.intro_ready.set()
             self.postgame_ready.set()
         finally:
+            self.presentation_prepared.set()
             self.intro_prepared.set()
             self.postgame_complete.set()
             if self.selector:

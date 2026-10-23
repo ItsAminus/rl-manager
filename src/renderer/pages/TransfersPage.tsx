@@ -31,7 +31,7 @@ export const TransfersPage: React.FC = () => {
   const setSearch = (value: string) => updateView('search', value);
   const selectedRegion = params.get('region') || 'ALL';
   const setSelectedRegion = (value: string) => updateView('region', value);
-  const minOvr = Math.max(0, Math.min(100, Number(params.get('ovr') || 70) || 0));
+  const minOvr = Math.max(0, Math.min(100, Number(params.get('ovr') || 0) || 0));
   const setMinOvr = (value: number) => updateView('ovr', String(value));
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -69,7 +69,7 @@ export const TransfersPage: React.FC = () => {
 
   const filtered = displayList.filter((p) => {
     if (p.teamId === team?.id) return false;
-    if (p.overall < minOvr) return false;
+    if (minOvr>0 && (p.overall==null || p.overall<minOvr)) return false;
     if (selectedRegion !== 'ALL' && !matchesRegion(p.region, selectedRegion)) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -80,7 +80,7 @@ export const TransfersPage: React.FC = () => {
       );
     }
     return true;
-  }).sort((a, b) => b.overall - a.overall || b.potential - a.potential || a.gamertag.localeCompare(b.gamertag));
+  }).sort((a, b) => (b.overall??-1) - (a.overall??-1) || a.gamertag.localeCompare(b.gamertag));
 
   return (
     <div className="transfers-page">
@@ -91,7 +91,7 @@ export const TransfersPage: React.FC = () => {
             Negotiate player contracts, scout upcoming prospects, and sign world-class talent to bolster
             your 3v3 roster.
           </p>
-          <p className="text-muted" style={{fontSize:13}}>Real players and confirmed 2026 rosters. Ratings are estimates; open a dossier for sources and confidence.</p>
+          <p className="text-muted" style={{fontSize:13}}>Real players and confirmed 2026 rosters. Ratings are hidden until scouted. Regional missions uncover players; individual observation improves your knowledge.</p>
         </div>
 
         <div className="transfer-budget-pill">
@@ -154,10 +154,10 @@ export const TransfersPage: React.FC = () => {
         </select>
 
         <div className="min-ovr-control">
-          <span>Min OVR: {minOvr}</span>
+          <span>Confirmed OVR: {minOvr||'Include unknown'}</span>
           <input
             type="range"
-            min="65"
+            min="0"
             max="95"
             value={minOvr}
             onChange={(e) => setMinOvr(Number(e.target.value))}
@@ -187,10 +187,10 @@ export const TransfersPage: React.FC = () => {
             {filtered.slice(0, limit).map((p) => (
               <tr key={p.id}>
                 <td>
-                  <span title={p.ratingMethod || 'Gameplay rating estimate'}><RatingBadge rating={p.overall} size="sm" /></span>
+                  <span title={p.scoutKnowledge}><RatingBadge rating={p.overall} size="sm" />{p.overall==null&&<small>{p.estimatedOverall}</small>}</span>
                 </td>
                 <td>
-                  <strong className="pot-text">{p.potential}</strong>
+                  <strong className="pot-text">{p.estimatedPotential||p.potential||"?"}</strong>
                 </td>
                 <td>
                   <span
@@ -205,14 +205,14 @@ export const TransfersPage: React.FC = () => {
                 <td>{p.age ?? '—'}</td>
                 <td className="tendency-text">{p.preferredTendency}</td>
                 <td>${(p.marketValue || 80000).toLocaleString()}</td>
-                <td>${wageDemands(p).salary.toLocaleString()}/mo</td>
+                <td>{p.overall==null?'Ask agent':`$${wageDemands(p).salary.toLocaleString()}/mo`}</td>
                 <td>
                   <div className="actions-cell">
                     <button
                       className="btn-table-action btn-approach"
-                      disabled={!market.open || (!p.teamId && ['unverified', 'inactive'].includes(p.affiliationStatus || ''))} title={!p.teamId && p.affiliationStatus === 'unverified' ? 'Current affiliation and availability have not been verified.' : market.label} onClick={() => navigate(`/negotiate/${p.id}`)}
+                      disabled={(team?.cashBalance??0)<(p.teamId?(p.marketValue||0):0) || (!p.teamId && ['unverified', 'inactive'].includes(p.affiliationStatus || ''))} title={!p.teamId && p.affiliationStatus === 'unverified' ? 'Current affiliation and availability have not been verified.' : market.label} onClick={() => navigate(`/negotiate/${p.id}`)}
                     >
-                      Approach
+                      Contact agent
                     </button>
                     <button
                       className="btn-table-action"

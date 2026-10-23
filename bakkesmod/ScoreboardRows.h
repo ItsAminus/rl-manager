@@ -8,8 +8,8 @@
 
 namespace career_scoreboard {
 // Only the presentation column of the verified PRI table may be rewritten.
-// PlayerIDString is a primary key and must never be changed, even if it happens
-// to contain a bot's display name.
+// Name publication must not change PlayerIDString. Native avatar routing uses
+// a separate reversible UI key alias, paired with the scoreboard sort list.
 inline bool playerNameBinding(const std::string& column,int row,int verifiedRow,
         uint64_t table,uint64_t verifiedTable,const std::string& value,
         const std::string& original,const std::string& career) {

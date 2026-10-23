@@ -31,7 +31,7 @@ export class FlagshipFormatRepair {
    if([16,20].includes(entrants.length))return {required,canRepair:!inProgress,completedSeries,entrants,missing:0,target:entrants.length,inProgress,reason:inProgress?'Finish the current series before repairing this event.':'',successorId:successor.id,successorName:successor.name,drawDate:successor.drawDate,startDate:successor.startDate,fieldNote:`${successor.name} already exists in this season with its qualified field. Retire this duplicate league and continue that official event. Its entrants, draw date and results stay unchanged.`};
   }
   const existing=this.db.prepare('SELECT ce.teamId,ce.seed,t.name AS teamName,t.region FROM competition_entries ce JOIN teams t ON t.id=ce.teamId WHERE ce.competitionId=? ORDER BY ce.seed,ce.teamId').all(id);
-  const eligible=(teamId:string)=>!!this.db.prepare("SELECT t.id FROM teams t WHERE t.id=? AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id=t.id) AND NOT EXISTS(SELECT 1 FROM team_roster_sources s WHERE s.teamId=t.id AND s.status='inactive') AND (SELECT COUNT(*) FROM players p WHERE p.teamId=t.id)>=3").get(teamId);
+  const eligible=(teamId:string)=>!!this.db.prepare("SELECT t.id FROM teams t WHERE t.id=? AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id=t.id) AND NOT EXISTS(SELECT 1 FROM team_roster_sources s WHERE s.teamId=t.id AND s.status IN ('inactive','incomplete','disbanded')) AND (SELECT COUNT(*) FROM players p WHERE p.teamId=t.id)>=3").get(teamId);
   const target=event.stage==='WORLDS'&&existing.length===20?20:16;
   const entrants=existing.filter(r=>eligible(r.teamId)).slice(0,target).map(r=>({...r,qualification:'Confirmed place in this event'}));
   const candidates=new Map<string,any>();

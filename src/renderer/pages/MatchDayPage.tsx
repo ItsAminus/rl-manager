@@ -205,21 +205,21 @@ export const MatchDayPage: React.FC = () => {
   }, [fixtureId, team, roster, career]);
 
   // Forecast uses exactly the strengths, goal rates and overtime model used by simulation.
-  const homeAvg = homeStarters.length > 0 ? homeStarters.reduce((s, p) => s + p.overall, 0) / homeStarters.length : 80;
-  const awayAvg = awayStarters.length > 0 ? awayStarters.reduce((s, p) => s + p.overall, 0) / awayStarters.length : 80;
-  const forecast = homeStarters.length && awayStarters.length ? forecastGame(
+  const homeAvg = homeStarters.length > 0 && homeStarters.every(p=>p.overall!=null) ? homeStarters.reduce((s, p) => s + p.overall, 0) / homeStarters.length : null;
+  const awayAvg = awayStarters.length > 0 && awayStarters.every(p=>p.overall!=null) ? awayStarters.reduce((s, p) => s + p.overall, 0) / awayStarters.length : null;
+  const forecast = homeStarters.length && awayStarters.length && [...homeStarters,...awayStarters].every(p=>p.overall!=null) ? forecastGame(
     { ...team, players: homeStarters }, { ...opponentTeam, players: awayStarters }, tactics, {}
   ) : null;
   const formatProbability = (probability: number) => probability > .999 ? '>99.9' : probability < .001 ? '<0.1' : (probability * 100).toFixed(1);
-  const homeProb = formatProbability(forecast?.homeWinProbability ?? .5);
-  const awayProb = formatProbability(forecast?.awayWinProbability ?? .5);
+  const homeProb = forecast?formatProbability(forecast?.homeWinProbability ?? .5):'—';
+  const awayProb = forecast?formatProbability(forecast?.awayWinProbability ?? .5):'—';
   const seriesForecast = !loading && forecast ? forecastSeries(forecast.homeWinProbability, seriesFormatNum, homeScore, awayScore)
     : { homeWinProbability: .5, awayWinProbability: .5 };
   const formLabel = (value: number | undefined) => value === undefined ? 'Unknown'
     : value >= 80 ? 'Excellent' : value >= 60 ? 'Good' : value >= 40 ? 'Standard' : value >= 20 ? 'Poor' : 'Very poor';
   const oddsExplanation = (profile: NonNullable<typeof forecast>['homeProfile'] | undefined) => profile
     ? `Simulation estimate based on this starting lineup. Average OVR ${profile.averageOverall.toFixed(1)}; lineup balance -${profile.lineupPenalty.toFixed(1)}; form, fitness, morale and tactics ${profile.conditionAdjustment >= 0 ? '+' : ''}${profile.conditionAdjustment.toFixed(1)}. Live bot matches and human performance can differ.`
-    : 'Estimated chance of winning one simulated game, including overtime.';
+    : 'Scout the opposing lineup before estimating its strength. Hidden ratings still govern the actual simulation.';
 
   // Record completed game
   const recordGame = async (blueScore: number, orangeScore: number, playerStats: GamePlayerStats[], wasHuman: boolean) => {
@@ -274,7 +274,8 @@ export const MatchDayPage: React.FC = () => {
     const homeTeamSim = { ...team, id: fixture?.homeTeamId, players: homeStarters };
     const awayTeamSim = { ...opponentTeam, id: fixture?.awayTeamId, players: awayStarters };
 
-    const simRes = simulateGame(homeTeamSim, awayTeamSim, tactics, {});
+    const simRes = await window.api.management.simulation(career!.id,fixtureId!);
+    if(!simRes.success)throw Error(simRes.error);
 
     // Convert player stats to array
     const pStats: GamePlayerStats[] = [];
@@ -304,7 +305,8 @@ export const MatchDayPage: React.FC = () => {
       const homeTeamSim = { ...team, id: fixture?.homeTeamId, players: homeStarters };
       const awayTeamSim = { ...opponentTeam, id: fixture?.awayTeamId, players: awayStarters };
 
-      const simRes = simulateGame(homeTeamSim, awayTeamSim, tactics, {});
+      const simRes = await window.api.management.simulation(career!.id,fixtureId!);
+    if(!simRes.success)throw Error(simRes.error);
       const isBlueWin = simRes.blueScore > simRes.orangeScore;
       if (isBlueWin) curHome++;
       else curAway++;
@@ -519,7 +521,7 @@ export const MatchDayPage: React.FC = () => {
             <span className="side-badge side-blue">BLUE</span>
           </div>
           <div className="team-metrics-row">
-            <span>Avg OVR: <strong>{homeAvg.toFixed(1)}</strong></span>
+            <span>Avg OVR: <strong>{homeAvg?.toFixed(1)??'Unknown'}</strong></span>
             <span>•</span>
             <span>Career squad</span>
             <span>•</span>
@@ -527,7 +529,7 @@ export const MatchDayPage: React.FC = () => {
           </div>
           <div className="team-odds-row">
             <span title={oddsExplanation(forecast?.homeProfile)}>Game win chance: <strong>{homeProb}%</strong></span>
-            <span title="Estimated chance of winning the series from its current score, assuming the same lineup and readiness.">Series win chance: <strong>{formatProbability(seriesForecast.homeWinProbability)}%</strong></span>
+            <span title="Estimated chance of winning the series from its current score, assuming the same lineup and readiness.">Series win chance: <strong>{forecast?formatProbability(seriesForecast.homeWinProbability)+'%':'Scouting required'}</strong></span>
           </div>
 
           <div className="pitch-starters">
@@ -569,11 +571,11 @@ export const MatchDayPage: React.FC = () => {
           <div className="team-metrics-row">
             <span>Form: <strong>{formLabel(opponentTeam?.teamForm)}</strong></span>
             <span>•</span>
-            <span>Avg OVR: <strong>{awayAvg.toFixed(1)}</strong></span>
+            <span>Avg OVR: <strong>{awayAvg?.toFixed(1)??'Unknown'}</strong></span>
           </div>
           <div className="team-odds-row">
             <span title={oddsExplanation(forecast?.awayProfile)}>Game win chance: <strong>{awayProb}%</strong></span>
-            <span title="Estimated chance of winning the series from its current score, assuming the same lineup and readiness.">Series win chance: <strong>{formatProbability(seriesForecast.awayWinProbability)}%</strong></span>
+            <span title="Estimated chance of winning the series from its current score, assuming the same lineup and readiness.">Series win chance: <strong>{forecast?formatProbability(seriesForecast.awayWinProbability)+'%':'Scouting required'}</strong></span>
           </div>
 
           <div className="pitch-starters">
@@ -768,12 +770,12 @@ export const MatchDayPage: React.FC = () => {
               const assignment = botPlan.assignments?.find((a: any) => a.playerId === p.id);
               const human = p.id === selectedHumanPlayerId;
               return <div key={p.id} className="bot-assignment-row">
-                <div><strong>{p.gamertag} • {p.overall}</strong><br />
+                <div><strong>{p.gamertag} • {p.overall??p.estimatedOverall??'Unscouted'}</strong><br />
                   <small>{human ? 'You control this player' : `${assignment?.engine || 'Unassigned'} • ${p.preferredTendency}`}
                     {assignment?.luckyGame ? ' • Breakout game' : ''}</small>
                   {!human && assignment && <small className="bot-assignment-detail">{assignment.availableLevel}
                     {assignment.styleApplied ? ' • Ground support follows player style' : assignment.type === 'Rocket Host' ? ' • Hosted bot policy' : ' • Bot-pack policy'}</small>}
-                  {!human&&assignment?.performance&&<small className="bot-assignment-detail">{assignment.performance.state} · Form {Math.round(assignment.performance.form)} · Confidence {Math.round(assignment.performance.confidence)} · Fatigue {Math.round(assignment.performance.fatigue*100)} · Cohesion {Math.round(assignment.performance.cohesion*100)}</small>}
+                  {!human&&p.teamId===team?.id&&assignment?.performance&&<small className="bot-assignment-detail">{assignment.performance.state} · Form {Math.round(assignment.performance.form)} · Confidence {Math.round(assignment.performance.confidence)} · Fatigue {Math.round(assignment.performance.fatigue*100)} · Cohesion {Math.round(assignment.performance.cohesion*100)}</small>}
                 </div>
               </div>;
             })}

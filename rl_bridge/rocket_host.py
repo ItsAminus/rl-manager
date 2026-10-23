@@ -287,6 +287,8 @@ def _launch_once(context,rl_path,result_path,enable_commentary=True):
         if not status.get('rocketHostTelemetry'):raise RuntimeError('Update RL Manager HUD to 1.4 before using Rocket Host')
         rcon_commands(['rcon_refresh_allowed'])
         dispatcher=create_commentary(enable_commentary,context=context)
+        from player_introductions import run_showcase
+        run_showcase(manager,context,dispatcher,log)
         if dispatcher:dispatcher.prepare_intro()
         log('Requesting Rocket Host server in '+server['location']+' with all five assigned bots...')
         address=validate_join_address(read_url(request_url(server,context,assignments),timeout=90))
@@ -317,6 +319,8 @@ def _launch_once(context,rl_path,result_path,enable_commentary=True):
                         from game_window import focus_rocket_league
                         focus_rocket_league()
                         log_event('MATCH_STARTED',message='Rocket Host 3v3 ready: human and all five assigned bots confirmed')
+                        time.sleep(.15)
+                        focus_rocket_league()
                 if started:
                     reader.check_activity(raw)
                     packet=reader.packet(raw);hud.update(packet);highlights.update(packet)

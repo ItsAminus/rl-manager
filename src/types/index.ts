@@ -237,6 +237,9 @@ export interface Contract {
 }
 
 export interface Player {
+  lastScouted?: string;
+  estimatedOverall?: string;
+  estimatedPotential?: string;
   id: string;
   gamertag: string;
   realName: string;

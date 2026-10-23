@@ -263,7 +263,7 @@ def finish_played_match(packet, result_file, dispatcher, incidents=None):
     return result
 
 
-def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Path | None = None, enable_commentary: bool = True, commentary=None, broadcast_context=None,manual_bakkesmod_confirmation=False):
+def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Path | None = None, enable_commentary: bool = True, commentary=None, broadcast_context=None,manual_bakkesmod_confirmation=False,presentation_context=None):
     from rlbot.setup_manager import SetupManager, ROCKET_LEAGUE_PROCESS_INFO
     from game_launcher import launcher_preference
 
@@ -293,10 +293,14 @@ def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Pat
     log_event("STATUS", message="Loading 3v3 match configuration...")
     from bot_startup import BotReadiness, receive_metadata, start_with_ready_bots
     readiness = BotReadiness(match_cfg)
-    manager.load_match_config(match_cfg)
 
     # Preload recordings and open the audio device before kickoff.
     dispatcher = commentary or create_commentary(enable_commentary and monitor)
+    from player_introductions import run_showcase
+    if monitor:
+        run_showcase(manager, presentation_context or {}, dispatcher,
+                     lambda message: log_event('STATUS', message=message))
+    manager.load_match_config(match_cfg)
     if dispatcher and hasattr(dispatcher, "prepare_intro"):
         dispatcher.prepare_intro()
     from rlbot.utils.structures.game_data_struct import GameTickPacket
@@ -328,6 +332,10 @@ def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Pat
     from game_window import focus_rocket_league
     focus_rocket_league()
     log_event("MATCH_STARTED", message="3v3 offline match successfully started in Rocket League!")
+    # Let the app retire its loading window before restoring exclusive-fullscreen
+    # focus. A focus request made while that window owns the desktop can fail.
+    time.sleep(.15)
+    focus_rocket_league()
 
     if not monitor:
         log_event("STATUS", message="Match running in background.")
@@ -469,6 +477,7 @@ def main():
             commentary=commentary,
             broadcast_context=config_data.get('broadcast'),
             manual_bakkesmod_confirmation=bool(config_data.get('bakkesmodConfirmation')),
+            presentation_context=context,
         )
     finally:
         if commentary:

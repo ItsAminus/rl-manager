@@ -37,6 +37,8 @@ def main():
     parser.add_argument('--resume', action='store_true', help='Resume this release, preserving verified assets')
     parser.add_argument('--workers', type=int, default=3)
     parser.add_argument('--keep-draft', action='store_true', help='Upload a subset without publishing the release')
+    parser.add_argument('--target', help='Exact source commit for the release tag')
+    parser.add_argument('--major', action='store_true', help='Label this as a major feature release')
     args = parser.parse_args()
     if args.repository.count('/') != 1:
         raise ValueError('Use owner/repository')
@@ -76,8 +78,12 @@ def main():
         if not release:
             raise RuntimeError('No matching release to resume.')
     else:
-        release = api('POST', route + '/releases', {'tag_name': tag, 'name': 'RL Manager ' + args.version,
-                                                  'body': notes, 'draft': True})
+        payload={'tag_name':tag,'name':'RL Manager '+args.version+(' — MAJOR RELEASE' if args.major else ''),'body':notes,'draft':True}
+        if args.target:
+            import re
+            if not re.fullmatch(r'[a-f0-9]{40}',args.target):raise ValueError('Release target must be a full commit SHA')
+            payload['target_commitish']=args.target
+        release = api('POST', route + '/releases', payload)
     upload = urllib.parse.urlsplit(release['upload_url'].split('{')[0])
     existing = {a['name']: a for a in api('GET', route + '/releases/' + str(release['id']) + '/assets?per_page=100')}
     def upload_file(file):
@@ -126,7 +132,7 @@ def main():
     files = [p for p in sorted(args.assets.iterdir()) if p.is_file()]
     with ThreadPoolExecutor(max_workers=max(1, min(4, args.workers))) as pool:
         receipts = list(pool.map(upload_file, files))
-    published = release if args.keep_draft else api('PATCH', route + '/releases/' + str(release['id']), {'draft': False})
+    published = release if args.keep_draft else api('PATCH', route + '/releases/' + str(release['id']), {'draft': False,'make_latest':'true'})
     # Draft downloads use temporary "untagged" URLs. Read the final URLs after
     # publishing rather than returning links that change with release state.
     final_assets = {a['name']: a for a in api('GET', route + '/releases/' + str(release['id']) + '/assets?per_page=100')}
