@@ -146,6 +146,30 @@ class StartupTests(unittest.TestCase):
         self.assertNotEqual(newer.folder, self.barrier.folder)
         self.assertEqual(newer.ready(), set())
 
+    def test_reordered_live_slots_report_the_configured_bot_identity(self):
+        # Human selected in lineup slot 2, but spawned as car 0. Bots are
+        # shifted to cars 1 and 2, while the other team keeps cars 3..5.
+        players=[SimpleNamespace(bot=i!=2,rlbot_controlled=i!=2,name=f'Pro {i}',
+                                 config_path=str(self.original)) for i in range(6)]
+        barrier=BotReadiness(SimpleNamespace(player_configs=players),root=self.root/'reordered')
+        self.assertEqual(set(barrier.expected),{0,1,3,4,5})
+        for configured,live in ((0,1),(1,2),(3,3),(4,4),(5,5)):
+            cfg=configparser.ConfigParser();cfg.read(players[configured].config_path)
+            cls=import_agent(cfg.get('Locations','python_file')).get_loaded_class()
+            agent=cls(players[configured].name,0 if configured<3 else 1,live)
+            agent.initialize_agent()
+            with self.assertRaisesRegex(RuntimeError,'inference failed'):
+                agent.get_output('fail')
+            self.assertNotIn(configured,barrier.ready())
+            agent.get_output('okay')
+            marker=json.loads((barrier.folder/f'{configured}.json').read_text())
+            self.assertEqual(marker['runtimeIndex'],live)
+            self.assertEqual(marker['name'],players[configured].name)
+        self.assertEqual(barrier.ready(),set(barrier.expected))
+        self.assertFalse((barrier.folder/'2.json').exists()) # never wait for human
+        with patch('bot_startup.receive_metadata'):
+            barrier.wait(self.manager(),lambda _:None)
+
     def test_metadata_drain_never_waits_on_empty_queue(self):
         manager = SimpleNamespace(agent_metadata_queue=Mock(), agent_metadata_map={},
                                   num_metadata_received=0, logger=Mock(), helper_process_manager=Mock())

@@ -10,7 +10,7 @@ const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).diges
 for(const file of mediaFiles){
  if(hash(path.join(root,'public/competitions',file))!==hash(path.join(resources,'app.asar.unpacked/public/competitions',file)))throw Error('Packaged competition asset differs: '+file);
 }
-for(const file of ['game_launcher.py','launcher.py','rocket_host.py','bakkesmod_startup.py']){
+for(const file of ['game_launcher.py','launcher.py','rocket_host.py','bakkesmod_startup.py','bot_startup.py']){
  if(hash(path.join(root,'rl_bridge',file))!==hash(path.join(resources,'rl_bridge',file)))throw Error('Packaged bridge differs: '+file);
 }
 if(hash(path.join(root,'bakkesmod/build/RLManagerHUD.dll'))!==hash(path.join(resources,'career-hud/RLManagerHUD.dll')))throw Error('Packaged HUD differs from the verified build');
@@ -76,7 +76,7 @@ try{
   })`));
  }
  await run('window.api.app.quit()');
- const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,nationalManagementAPI:true,managerTeamSearch:true,teamSorts:options,selectableTeams:selectable.length,competitionAssetHashes:mediaFiles.length,bridgeHashes:4,nativeHUDHash:true,decodedVideos};
+ const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,nationalManagementAPI:true,managerTeamSearch:true,teamSorts:options,selectableTeams:selectable.length,competitionAssetHashes:mediaFiles.length,bridgeHashes:5,nativeHUDHash:true,decodedVideos};
  fs.writeFileSync(path.join(root,'release',version,'release-check.json'),JSON.stringify(result,null,2));
  console.log(JSON.stringify({...result,folder}));
 }catch(error){console.error(error.stack);process.exitCode=1;}finally{socket?.close();if(proc.exitCode===null)proc.kill();}

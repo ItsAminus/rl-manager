@@ -26,12 +26,15 @@ def receive_metadata(manager):
     return received
 
 
-def mark_ready(folder, index, name):
+def mark_ready(folder, index, name, runtime_index=None):
     # Called only after initialize_agent AND a successful get_output. Metadata
     # alone arrives earlier and does not prove that the neural network is ready.
     path = Path(folder) / f"{index}.json"
     temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps({"index": index, "name": name}), encoding="utf-8")
+    # index is the configured slot. Rocket League may assign a different live
+    # car index when spawning the human; readiness must not depend on that order.
+    temporary.write_text(json.dumps({"index": index, "name": name,
+                                     "runtimeIndex": index if runtime_index is None else runtime_index}), encoding="utf-8")
     temporary.replace(path)
 
 
@@ -86,7 +89,7 @@ class BotReadiness:
                 "        controls = self._manager_tactics.apply(packet, controls)\n"
                 "        self._manager_tactics.take_ack()\n"
                 "        if not getattr(self, '_manager_ready', False):\n"
-                f"            mark_ready({str(self.folder)!r}, self.index, self.name)\n"
+                f"            mark_ready({str(self.folder)!r}, {index}, self.name, runtime_index=self.index)\n"
                 "            self._manager_ready = True\n"
                 "        return controls\n"
                 "    def handle_quick_chat(self, index, team, quick_chat):\n"
