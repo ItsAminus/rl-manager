@@ -28,7 +28,7 @@ The separate `RL.Manager.1.5.2.Setup.exe` file updates the app. It is **not the 
 - **Windows 10 or Windows 11, 64-bit.**
 - **Rocket League already installed** through Epic Games or Steam. Launch it once and sign in to your account.
 - **[7-Zip for Windows x64](https://www.7-zip.org/)** installed, to extract the download.
-- **At least 30 GB of free space** for the download, extraction and installation, in addition to Rocket League. The four-part download is about **7 GB**.
+- **Preferably 10-20GB of free space** for the download, extraction and installation, in addition to Rocket League. The four-part download is about **7 GB**.
 - An internet connection for downloading, game sign-in, BakkesMod checks and Rocket Host matches, plus working graphics/audio drivers.
 - A PC capable of running Rocket League. **An NVIDIA GPU is not required:** AMD/Intel users can use CPU-generated commentary with the same Caster One and Caster Two voices. CPU voice generation can be slower.
 
