@@ -4,6 +4,7 @@ import { useCareerStore } from '../../stores/careerStore';
 import { RatingBadge } from '../components/RatingBadge';
 import { getPlayerPhotoCredit, getPlayerPhotoKind } from '../utils/player-avatars';
 import { PlayerAvatar } from '../components/PlayerAvatar';
+import { PlayerIdentityEditor } from '../components/PlayerIdentityEditor';
 import { FormIndicator } from '../components/FormIndicator';
 import { AttributeBar } from '../components/AttributeBar';
 import { RadarChart, RadarDataPoint } from '../components/RadarChart';
@@ -159,6 +160,9 @@ export const PlayerProfilePage: React.FC = () => {
       </div>
 
       {/* Action Buttons Toolbar */}
+      {career&&<PlayerIdentityEditor key={player.id} playerId={player.id} onSaved={async message=>{
+        setStatusMsg(message);setPlayer(await window.api.players.getById(player.id));await reloadRoster();
+      }}/>}
       {!!player.careerHonours?.length&&<section className="card" style={{marginBottom:16,padding:20}}><h3>Career honours</h3><p className="text-muted">Earned in this save.</p>{player.careerHonours.map(h=><div className="list-row" key={h.competitionId}><span><strong>{h.competitionName} — Champion</strong><small>{h.title||'Championship honour · no official player title'}</small></span><span>{h.earnedDate}</span></div>)}</section>}
       {player.ratingMethod && <div className="card" style={{ marginBottom: 16, padding: 16 }}>
         <strong>Rating review · {player.ratingReviewedAt} · {player.ratingConfidence === 'low' || player.ratingConfidence === 'unknown' ? 'Provisional estimate' : 'Recent LAN evidence'}</strong>

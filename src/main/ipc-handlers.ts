@@ -1,4 +1,5 @@
 import {ClubEconomy} from './club-economy';
+import {PlayerIdentity,type IdentityPreview} from './player-identity';
 import {applyTeamStatusAudit,selectableTeams} from './team-pool';
 import {RecruitmentNetwork} from './recruitment-network';
 import { ipcMain, dialog, app, BrowserWindow } from 'electron';
@@ -441,6 +442,39 @@ export function setupIpcHandlers() {
   // ============================================================
   // Player Operations
   // ============================================================
+  const identityImports=new Map<string,{careerId:string;preview:IdentityPreview;created:number}>();
+  const identityEditor=()=>{
+    activeCareer();
+    if(practiceActive)throw Error('Finish or skip the tutorial before editing career data.');
+    if(matchHandoff.busy)throw Error('Finish the live series before editing player information.');
+    return new PlayerIdentity(db,()=>{
+      const file=getDbPath(),folder=path.join(path.dirname(file),'identity-backups');
+      fs.mkdirSync(folder,{recursive:true});
+      fs.writeFileSync(path.join(folder,`${activeCareerId}-${Date.now()}-${uuidv4()}.sqlite`),Buffer.from(db.exportBinary()));
+    });
+  };
+  handle('players:identity:get',(_,id:string)=>identityEditor().get(id));
+  handle('players:identity:save',(_,id:string,details:any)=>{
+    const editor=identityEditor();
+    if(!details||typeof details!=='object'||Array.isArray(details))throw Error('Enter player information.');
+    const preview=editor.preview([{realName:details.realName,age:details.age,nationality:details.nationality,id}]);
+    return {updated:editor.apply(preview)};
+  });
+  handle('players:identity:preview',(_,text:string)=>{
+    const editor=identityEditor();
+    if(typeof text!=='string'||Buffer.byteLength(text,'utf8')>32*1024*1024)throw Error('Choose a JSON file smaller than 32 MB.');
+    let input;try{input=JSON.parse(text);}catch{throw Error('This file is not valid JSON.');}
+    const preview=editor.preview(input),token=uuidv4();
+    for(const [key,entry] of identityImports)if(Date.now()-entry.created>15*60*1000)identityImports.delete(key);
+    if(identityImports.size>=5)identityImports.delete(identityImports.keys().next().value!);
+    identityImports.set(token,{careerId:activeCareerId!,preview,created:Date.now()});
+    return {token,...preview};
+  });
+  handle('players:identity:apply',(_,token:string)=>{
+    const editor=identityEditor(),entry=identityImports.get(token);
+    if(!entry||entry.careerId!==activeCareerId||Date.now()-entry.created>15*60*1000)throw Error('Import preview expired or belongs to another career. Review the file again.');
+    const updated=editor.apply(entry.preview);identityImports.delete(token);return {updated};
+  });
   handle('players:getAll', async () => {
     try {
       let players = db.prepare(`

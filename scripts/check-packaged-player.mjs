@@ -29,6 +29,7 @@ try{
  const info=await run('window.api.app.playerInfo()');if(!info.packaged||info.version!==version)throw Error('Wrong packaged identity: '+JSON.stringify(info));
  if(!await run("typeof window.api.competitions.repairFormat==='function'"))throw Error('Tournament repair API missing');
  if(!await run("typeof window.api.rlbot.confirmBakkesmod==='function'"))throw Error('BakkesMod confirmation API missing');
+ if(!await run("typeof window.api.players.identity?.preview==='function'&&typeof window.api.players.identity?.save==='function'"))throw Error('Player information editor API missing');
  const denied=await run("window.api.db.run('UPDATE players SET overall=1').then(()=>false,()=>true)");if(!denied)throw Error('Packaged database editor still accessible');
  await run("document.querySelector('.tour-intro .tour-primary').click()");await wait("!!document.querySelector('.tour-root[data-step=office]')&&!!document.querySelector('.overview-metrics')");
  const emblem=await run("(async()=>{const el=document.querySelector('.nav-item[href=\"#/social\"] img');if(!el)throw Error('Chirp emblem missing');await el.decode();return el.naturalWidth;})()");if(emblem<500)throw Error('Packaged Chirp image did not load');
@@ -75,8 +76,26 @@ try{
    video.play().catch(error=>{clearTimeout(timer);reject(error);});
   })`));
  }
+ // Verify the public identity editor in a real disposable career, without SQL access.
+ const identityCareer=await run(`window.api.career.create({managerName:'Packaged identity check',teamId:${JSON.stringify(selectable.find(t=>t.name==='Team Vitality')?.id||selectable[0].id)},region:'Europe',difficulty:'Medium',mode:'Manager Career'})`);
+ if(!identityCareer.success)throw Error('Could not create identity test career: '+identityCareer.error);
+ await run("location.hash='/career/load'");await wait("document.querySelectorAll('.save-item-card').length===1");
+ await run("document.querySelector('.save-item-card').click()");await run("document.querySelector('.load-btn').click()");await wait("location.hash==='#/dashboard'");
+ const identityPlayer=await run(`(async()=>{const c=await window.api.career.load(${JSON.stringify(identityCareer.id)});return c.players[0];})()`);
+ await run(`location.hash='/player/'+${JSON.stringify(identityPlayer.id)}`);await wait("!!document.querySelector('.identity-editor')");
+ await run("document.querySelector('.identity-heading button').click()");await wait("!!document.querySelector('.identity-fields input')");
+ await run("(()=>{const input=document.querySelector('.identity-fields input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'Packaged identity correction');input.dispatchEvent(new Event('input',{bubbles:true}));})()");
+ await run("document.querySelector('.identity-editor form').requestSubmit()");await wait("document.querySelector('.header-realname')?.textContent.includes('Packaged identity correction')");
+ const importJson=JSON.stringify([{id:identityPlayer.id,realName:'Packaged import correction',overall:1,teamId:'ignored'}]);
+ await run(`(()=>{document.querySelector('.identity-import').open=true;const transfer=new DataTransfer();transfer.items.add(new File([${JSON.stringify(importJson)}],'corrections.json',{type:'application/json'}));const file=document.querySelector('.identity-file input');file.files=transfer.files;file.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+ await wait("!!document.querySelector('.identity-preview')");
+ if(await run(`(await window.api.players.identity.get(${JSON.stringify(identityPlayer.id)})).realName!=='Packaged identity correction'`))throw Error('Import applied before review');
+ await run("document.querySelector('.identity-buttons .btn-primary').click()");await wait("document.querySelector('.header-realname')?.textContent.includes('Packaged import correction')");
+ const afterIdentity=await run(`window.api.players.getById(${JSON.stringify(identityPlayer.id)})`);
+ if(afterIdentity.overall!==identityPlayer.overall||afterIdentity.teamId!==identityPlayer.teamId)throw Error('Identity import changed gameplay fields');
+ if(fs.readdirSync(path.join(folder,'database/careers/identity-backups')).filter(f=>f.endsWith('.sqlite')).length!==2)throw Error('Identity backups missing');
  await run('window.api.app.quit()');
- const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,nationalManagementAPI:true,managerTeamSearch:true,teamSorts:options,selectableTeams:selectable.length,competitionAssetHashes:mediaFiles.length,bridgeHashes:5,nativeHUDHash:true,decodedVideos};
+ const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,nationalManagementAPI:true,managerTeamSearch:true,teamSorts:options,selectableTeams:selectable.length,competitionAssetHashes:mediaFiles.length,bridgeHashes:5,nativeHUDHash:true,playerInformationEditor:true,identityImportPreviewAndApply:true,identityBackups:2,decodedVideos};
  fs.writeFileSync(path.join(root,'release',version,'release-check.json'),JSON.stringify(result,null,2));
  console.log(JSON.stringify({...result,folder}));
 }catch(error){console.error(error.stack);process.exitCode=1;}finally{socket?.close();if(proc.exitCode===null)proc.kill();}

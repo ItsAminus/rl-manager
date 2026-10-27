@@ -1,0 +1,58 @@
+// Exercise real IPC, isolated career files, and the React editor without touching user saves.
+const {app}=require('electron'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),folder=fs.mkdtempSync(path.join(root,'scratch/identity-check-'));
+process.env.RLM_USER_DATA=folder;app.disableHardwareAcceleration();const windows=[];
+app.on('browser-window-created',(_,win)=>{windows.push(win);win.show=()=>{};win.focus=()=>{};});
+require('../dist-electron/main.js');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{let code=0;try{
+  let win;
+  for(let i=0;i<900;i++){win=windows.find(w=>!w.isDestroyed()&&w.webContents.getURL().includes('/dist/index.html'));if(win)break;await delay(100);}
+  if(!win)throw Error('No main window');const run=async s=>{
+    const result=await win.webContents.executeJavaScript(`(async()=>{try{return {value:await (${s})};}catch(e){return {failure:e.message,stack:e.stack};}})()`);
+    if(result.failure)throw Error(result.failure+'\n'+result.stack);return result.value;
+  };
+  const wait=async s=>{for(let i=0;i<450;i++){if(await run(s))return;await delay(100);}throw Error('Timed out: '+s);};
+  await wait('!!window.api?.players?.identity');
+  await wait("!!document.querySelector('.tour-intro .tour-secondary')");
+  await run("document.querySelector('.tour-intro .tour-secondary').click()");
+  await wait("!document.querySelector('.tour-intro')");
+  const careers=await run(`(async()=>{await window.api.tutorial.finish('skipped');const teams=await window.api.teams.getSelectable(),team=teams.find(t=>t.name==='Team Vitality')||teams[0];const config={managerName:'Identity test',teamId:team.id,region:team.region,difficulty:'Medium',mode:'Manager Career'};const a=await window.api.career.create(config),b=await window.api.career.create({...config,managerName:'Other career'});if(!a.success||!b.success)throw Error(JSON.stringify([a,b]));return {a:a.id,b:b.id};})()`);
+  await run("location.hash='/career/load'");await wait("document.querySelectorAll('.save-item-card').length===2");
+  await run("(()=>{[...document.querySelectorAll('.save-item-card')].find(e=>e.textContent.includes('Identity test')).click();})()");
+  await run("document.querySelector('.load-btn').click()");
+  await wait("location.hash==='#/dashboard'");
+  const player=await run(`(async()=>{const c=await window.api.career.load(${JSON.stringify(careers.a)});return c.players?.[0]|| (await window.api.players.getByTeam(c.team.id))[0];})()`);
+  if(!player?.id)throw Error('No player');const id=player.id;
+  const original=await run(`window.api.players.identity.get(${JSON.stringify(id)})`);
+  await run(`location.hash='/player/'+${JSON.stringify(id)}`);await wait("!!document.querySelector('.identity-editor')");
+  await run("document.querySelector('.identity-heading button').click()");await wait("!!document.querySelector('.identity-fields input')");
+  for(const [i,value] of ['Local Identity Test','24','GB'].entries())await run(`(()=>{const field=document.querySelectorAll('.identity-fields input')[${i}];Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)});field.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await run("document.querySelector('.identity-editor').scrollIntoView({block:'start'})");await delay(150);
+  fs.writeFileSync(path.join(folder,'edit-form.png'),(await win.webContents.capturePage()).toPNG());
+  await run("document.querySelector('.identity-editor form').requestSubmit()");
+  await wait("document.querySelector('.header-realname')?.textContent.includes('Local Identity Test')");
+  if(await run(`(await window.api.players.identity.get(${JSON.stringify(id)})).age!==24`))throw Error('Editor did not save age');
+  const input=JSON.stringify([{id,realName:'Imported Identity Test',age:25,nationality:'FR',overall:1,teamId:'bad'}]);
+  await run(`(()=>{document.querySelector('.identity-import').open=true;const transfer=new DataTransfer();transfer.items.add(new File([${JSON.stringify(input)}],'corrections.json',{type:'application/json'}));const file=document.querySelector('.identity-file input');file.files=transfer.files;file.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+  await wait("!!document.querySelector('.identity-preview')");
+  await run("document.querySelector('.identity-editor').scrollIntoView({block:'start'})");await delay(150);
+  fs.writeFileSync(path.join(folder,'import-preview.png'),(await win.webContents.capturePage()).toPNG());
+  if(await run(`(await window.api.players.identity.get(${JSON.stringify(id)})).realName!=='Local Identity Test'`))throw Error('Import applied without review');
+  await run("document.querySelector('.identity-buttons .btn-primary').click()");
+  await wait("document.querySelector('.header-realname')?.textContent.includes('Imported Identity Test')");
+  const current=await run(`window.api.players.getById(${JSON.stringify(id)})`);
+  if(current.overall!==player.overall||current.teamId!==player.teamId)throw Error('Import changed gameplay fields');
+  await run(`window.api.career.load(${JSON.stringify(careers.b)})`);
+  const other=await run(`window.api.players.identity.get(${JSON.stringify(id)})`);
+  if(other.realName!==original.realName||other.age!==original.age)throw Error('Other career changed');
+  const preview=await run(`window.api.players.identity.preview(${JSON.stringify(input)})`);
+  await run(`window.api.career.load(${JSON.stringify(careers.a)})`);
+  const rejected=await run(`window.api.players.identity.apply(${JSON.stringify(preview.token)}).then(()=>false,()=>true)`);
+  if(!rejected)throw Error('Import token crossed careers');
+  const backupFolder=path.join(folder,'database/careers/identity-backups');
+  if(fs.readdirSync(backupFolder).filter(f=>f.endsWith('.sqlite')).length!==2)throw Error('Expected two automatic backups');
+  await run("document.querySelector('.identity-editor').scrollIntoView({block:'center'})");await delay(200);
+  const screenshot=path.join(folder,'identity-editor.png');fs.writeFileSync(screenshot,(await win.webContents.capturePage()).toPNG());
+  console.log(JSON.stringify({passed:true,editSaved:true,importPreviewAndApply:true,gameplayPreserved:true,otherCareerUnchanged:true,staleCareerTokenRejected:true,automaticBackups:2,screenshot}));
+}catch(error){code=1;console.error(error.stack);}finally{app.exit(code);}})();

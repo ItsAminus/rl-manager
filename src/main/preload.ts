@@ -28,6 +28,12 @@ const api = {
 
   // Player Operations
   players: {
+    identity: {
+      get:(id:string)=>ipcRenderer.invoke('players:identity:get',id),
+      save:(id:string,details:any)=>ipcRenderer.invoke('players:identity:save',id,details),
+      preview:(text:string)=>ipcRenderer.invoke('players:identity:preview',text),
+      apply:(token:string)=>ipcRenderer.invoke('players:identity:apply',token),
+    },
     getAll: () => ipcRenderer.invoke('players:getAll'),
     getById: (id: string) => ipcRenderer.invoke('players:getById', id),
     getByTeam: (teamId: string) => ipcRenderer.invoke('players:getByTeam', teamId),
