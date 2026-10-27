@@ -14,7 +14,7 @@ DOWNLOAD ALL FOUR FILES (about 7.3 GB total)
 3. RL-Manager-Complete-1.0.8.7z.003
 4. RL-Manager-Complete-1.0.8.7z.004
 
-Get them from https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.0.8
+Get them from https://github.com/ItsAminus/rl-manager/releases/tag/v1.0.8
 Keep all four together in ONE folder. Do not rename them.
 These are parts of ONE download, not four installers.
 
@@ -51,6 +51,6 @@ FIRST MATCH
   uses Rocket Host for eligible matches; it may be unstable or laggy.
 
 HELP
-Full guide: https://github.com/MyMedicalCenters/rl-manager#start-here-first-time-installation
+Full guide: https://github.com/ItsAminus/rl-manager#start-here-first-time-installation
 Audio problems: run Test match audio, then check the Windows volume mixer/default output.
 Support logs: Settings > Help & about > Open support logs.

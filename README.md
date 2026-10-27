@@ -9,7 +9,7 @@ Build your Rocket League career in **Manager Career** or take a fixed squad from
 
 **Latest version: 1.5.2 · Windows PC only**
 
-**[Download the 1.5.2 update installer](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.2/RL.Manager.1.5.2.Setup.exe)** · [Release notes](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.2)
+**[Download the 1.5.2 update installer](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.2/RL.Manager.1.5.2.Setup.exe)** · [Release notes](https://github.com/ItsAminus/rl-manager/releases/tag/v1.5.2)
 
 1.5.2 adds a personal player-information editor and JSON import. Open a player's profile in Manager Career to correct real name, age or nationality in your current save, or preview and import an edited `players.json`. Changes apply immediately, with automatic backups, and leave other saves and gameplay attributes untouched. [Editor guide](docs/PLAYER_INFORMATION_EDITOR.md).
 
@@ -36,14 +36,14 @@ The separate `RL.Manager.1.5.2.Setup.exe` file updates the app. It is **not the 
 
 ### 2. Download ALL FOUR parts
 
-Open the **[complete 1.5.0 download page](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.0)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.5.2:
+Open the **[complete 1.5.0 download page](https://github.com/ItsAminus/rl-manager/releases/tag/v1.5.0)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.5.2:
 
 | Download | File | Approximate size |
 | --- | --- | --- |
-| [Part 1](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.001) | `RL-Manager-Complete-1.5.0.7z.001` | 1.99 GB |
-| [Part 2](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.002) | `RL-Manager-Complete-1.5.0.7z.002` | 1.99 GB |
-| [Part 3](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.003) | `RL-Manager-Complete-1.5.0.7z.003` | 1.99 GB |
-| [Part 4](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | Remaining part; see GitHub size |
+| [Part 1](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.001) | `RL-Manager-Complete-1.5.0.7z.001` | 1.99 GB |
+| [Part 2](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.002) | `RL-Manager-Complete-1.5.0.7z.002` | 1.99 GB |
+| [Part 3](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.003) | `RL-Manager-Complete-1.5.0.7z.003` | 1.99 GB |
+| [Part 4](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | Remaining part; see GitHub size |
 
 **Put all four files in the same folder. Keep their original names.** They are four pieces of one download, not four installers.
 

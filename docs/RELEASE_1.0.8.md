@@ -16,10 +16,10 @@ The complete setup includes **RLM, local bots/Python, BakkesMod, Rocket Host and
 
 | Part | Download |
 | --- | --- |
-| 1 | [RL-Manager-Complete-1.0.8.7z.001](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.001) |
-| 2 | [RL-Manager-Complete-1.0.8.7z.002](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.002) |
-| 3 | [RL-Manager-Complete-1.0.8.7z.003](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.003) |
-| 4 | [RL-Manager-Complete-1.0.8.7z.004](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.004) |
+| 1 | [RL-Manager-Complete-1.0.8.7z.001](https://github.com/ItsAminus/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.001) |
+| 2 | [RL-Manager-Complete-1.0.8.7z.002](https://github.com/ItsAminus/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.002) |
+| 3 | [RL-Manager-Complete-1.0.8.7z.003](https://github.com/ItsAminus/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.003) |
+| 4 | [RL-Manager-Complete-1.0.8.7z.004](https://github.com/ItsAminus/rl-manager/releases/download/v1.0.8/RL-Manager-Complete-1.0.8.7z.004) |
 
 Keep all four in **one folder**, with their original names. The **Source code** downloads are not a game installer.
 
@@ -50,7 +50,7 @@ For played RLM matches, launch Rocket League without Easy Anti-Cheat:
 - Start a played match. When prompted, wait at Rocket League's main menu, then click RLM's **I'm at the menu — Start / restart BakkesMod** button.
 - Manager Career's **Easy/Medium** use local bots. **Hard is experimental**, uses Rocket Host for eligible games and may be unstable or laggy.
 
-[Full installation guide and troubleshooting](https://github.com/MyMedicalCenters/rl-manager#start-here-first-time-installation).
+[Full installation guide and troubleshooting](https://github.com/ItsAminus/rl-manager#start-here-first-time-installation).
 
 <details>
 <summary>Already used a complete pre-release test build?</summary>
