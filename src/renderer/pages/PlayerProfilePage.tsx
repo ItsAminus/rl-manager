@@ -21,27 +21,31 @@ export const PlayerProfilePage: React.FC = () => {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchPlayer() {
       if (!id) return;
-      setLoading(true);
+      // Roster refreshes must not unmount an open editor/import preview.
+      // Only navigating to a different player needs the full loading screen.
+      if (player?.id !== id) setLoading(true);
       try {
         if (window.api?.players) {
           const p = await window.api.players.getById(id);
           if (p) {
-            setPlayer(p);
+            if (!cancelled) setPlayer(p);
           } else {
             // fallback to finding in roster
             const found = roster.find((r) => r.id === id);
-            if (found) setPlayer(found);
+            if (found && !cancelled) setPlayer(found);
           }
         }
       } catch (err) {
         console.error('Error fetching player', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchPlayer();
+    return () => { cancelled = true; };
   }, [id, roster]);
 
   if (loading) {
