@@ -89,7 +89,7 @@ try{
  const importJson=JSON.stringify([{id:identityPlayer.id,realName:'Packaged import correction',overall:1,teamId:'ignored'}]);
  await run(`(()=>{document.querySelector('.identity-import').open=true;const transfer=new DataTransfer();transfer.items.add(new File([${JSON.stringify(importJson)}],'corrections.json',{type:'application/json'}));const file=document.querySelector('.identity-file input');file.files=transfer.files;file.dispatchEvent(new Event('change',{bubbles:true}));})()`);
  await wait("!!document.querySelector('.identity-preview')");
- if(await run(`(await window.api.players.identity.get(${JSON.stringify(identityPlayer.id)})).realName!=='Packaged identity correction'`))throw Error('Import applied before review');
+ if(await run(`window.api.players.identity.get(${JSON.stringify(identityPlayer.id)}).then(p=>p.realName!=='Packaged identity correction')`))throw Error('Import applied before review');
  await run("document.querySelector('.identity-buttons .btn-primary').click()");await wait("document.querySelector('.header-realname')?.textContent.includes('Packaged import correction')");
  const afterIdentity=await run(`window.api.players.getById(${JSON.stringify(identityPlayer.id)})`);
  if(afterIdentity.overall!==identityPlayer.overall||afterIdentity.teamId!==identityPlayer.teamId)throw Error('Identity import changed gameplay fields');
