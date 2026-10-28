@@ -254,7 +254,7 @@ def launch(context,rl_path,result_path,enable_commentary=True):
             if attempt==2:
                 raise RuntimeError(str(exc)+' Automatic recovery exhausted two retries. Previous completed series games remain saved; retry this game with healthy bots.') from exc
             names=', '.join(a['name']+' ('+a['engine']+')' for a in exc.assignments)
-            log_event('BOT_RECOVERY',message=f'{names} stopped playing. Excluding the failed bots and restarting game {context.get("gameNumber",1)} with replacements from the same rating tier (retry {attempt+1}/2). Previous completed games remain saved.',gameNumber=context.get('gameNumber',1))
+            log_event('BOT_RECOVERY',message=f'{names} stopped playing. Excluding the failed bots and restarting game {context.get("gameNumber",1)} with the next strongest healthy replacements (retry {attempt+1}/2). Previous completed games remain saved.',gameNumber=context.get('gameNumber',1))
 
 
 def _launch_once(context,rl_path,result_path,enable_commentary=True):
@@ -271,17 +271,19 @@ def _launch_once(context,rl_path,result_path,enable_commentary=True):
     preferred=context.get('rocketHostRegion','US-CENTRAL')
     server=next((s for s in servers if s['location']==preferred),servers[0])
     for a in assignments:log_event('CONFIG_PLAYER',name=a['name'],team='Blue' if a['team']==0 else 'Orange',slot=a['slot'],type=a['type'],bot=a['engine'],profile=a)
+    for a in assignments:
+        if a.get('fallbackReason'):log(a['name']+': '+a['fallbackReason'])
     log(selected['notice'])
     allow_career_commands()
     from rlbot.setup_manager import SetupManager,ROCKET_LEAGUE_PROCESS_INFO
-    from game_launcher import launcher_preference
+    from game_launcher import configure_launcher
     import logging
     logging.getLogger('rlbot').setLevel(logging.WARNING)
     ROCKET_LEAGUE_PROCESS_INFO.get_ideal_args=lambda port:['-rlbot',f'RLBot_ControllerURL=127.0.0.1:{port}','RLBot_PacketSendRate=120','-nomovie','-noeac']
     manager=SetupManager()
     dispatcher=None;hud=None;joined=False
     try:
-        connect_with_hud(manager,launcher_preference(rl_path,log),log,required=True,
+        connect_with_hud(manager,configure_launcher(manager,rl_path,log),log,required=True,
                          manual_confirmation=bool(context.get('bakkesmodConfirmation')))
         status=json.loads((folder()/'data/rl-manager/plugin-status.json').read_text())
         if not status.get('rocketHostTelemetry'):raise RuntimeError('Update RL Manager HUD to 1.4 before using Rocket Host')

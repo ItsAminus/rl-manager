@@ -2,14 +2,18 @@ import {describe,expect,it} from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import teams from '../data/teams.json';
+import additional from '../data/additional-professional-clubs.json';
+import ssa from '../data/ssa-community-rosters.json';
 import logos from '../data/team-broadcast-logos.json';
 import {broadcastMatch,broadcastTeam,officialProfile} from '../src/services/broadcast-assets';
 import {teamCrest} from '../src/services/team-crest';
 
 describe('Fixture-specific timer branding',()=>{
   it('covers every database team with a usable local PNG and honest source classification',()=>{
-    expect(Object.keys(logos).sort()).toEqual(teams.map(team=>team.id).sort());
-    for(const team of teams){
+    const known=[...teams,...additional.filter(a=>!teams.some(t=>t.id===a.id)),...ssa.teams];
+    expect(teams.every(team=>Object.hasOwn(logos,team.id))).toBe(true);
+    expect(Object.keys(logos).every(id=>known.some(t=>t.id===id))).toBe(true);
+    for(const team of known.filter(t=>Object.hasOwn(logos,t.id))){
       const record=(logos as Record<string,any>)[team.id];
       const shown=broadcastTeam(team,[]);
       expect(shown.id).toBe(team.id);

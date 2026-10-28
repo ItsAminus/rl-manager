@@ -32,6 +32,12 @@ def create_commentary(enabled=True, context=None):
         comm_dir = Path(__file__).parent / "commentary"
         if str(comm_dir) not in sys.path:
             sys.path.insert(0, str(comm_dir))
+        if os.environ.get('RLM_COMMENTARY_ENABLED') == '0':
+            from clip_broadcast import ClipBroadcast
+            director=ClipBroadcast(log=lambda message: log_event('STATUS',message=message))
+            director.speech_muted=True
+            log_event('STATUS',message='Commentary muted in RL Manager; crowd and countdown remain enabled.')
+            return director
         from hybrid_broadcast import HybridBroadcast
         return HybridBroadcast(context=context, log=lambda message: log_event("STATUS", message=message))
     except Exception as exc:
@@ -265,7 +271,7 @@ def finish_played_match(packet, result_file, dispatcher, incidents=None):
 
 def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Path | None = None, enable_commentary: bool = True, commentary=None, broadcast_context=None,manual_bakkesmod_confirmation=False,presentation_context=None):
     from rlbot.setup_manager import SetupManager, ROCKET_LEAGUE_PROCESS_INFO
-    from game_launcher import launcher_preference
+    from game_launcher import configure_launcher
 
     # Align Rocket League packet rate to 120Hz for optimal Nexto neural network physics
     ROCKET_LEAGUE_PROCESS_INFO.get_ideal_args = lambda port: [
@@ -282,7 +288,7 @@ def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Pat
     manager = SetupManager()
     manager.early_start_seconds = 5
 
-    launcher_pref = launcher_preference(rl_exe, lambda message: log_event('STATUS', message=message))
+    launcher_pref = configure_launcher(manager, rl_exe, lambda message: log_event('STATUS', message=message))
 
     log_event("STATUS", message="Connecting to Rocket League gateway...")
     from bakkesmod_startup import connect_with_hud

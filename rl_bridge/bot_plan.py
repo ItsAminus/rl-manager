@@ -5,7 +5,7 @@ from rating_bots import rating_plan
 
 
 def plan(context):
-    return rating_plan(context)
+    return rating_plan(context,allow_partial=True)
 
 
 if __name__ == '__main__':

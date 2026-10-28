@@ -1,3 +1,4 @@
+import type {CustomOrganization} from '../game/custom-organization';
 import { create } from 'zustand';
 import { Career, Team, Player, Fixture, CalendarEvent, InboxItem } from '../types';
 
@@ -18,7 +19,7 @@ interface CareerState {
 
   // Actions
   initialize: () => Promise<void>;
-  createCareer: (data: { managerName: string; teamId: string; region: string; difficulty: string; customOrgName?: string;mode?:'Manager Career'|'Path To Glory';pathRank?:string }) => Promise<{ success: boolean; id?: string; error?: string }>;
+  createCareer: (data: { managerName: string; teamId: string; region: string; difficulty: string; customOrgName?: string;customOrganization?:CustomOrganization;mode?:'Manager Career'|'Path To Glory';pathRank?:string }) => Promise<{ success: boolean; id?: string; error?: string }>;
   loadCareer: (id: string) => Promise<boolean>;
   saveCareer: () => Promise<void>;
   advanceDay: () => Promise<{ events: CalendarEvent[]; fixtures: Fixture[] } | null>;

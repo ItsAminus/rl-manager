@@ -1,3 +1,4 @@
+import {TeamLink} from './TeamLink';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useCareerStore} from '../../stores/careerStore';
@@ -29,7 +30,7 @@ export function ClubChampionshipEvent({competition:c,onRefresh}:{competition:any
     </section>:<>
       <p className="notice">Career organiser choices are saved for this edition. {info.bonusRegion?`${info.bonusRegion} earned the extra Finale place by winning the Kick-Off.`:'The Kick-Off winner will earn its region one extra Finale place.'}</p>
       <section className="panel"><h2>Follow the competition</h2><div className="club-event-list">{events.map((e:any)=><button key={e.id} onClick={()=>navigate('/competition/'+e.id)}><span><strong>{e.name}</strong><small>{e.startDate} · {e.region} · {e.status.replace(/_/g,' ')}</small></span><span>View →</span></button>)}</div></section>
-      <section className="panel table-panel"><h2>Invited-club points</h2><p>Only configured invited teams receive Club Points. Match qualification remains determined by the regional leagues. Equal totals use the saved career invitation order; that administrative tie choice is not an official rule.</p><table><thead><tr><th>#</th><th>Club</th><th>Points</th><th>Owner payout</th></tr></thead><tbody>{info.leaderboard.map((r:any,i:number)=><tr key={r.teamId} className={r.teamId===teamId?'row-my-team':''}><td>{i+1}</td><td>{r.teamName}</td><td>{r.points}</td><td>{info.ownerPayouts.find((p:any)=>p.teamId===r.teamId)?.amount?.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})||'After the Finale'}</td></tr>)}</tbody></table></section>
+      <section className="panel table-panel"><h2>Invited-club points</h2><p>Only configured invited teams receive Club Points. Match qualification remains determined by the regional leagues. Equal totals use the saved career invitation order; that administrative tie choice is not an official rule.</p><table><thead><tr><th>#</th><th>Club</th><th>Points</th><th>Owner payout</th></tr></thead><tbody>{info.leaderboard.map((r:any,i:number)=><tr key={r.teamId} className={r.teamId===teamId?'row-my-team':''}><td>{i+1}</td><td><TeamLink id={r.teamId}>{r.teamName}</TeamLink></td><td>{r.points}</td><td>{info.ownerPayouts.find((p:any)=>p.teamId===r.teamId)?.amount?.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})||'After the Finale'}</td></tr>)}</tbody></table></section>
       <section className="panel"><h2>Player prize awards</h2><p>{info.playerPrizes.length} registered player awards recorded. These are player earnings, not an automatic credit to the club’s bank balance.</p></section>
     </>}
   </div>;

@@ -1,0 +1,206 @@
+{
+  "providedAt": "2026-10-28",
+  "note": "User-supplied 2026 SSA Open 1–6 roster snapshots. Exact snapshot dates, identities and active contracts are not independently verified. Ratings and finances are game estimates. Existing clubs and career transfers are preserved.",
+  "teams": [
+    {
+      "id": "thepunishers_ssa",
+      "name": "The Punishers",
+      "shortName": "TP",
+      "roster": [
+        "Goldninja",
+        "Shadow",
+        "Marmoan"
+      ],
+      "substitutes": [
+        "Chace"
+      ]
+    },
+    {
+      "id": "roumds_ssa",
+      "name": "Roumds",
+      "shortName": "R",
+      "roster": [
+        "Renshiro",
+        "Onizumaa",
+        "Marssyy"
+      ],
+      "substitutes": []
+    },
+    {
+      "id": "marineregion_ssa",
+      "name": "Marine Region",
+      "shortName": "MR",
+      "roster": [
+        "PinGu",
+        "EliakimZA",
+        "Ram"
+      ],
+      "substitutes": []
+    },
+    {
+      "id": "7x7_ssa",
+      "name": "7x7",
+      "shortName": "7",
+      "roster": [
+        "Strutic",
+        "Trstn",
+        "Twnzr"
+      ],
+      "substitutes": []
+    },
+    {
+      "id": "lfo_ssa",
+      "name": "LFO (Looking For Org)",
+      "shortName": "L",
+      "roster": [
+        "Werty",
+        "Chancla",
+        "Zany"
+      ],
+      "substitutes": []
+    },
+    {
+      "id": "thewave_ssa",
+      "name": "The Wave",
+      "shortName": "TW",
+      "roster": [
+        "Oji_RL",
+        "Pandak",
+        "Com"
+      ],
+      "substitutes": [
+        "Balbine9741"
+      ]
+    },
+    {
+      "id": "stanislas_ssa",
+      "name": "Stanislas",
+      "shortName": "S",
+      "roster": [
+        "Zion_RL",
+        "Clays!",
+        "Smshyy"
+      ],
+      "substitutes": [
+        "Kayzz"
+      ]
+    },
+    {
+      "id": "teamespionage_ssa",
+      "name": "Team Espionage",
+      "shortName": "TE",
+      "roster": [
+        "Lorax_21",
+        "Kayvee",
+        "Olam"
+      ],
+      "substitutes": []
+    },
+    {
+      "id": "fusion_ssa",
+      "name": "Fusion",
+      "shortName": "F",
+      "roster": [
+        "Zan",
+        "Lickkse",
+        "Raf"
+      ],
+      "substitutes": []
+    }
+  ],
+  "skipped": [
+    {
+      "requested": "Five Fears",
+      "existingId": "real_team_67b42553-b3da-4674-b0fb-217138da7ab0",
+      "existingName": "Five Fears"
+    },
+    {
+      "requested": "Pioneers",
+      "existingId": "team_21",
+      "existingName": "Pioneers"
+    },
+    {
+      "requested": "White Rabbit Gaming",
+      "existingId": "white_rabbit_gaming_ssa",
+      "existingName": "White Rabbit Gaming"
+    },
+    {
+      "requested": "Synthesis",
+      "existingId": "sg_team_3007757",
+      "existingName": "Synthesis Entertainment"
+    },
+    {
+      "requested": "Le Passion",
+      "existingId": "sg_team_3054306",
+      "existingName": "le passion"
+    },
+    {
+      "requested": "Death Cloud Esports",
+      "existingId": "sg_team_3054142",
+      "existingName": "Death Cloud Esports"
+    },
+    {
+      "requested": "Team HSK",
+      "existingId": "sg_team_3049882",
+      "existingName": "Team HSK"
+    },
+    {
+      "requested": "BTF Esports",
+      "existingId": "sg_team_3026887",
+      "existingName": "BTF Esports"
+    },
+    {
+      "requested": "La Masia",
+      "existingId": "sg_team_3054390",
+      "existingName": "La Masia"
+    },
+    {
+      "requested": "Midwest Mafia",
+      "existingId": "sg_team_3047597",
+      "existingName": "Midwest Mafia"
+    },
+    {
+      "requested": "Astronic Esports",
+      "existingId": "astronic_esports_ssa",
+      "existingName": "Astronic Esports"
+    },
+    {
+      "requested": "Unity",
+      "existingId": "sg_team_3031729",
+      "existingName": "Unity Esports"
+    },
+    {
+      "requested": "Rising Esports",
+      "existingId": "sg_team_3014090",
+      "existingName": "Rising Esport"
+    }
+  ],
+  "freeAgents": [
+    "Skillsteal",
+    "Tebussie",
+    "TechnicEagle75",
+    "Ck.",
+    "Zentix",
+    "Torres8232",
+    "DaltonZA",
+    "Tykop",
+    "Yabu",
+    "Flosee",
+    "Ender",
+    "Kexii",
+    "Bairechuu",
+    "Dylan",
+    "ASN*RuBiiX",
+    "StaaR",
+    "5bs",
+    "Exotiko7",
+    "Xyro",
+    "Galaxi22",
+    "Bananacat",
+    "Cyx.",
+    "K8an.",
+    "Poggo",
+    "Ju5t_b",
+    "Krishan"
+  ]
+}

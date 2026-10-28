@@ -1,5 +1,7 @@
 """Sentence playback isolated from RLBot telemetry and speech generation."""
 import io
+import os
+import math
 from collections import deque
 import queue
 import struct
@@ -9,6 +11,12 @@ import threading
 import time
 import wave
 from pathlib import Path
+
+def commentary_volume():
+    try:
+        value=float(os.environ.get('RLM_COMMENTARY_VOLUME','1'))
+        return max(0,min(1,value)) if math.isfinite(value) else 1
+    except (TypeError,ValueError):return 1
 
 
 class NativeSink:
@@ -98,7 +106,8 @@ class ClipPlayer:
     stream = None
     underruns = 0
 
-    def __init__(self, sink=None, continuous_output=False):
+    def __init__(self, sink=None, continuous_output=False, volume=1.0):
+        self.volume=max(0,min(1,float(volume)))
         self.sink = sink or NativeSink(continuous_output=continuous_output)
         self.lock = threading.Lock()
         self.wake = threading.Event()
@@ -155,7 +164,7 @@ class ClipPlayer:
             wav.setnchannels(1)
             wav.setsampwidth(2)
             wav.setframerate(self.sample_rate)
-            wav.writeframes((np.clip(pcm, -1, 1) * 32767).astype("<i2").tobytes())
+            wav.writeframes((np.clip(pcm*self.volume, -1, 1) * 32767).astype("<i2").tobytes())
         return output.getvalue()
 
     def _started(self):

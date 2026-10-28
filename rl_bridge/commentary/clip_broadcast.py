@@ -177,7 +177,8 @@ class ClipBroadcast:
     def __init__(self, bank_path=None, player=None, log=print, clock=time.monotonic, seed=None,
                  state_file=None, countdown_player=None, goal_player=None):
         self.log, self.clock = log, clock
-        self.player = player or ClipPlayer()
+        from native_audio import commentary_volume
+        self.player = player or ClipPlayer(volume=commentary_volume())
         folder = Path(bank_path) if bank_path else Path(__file__).parent / "voice_bank"
         state_file = state_file or (Path(__file__).parent / "cache" / "clip_rotation.json")
         try:
@@ -255,6 +256,7 @@ class ClipBroadcast:
             self.was_busy = False
 
     def _start_line(self, category, owner, team, now):
+        if getattr(self,'speech_muted',False):return
         clip_id, pcm = self.bank.draw(category)
         self.player.play(pcm, interruptible=self.preempt_recordings and category not in {'intro', 'postgame'})
         self.current = (category, owner, team)
@@ -309,6 +311,7 @@ class ClipBroadcast:
                     self.goal_calls.append((crowd, owner, team))
                 else:
                     self._start_goal(crowd, owner, team, now)
+        if getattr(self,'speech_muted',False):return False
         if self.bank.recording_category(category) not in self.bank.categories:
             if category in TERMINAL:
                 self._invalidate_pending(now)
@@ -619,6 +622,7 @@ class ClipBroadcast:
         self._quiet_recording(packet, now)
 
     def _quiet_recording(self, packet, now):
+        if getattr(self,'speech_muted',False):return
         # Filler is deliberately sparse and never queues behind live action.
         info = packet.game_info
         if info.is_kickoff_pause or not info.is_round_active or info.is_match_ended:

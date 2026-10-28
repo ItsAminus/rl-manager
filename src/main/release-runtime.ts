@@ -3,16 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {PlayerPreferences} from './player-preferences';
 import {speechEnvironment} from './speech-settings';
+import {syncPlayerBridge} from './bridge-installation';
 
 // Python must run outside app.asar, with its generated files in a writable place.
 export function playerBridge(){
   if(!app.isPackaged)return path.resolve(__dirname,'../rl_bridge/launcher.py');
   const source=path.join(process.resourcesPath,'rl_bridge'),target=path.join(app.getPath('userData'),'bridge');
-  const stamp=path.join(target,'.release-version');
-  if(!fs.existsSync(stamp)||fs.readFileSync(stamp,'utf8')!==app.getVersion()){
-    fs.mkdirSync(target,{recursive:true});fs.cpSync(source,target,{recursive:true});fs.writeFileSync(stamp,app.getVersion());
-    fs.cpSync(path.join(process.resourcesPath,'data'),path.join(app.getPath('userData'),'data'),{recursive:true});
-  }
+  syncPlayerBridge(source,target,path.join(process.resourcesPath,'data'),path.join(app.getPath('userData'),'data'),app.getVersion());
   return path.join(target,'launcher.py');
 }
 export function runtimePreferencesFile(){return path.join(app.getPath('userData'),'runtime-location.json');}
@@ -31,6 +28,7 @@ export function installedAiRuntime(){
 export function playerBridgeEnvironment(){
   const localHud=path.resolve(__dirname,'../bakkesmod/build');
   return {...process.env,...speechEnvironment(new PlayerPreferences(app.getPath('userData')).read().integration),RLM_AI_RUNTIME:installedAiRuntime()||path.resolve(__dirname,'../rl_bridge/local_runtime'),
+    RLM_INTRO_MUSIC:app.isPackaged?path.join(process.resourcesPath,'app.asar.unpacked/public/audio/introduction-anticipation.wav'):path.resolve(__dirname,'../public/audio/introduction-anticipation.wav'),
     ...(app.isPackaged?{RLM_AUDIO_DEPS:path.join(process.resourcesPath,'audio-deps'),RLM_HUD_SOURCE:path.join(process.resourcesPath,'career-hud')}:
       fs.existsSync(path.join(localHud,'RLManagerHUD.dll'))&&fs.existsSync(path.join(localHud,'fonts','glyphs.json'))?{RLM_HUD_SOURCE:process.env.RLM_HUD_SOURCE||localHud}: {})};
 }

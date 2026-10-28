@@ -29,7 +29,7 @@ class RocketHostTests(unittest.TestCase):
 
     def test_reported_three_kiyo_match_releases_human_and_binds_selected_pro(self):
         context=roster()
-        for p,rating in zip(context['blueTeam']['players']+context['orangeTeam']['players'],(98,99,99,99,94,93)):p['rating']=rating
+        for p,rating in zip(context['blueTeam']['players']+context['orangeTeam']['players'],(98,99,99,99,97,96)):p['rating']=rating
         a=rating_plan(context,CATALOG)['assignments'];raw=raw_packet(a)
         raw['players']=[p for p in raw['players'] if p['isBot']]
         for slot,label in ((1,'Kiyo 3.0'),(2,'Kiyo 3.0 (2)'),(3,'Kiyo 3.0 (3)'),(4,'BonkDaddy'),(5,'Kilobyte')):
@@ -66,7 +66,9 @@ class RocketHostTests(unittest.TestCase):
 
     def test_official_request_contains_five_bots_and_series_map(self):
         context=roster();context['arenaUpk']='CHN_Stadium_P'
-        context['orangeTeam']['players'][0]['rating']=96
+        for p in context['blueTeam']['players']+context['orangeTeam']['players']:p['rating']=97
+        context['blueTeam']['players'][1]['rating']=99
+        context['orangeTeam']['players'][0]['rating']=98
         a=rating_plan(context,CATALOG)['assignments']
         url=request_url({'ip':'154.7.120.61','port':'2000'},context,a)
         q=parse_qs(urlparse(url).query)
@@ -82,7 +84,9 @@ class RocketHostTests(unittest.TestCase):
             with self.assertRaises(ValueError):validate_join_address(address)
 
     def test_duplicate_bot_instances_preserve_separate_career_roles(self):
-        a=rating_plan(ssl_roster(),['Byte'])['assignments'];raw=raw_packet(a);reader=HostedPacketReader(a)
+        context=ssl_roster()
+        for p in context['blueTeam']['players']+context['orangeTeam']['players']:p['rating']=96
+        a=rating_plan(context,['Byte'])['assignments'];raw=raw_packet(a);reader=HostedPacketReader(a)
         self.assertTrue(reader.bind(raw));packet=reader.packet(raw)
         self.assertEqual([c.name for c in packet.game_cars[:6]],['Human','Zen','Support','A','B','C'])
         self.assertEqual([c.score_info.score for c in packet.game_cars[:6]],list(range(0,600,100)))
@@ -120,7 +124,9 @@ class RocketHostTests(unittest.TestCase):
         self.assertFalse(reader.bots_present(raw))
 
     def test_arriving_duplicate_bots_keep_their_pregame_role_at_kickoff(self):
-        a=rating_plan(ssl_roster(),['Byte'])['assignments'];raw=raw_packet(a)
+        context=ssl_roster()
+        for p in context['blueTeam']['players']+context['orangeTeam']['players']:p['rating']=96
+        a=rating_plan(context,['Byte'])['assignments'];raw=raw_packet(a)
         reader=HostedPacketReader(a)
         # Higher native address arrives first on blue: it must retain Zen's
         # identity when the lower-address duplicate joins later.

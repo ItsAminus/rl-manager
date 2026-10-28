@@ -1,6 +1,9 @@
 import type {AppDatabase} from './database';
 import {v4 as uuid} from 'uuid';
 import {addDays} from '../game/career-rules';
+import {clubStructure,STAFF_ROLES,staffDepartment} from './club-structure';
+import {transferObligations,settleTransferPayments,calendarMonth} from './transfer-agreements';
+import {boardVision,reviewBoardVision} from './board-visions';
 
 export function realismSchema(db:AppDatabase){
   db.exec(`
@@ -11,6 +14,9 @@ export function realismSchema(db:AppDatabase){
     CREATE TABLE IF NOT EXISTS scout_observations(careerId TEXT,playerId TEXT,observedDate TEXT,depth INTEGER,overall INTEGER,potential INTEGER,attributes TEXT,traits TEXT,form INTEGER,tendency TEXT,PRIMARY KEY(careerId,playerId));
     CREATE TABLE IF NOT EXISTS scouting_regions(id TEXT PRIMARY KEY,careerId TEXT,region TEXT,startedDate TEXT,endDate TEXT,nextReport TEXT,status TEXT,cost INTEGER);
     CREATE TABLE IF NOT EXISTS contract_payments(contractId TEXT PRIMARY KEY,paidMonths INTEGER DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS club_fee_talks(careerId TEXT,playerId TEXT,buyerId TEXT,sellerId TEXT,status TEXT,rounds INTEGER,expiresDate TEXT,terms TEXT,history TEXT,PRIMARY KEY(careerId,playerId));
+    CREATE TABLE IF NOT EXISTS transfer_payments(id TEXT PRIMARY KEY,careerId TEXT,dealId TEXT,playerId TEXT,buyerId TEXT,sellerId TEXT,dueDate TEXT,amount INTEGER,paidDate TEXT);
+    CREATE TABLE IF NOT EXISTS board_visions(careerId TEXT PRIMARY KEY,startedDate TEXT,deadline TEXT,longDeadline TEXT,baseline TEXT,status TEXT,rounds INTEGER,terms TEXT,counter TEXT,history TEXT,confidence INTEGER DEFAULT 60);
     CREATE TABLE IF NOT EXISTS deal_clauses(contractId TEXT PRIMARY KEY,careerId TEXT,playerId TEXT,buyerId TEXT,sellerId TEXT,baseFee INTEGER,profitPercent INTEGER DEFAULT 0,buybackFee INTEGER DEFAULT 0,buybackUntil TEXT,contribution INTEGER DEFAULT 0,contributionUntil TEXT,playingTime INTEGER DEFAULT 0,lastReview TEXT,breaches INTEGER DEFAULT 0,settled INTEGER DEFAULT 0);
   `);
   const columns=db.prepare('PRAGMA table_info(club_accounts)').all().map(c=>c.name);
@@ -50,7 +56,11 @@ export class ClubEconomy{
     const contributions=this.contributions(c.id,c.teamId,c.currentDate),interest=Math.round(a.debt*.01);
     const revenue=(t.sponsorIncome||0)+a.corporateIncome+contributions.received;
     const expenses=wages+a.overhead+interest+contributions.paid;
-    return {...a,...this.boardReview(c),cash:t.cashBalance,wages,revenue,expenses,net:revenue-expenses,interest,contributions,employment:this.db.prepare('SELECT * FROM manager_employment WHERE careerId=?').get(c.id),ledger:this.db.prepare('SELECT * FROM club_ledger WHERE careerId=? AND teamId=? ORDER BY date DESC,rowid DESC LIMIT 60').all(c.id,c.teamId)};
+    const obligations=transferObligations(this.db,c),structure=clubStructure(this.db,c,t.cashBalance,revenue-expenses,expenses);
+    structure.projections=structure.projections.map(p=>({...p,cash:p.cash+obligations.rows.filter(r=>!r.paidDate&&r.dueDate<=calendarMonth(c.currentDate,p.months)).reduce((n,r)=>n+(r.buyerId===c.teamId?-r.amount:r.amount),0)}));
+    structure.discretionaryCash=Math.max(0,structure.discretionaryCash-obligations.payable);
+    structure.policy+=' Existing transfer instalments are included on their due dates; the full unpaid purchase balance reduces discretionary funds.';
+    return {...a,...this.boardReview(c),structure,obligations,vision:boardVision(this.db,c),cash:t.cashBalance,wages,revenue,expenses,net:revenue-expenses,interest,contributions,employment:this.db.prepare('SELECT * FROM manager_employment WHERE careerId=?').get(c.id),ledger:this.db.prepare('SELECT * FROM club_ledger WHERE careerId=? AND teamId=? ORDER BY date DESC,rowid DESC LIMIT 60').all(c.id,c.teamId)};
   }
   private boardReview(c:any){
     const a=this.db.prepare('SELECT * FROM club_accounts WHERE careerId=? AND teamId=?').get(c.id,c.teamId);
@@ -67,6 +77,7 @@ export class ClubEconomy{
   }
   tick(c:any){
     this.initialise(c);
+    settleTransferPayments(this.db,c);
     const month=c.currentDate.slice(0,7);
     for(const a of this.db.prepare('SELECT * FROM club_accounts WHERE careerId=?').all(c.id)){
       const t=this.db.prepare('SELECT * FROM teams WHERE id=?').get(a.teamId);if(!t)continue;
@@ -75,6 +86,7 @@ export class ClubEconomy{
         this.db.prepare('UPDATE contract_payments SET paidMonths=paidMonths+1 WHERE contractId IN(SELECT id FROM contracts WHERE teamId=? AND isActive=1 AND contract_payments.paidMonths<duration)').run(t.id);
         const contributions=this.contributions(c.id,t.id,c.currentDate);
         const entries:[string,number][]=[['Sponsorship',t.sponsorIncome||0],['Corporate and commercial revenue',a.corporateIncome],['Wage contributions received',contributions.received],['Player wages',-wages],['Club operations',-a.overhead],['Debt interest',-Math.round(a.debt*.01)],['Wage contributions paid',-contributions.paid]];
+        if(t.id===c.teamId){const staff=STAFF_ROLES.reduce((n,role)=>n+staffDepartment(this.db,c,role).monthly,0);if(staff)entries.push(['Backroom staff wages',-staff]);}
         let cash=t.cashBalance+entries.reduce((n,e)=>n+e[1],0),debt=a.debt;
         if(cash<0){const draw=Math.min(-cash,Math.max(0,a.creditLimit-debt));cash+=draw;debt+=draw;if(draw)entries.push(['Credit line drawn',draw]);}
         else if(debt>0){const repayment=Math.min(debt,Math.floor(cash*.1));cash-=repayment;debt-=repayment;if(repayment)entries.push(['Debt repayment',-repayment]);}
@@ -111,6 +123,7 @@ export class ClubEconomy{
       }
     }
     this.reviewPromises(c);
+    reviewBoardVision(this.db,c);
   }
   private reviewPromises(c:any){
     for(const d of this.db.prepare('SELECT d.*,p.teamId,p.gamertag FROM deal_clauses d JOIN players p ON p.id=d.playerId JOIN contracts co ON co.id=d.contractId WHERE d.careerId=? AND co.isActive=1 AND d.playingTime>0 AND (d.lastReview IS NULL OR d.lastReview<=?)').all(c.id,addDays(c.currentDate,-30))){

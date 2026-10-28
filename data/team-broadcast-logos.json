@@ -10511,5 +10511,82 @@
     "logo": "/broadcast-crests/sg_team_3051672.png",
     "kind": "initials_fallback",
     "source": null
+  },
+  "astronic_esports_ssa": {
+    "name": "Astronic Esports",
+    "logo": "/broadcast-crests/astronic_esports_ssa.png",
+    "kind": "published_logo",
+    "source": "https://assets.blast.tv/images/teams/d3cf739b-86cf-40f6-a7bf-aa27b0b67954?format=png&width=512",
+    "presentationBacking": true
+  },
+  "scr_esports_ssa": {
+    "name": "SCR Esports",
+    "logo": "/broadcast-crests/scr_esports_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "thepunishers_ssa": {
+    "name": "The Punishers",
+    "logo": "/broadcast-crests/thepunishers_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "roumds_ssa": {
+    "name": "Roumds",
+    "logo": "/broadcast-crests/roumds_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "marineregion_ssa": {
+    "name": "Marine Region",
+    "logo": "/broadcast-crests/marineregion_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "7x7_ssa": {
+    "name": "7x7",
+    "logo": "/broadcast-crests/7x7_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "lfo_ssa": {
+    "name": "LFO (Looking For Org)",
+    "logo": "/broadcast-crests/lfo_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "thewave_ssa": {
+    "name": "The Wave",
+    "logo": "/broadcast-crests/thewave_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "stanislas_ssa": {
+    "name": "Stanislas",
+    "logo": "/broadcast-crests/stanislas_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "teamespionage_ssa": {
+    "name": "Team Espionage",
+    "logo": "/broadcast-crests/teamespionage_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
+  },
+  "fusion_ssa": {
+    "name": "Fusion",
+    "logo": "/broadcast-crests/fusion_ssa.png",
+    "kind": "initials_fallback",
+    "source": null,
+    "presentationBacking": false
   }
 }

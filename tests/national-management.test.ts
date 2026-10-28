@@ -10,6 +10,7 @@ import {buildSeriesContext} from '../src/services/series-context';
 import {nextSeriesGame} from '../src/services/next-series-game';
 import {seriesMap} from '../src/services/series-maps';
 import {DEFAULT_TACTICS,MATCH_ROLES} from '../src/game/tactics';
+import {nationalPrematchDesk} from '../src/main/national-desk';
 let SQL:any,db:any,national:NationalManagement,cup:FifaWorldCup,eventId:string,start:string;
 beforeAll(async()=>{SQL=await initSqlJs();});
 beforeEach(()=>{
@@ -48,6 +49,17 @@ describe('National eligibility',()=>{
   });
 });
 describe('National management and played FIFAe games',()=>{
+  it('builds an offline national desk and preserves draws without inventing club losses',()=>{
+    const state=begin(),fixture=state.nextFixture;
+    const comp=db.prepare('SELECT config FROM competitions WHERE id=?').get(eventId),config=JSON.parse(comp.config);
+    config.national.matches.push({...fixture,id:'recent-national-draw',scheduledDate:start,status:'completed',homeScore:1,awayScore:1});
+    db.prepare('UPDATE competitions SET config=? WHERE id=?').run(JSON.stringify(config),eventId);
+    const desk=nationalPrematchDesk(db,'career',fixture.id);
+    expect(desk.own.name).toBe('France');expect(desk.own.form).toContain('1 draws');
+    expect(desk.own.recent.find(r=>r.id==='recent-national-draw')?.won).toBeNull();
+    expect(desk.turns.every(t=>!t.category.includes('after_defeat'))).toBe(true);
+    expect(desk.turns.filter(t=>t.category==='team_name').map(t=>t.text)).toContain('France');
+  });
   it('locks the selected squad, skips managed NPC results and stops the calendar',()=>{
     const state=begin(),fixture=state.nextFixture;
     expect(state.locked).toBe(true);expect(state.fixtures.every((f:any)=>f.status==='scheduled')).toBe(true);

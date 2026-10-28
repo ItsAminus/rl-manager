@@ -1,0 +1,38 @@
+// Isolated renderer check: creates a test career, never launches Rocket League.
+const {app}=require('electron'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),folder=fs.mkdtempSync(path.join(root,'scratch/custom-club-check-'));
+process.env.RLM_USER_DATA=folder;app.disableHardwareAcceleration();const windows=[];
+app.on('browser-window-created',(_,w)=>{windows.push(w);w.show=()=>{};w.focus=()=>{};});require('../dist-electron/main.js');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{let code=0;try{
+ let win;for(let i=0;i<900;i++){win=windows.find(w=>!w.isDestroyed()&&w.webContents.getURL().includes('/dist/index.html'));if(win)break;await delay(100);}if(!win)throw Error('No app window');
+ const run=s=>win.webContents.executeJavaScript(`(async()=>(${s}))()`);
+ const wait=async s=>{for(let i=0;i<450;i++){if(await run(s))return;await delay(100);}throw Error('Timed out: '+s);};
+ await wait("!!document.querySelector('.tour-intro .tour-secondary')");await run("document.querySelector('.tour-intro .tour-secondary').click()");await run("window.api.tutorial.finish('skipped')");
+ await run("location.hash='/career/new'");await wait("!!document.querySelector('.wizard-footer .btn-primary')");
+ await run("document.querySelector('.wizard-footer .btn-primary').click()");await delay(150);await run("document.querySelector('.wizard-footer .btn-primary').click()");await wait("!!document.querySelector('.org-tabs')||!!document.querySelector('.org-tab')");
+ await run("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('Found Custom')).click()");await wait("!!document.querySelector('.custom-squad-grid')");
+ await run(`(()=>{const set=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));};set(document.querySelector('.custom-org-panel input[type=text]'),'Solar Test');set(document.querySelector('.custom-squad-fields input'),'SOL');})()`);
+ const image=fs.readFileSync(path.join(root,'public/broadcast-crests/team_1.png')).toString('base64');
+ await run(`(()=>{const raw=atob(${JSON.stringify(image)}),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0)),dt=new DataTransfer();dt.items.add(new File([bytes],'test-logo.png',{type:'image/png'}));const el=document.querySelector('#custom-club-logo');el.files=dt.files;el.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+ await wait("!!document.querySelector('.custom-logo-preview img')");win.webContents.setBackgroundThrottling(false);win.showInactive();await delay(200);fs.writeFileSync(path.join(folder,'setup.png'),(await win.webContents.capturePage()).toPNG());
+ await run("document.querySelector('.wizard-footer .btn-primary').click()");await delay(120);await run("document.querySelector('.wizard-footer .btn-primary').click()");await wait("!!document.querySelector('.create-btn')");await run("document.querySelector('.create-btn').click()");await wait("location.hash==='#/dashboard'");
+ const c=await run("window.api.db.query('SELECT * FROM careers LIMIT 1')");const team=await run(`window.api.teams.getById(${JSON.stringify(c.teamId)})`);
+ if(team.name!=='Solar Test'||team.shortName!=='SOL'||!team.branding?.logo?.startsWith('data:image/png'))throw Error('Club identity not saved');
+ const roster=await run(`window.api.players.getByTeam(${JSON.stringify(c.teamId)})`);if(roster.length!==3||roster.some(p=>p.overall!==70))throw Error('Custom ratings/roster not retained');
+ const source=await run(`window.api.db.query('SELECT starterIds FROM team_roster_sources WHERE teamId=?',${JSON.stringify(c.teamId)})`);if(JSON.parse(source.starterIds).length!==3)throw Error('Starting squad missing');
+ await wait("!!document.querySelector('.club-brand-strip img')");await delay(250);fs.writeFileSync(path.join(folder,'dashboard.png'),(await win.webContents.capturePage()).toPNG());
+ await run("location.hash='/settings'");await wait("!!document.querySelector('input[aria-label=\"Commentator volume\"]')");
+ const prefsBefore=await run('window.api.app.integration()');
+ await run("(()=>{const el=document.querySelector('input[aria-label=\"Commentator volume\"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,'35');el.dispatchEvent(new Event('input',{bubbles:true}));})()");await delay(450);
+ const prefsAfter=await run('window.api.app.integration()');if(prefsAfter.commentaryVolume!==.35||prefsAfter.botPack!==prefsBefore.botPack||prefsAfter.rocketLeague!==prefsBefore.rocketLeague)throw Error('Commentary volume save damaged preferences');
+ fs.writeFileSync(path.join(folder,'commentary-volume.png'),(await win.webContents.capturePage()).toPNG());
+ await run(`window.api.db.run('UPDATE player_attributes SET mechanical=99,aerial=85,shooting=79,passing=70,goalkeeping=50 WHERE playerId=?',${JSON.stringify(roster[0].id)})`);
+ await run(`location.hash='/player/${roster[0].id}'`);await wait("document.querySelectorAll('.attribute-bar-value').length>5");
+ const styles=await run("Array.from(document.querySelectorAll('.attribute-bar-value')).map(el=>({text:el.textContent,color:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}))");
+ if(styles.some(s=>s.color===s.background||s.background!=='rgba(0, 0, 0, 0)'))throw Error('Attribute numbers have an unreadable background');
+ const scroller=await run("(()=>{const el=document.querySelector('.attribute-bar-row');el.scrollIntoView({block:'center'});return true;})()");await delay(200);fs.writeFileSync(path.join(folder,'attribute-contrast.png'),(await win.webContents.capturePage()).toPNG());
+ await run("location.hash='/settings'");await wait("!!document.querySelector('input[aria-label=\"Commentator volume\"]')");await delay(150);if(await run("document.querySelector('input[aria-label=\"Commentator volume\"]').value")!=='35')throw Error('Commentary volume did not reload');
+ const fixtures=await run(`window.api.fixtures.getUpcoming(${JSON.stringify(c.teamId)},${JSON.stringify(c.currentDate)})`);if(!fixtures.length)throw Error('Custom team not entered into competition');
+ console.log(JSON.stringify({passed:true,customWizard:true,imageUpload:true,rosterAndRatings:true,brandingPersists:true,competitionEntry:true,screenshots:folder}));
+ }catch(e){code=1;console.error(e.stack);const w=windows.find(w=>!w.isDestroyed()&&w.webContents.getURL().includes('/dist/index.html'));if(w)console.error(await w.webContents.executeJavaScript('document.body.innerText'));}finally{app.exit(code);}})();

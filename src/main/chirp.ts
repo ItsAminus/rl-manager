@@ -1,3 +1,4 @@
+import {regionalNewsOnly,regionalPostSql,regionSql} from './news-scope';
 import {RecruitmentNetwork} from './recruitment-network';
 import type { AppDatabase } from './database';
 import { v4 as uuid } from 'uuid';
@@ -509,17 +510,18 @@ export class Chirp {
     if (!p) throw new Error('Chirp not found.');
     return p;
   }
+  private newsScope(id:string,p='p',a='a'){return regionalNewsOnly(this.db)?regionalPostSql(this.career(id).region,p,a):'1=1';}
   feed(id: string, options: any = {}, update=true) {
     if (update) this.tick(id);
     else { this.db.transaction(() => this.initialize(this.career(id)))(); this.queueUpdates(id); }
     if(options.refresh)this.queueRefresh(id);
-    const c = this.career(id), params: any[] = [id], where = ['p.careerId=?', 'p.parentId IS NULL',this.visible()];
+    const c = this.career(id), params: any[] = [id], where = ['p.careerId=?', 'p.parentId IS NULL',this.visible(),this.newsScope(id)];
     const query = String(options.query || '').trim().slice(0, 100), region = String(options.region || '');
     if (options.mode === 'following') where.push("EXISTS (SELECT 1 FROM chirp_follows f WHERE f.careerId=p.careerId AND f.accountId=p.accountId) OR p.accountId='manager' OR EXISTS(SELECT 1 FROM chirp_reactions r JOIN chirp_follows f ON f.careerId=r.careerId AND f.accountId=r.accountId WHERE r.careerId=p.careerId AND r.postId=p.id AND r.type='repost')");
     if (options.mode === 'bookmarks') where.push('EXISTS (SELECT 1 FROM chirp_bookmarks b WHERE b.careerId=p.careerId AND b.postId=p.id)');
     if (options.account) { where.push("(p.accountId=? OR EXISTS(SELECT 1 FROM chirp_reactions r WHERE r.careerId=p.careerId AND r.postId=p.id AND r.accountId=? AND r.type='repost'))"); params.push(options.account, options.account); }
     if (query) { where.push('(p.body LIKE ? ESCAPE \'\\\' OR a.displayName LIKE ? ESCAPE \'\\\' OR a.handle LIKE ? ESCAPE \'\\\' OR p.topic LIKE ? ESCAPE \'\\\')'); const q = '%' + query.replace(/^#/, '').replace(/[\\%_]/g, '\\$&') + '%'; params.push(q, q, q, q); }
-    if (region) { where.push('a.region=?'); params.push(region); }
+    if (region&&!regionalNewsOnly(this.db)) { where.push('a.region=?'); params.push(region); }
     if (options.cursor) {
       const cursor = this.requirePost(id, options.cursor);
       where.push('(p.date<? OR (p.date=? AND p.position<?))'); params.push(cursor.date, cursor.date, cursor.position);
@@ -528,9 +530,9 @@ export class Chirp {
     const rows = this.db.prepare(`SELECT p.* FROM chirp_posts p JOIN chirp_accounts a ON a.careerId=p.careerId AND a.id=p.accountId WHERE ${where.map(w => '(' + w + ')').join(' AND ')} ORDER BY p.date DESC,p.position DESC LIMIT 26`).all(...params);
     const posts = rows.slice(0, 25).map(p => this.postData(c, p));
     return { posts, cursor: rows.length > 25 ? posts[posts.length - 1].id : null, today: c.currentDate, manager: this.accountData(id, 'manager'), unread: this.unread(id),
-      trends: this.db.prepare("SELECT topic,COUNT(*) AS count FROM chirp_posts WHERE careerId=? AND parentId IS NULL AND topic!='' AND date>=? GROUP BY topic ORDER BY count DESC,topic LIMIT 6").all(id, addDays(c.currentDate, -7)),
-      suggestions: this.db.prepare("SELECT a.id FROM chirp_accounts a WHERE a.careerId=? AND a.id!='manager' AND NOT EXISTS(SELECT 1 FROM chirp_follows f WHERE f.careerId=a.careerId AND f.accountId=a.id) ORDER BY CASE WHEN a.teamId=? THEN 0 WHEN a.kind IN ('Analyst','Creator','Former pro','Media') THEN 1 ELSE 2 END,a.followers DESC LIMIT 4").all(id, c.teamId).map(a=>this.accountData(id,a.id)),
-      people: query ? this.db.prepare("SELECT a.id FROM chirp_accounts a WHERE a.careerId=? AND (a.displayName LIKE ? OR a.handle LIKE ?) ORDER BY a.followers DESC LIMIT 10").all(id, '%' + query.replace(/^@/, '') + '%', '%' + query.replace(/^@/, '') + '%').map(a=>this.accountData(id,a.id)) : [], regions: this.db.prepare("SELECT DISTINCT region FROM chirp_accounts WHERE careerId=? AND kind='Player' ORDER BY region").all(id).map(r => r.region) };
+      trends: this.db.prepare(`SELECT p.topic,COUNT(*) AS count FROM chirp_posts p JOIN chirp_accounts a ON a.careerId=p.careerId AND a.id=p.accountId WHERE p.careerId=? AND p.parentId IS NULL AND p.topic!='' AND p.date>=? AND ${this.visible()} AND ${this.newsScope(id)} GROUP BY p.topic ORDER BY count DESC,p.topic LIMIT 6`).all(id, addDays(c.currentDate, -7)),
+      suggestions: this.db.prepare(`SELECT a.id FROM chirp_accounts a WHERE a.careerId=? AND a.id!='manager' ${regionalNewsOnly(this.db)?`AND a.region IN (${regionSql(c.region)})`:''} AND NOT EXISTS(SELECT 1 FROM chirp_follows f WHERE f.careerId=a.careerId AND f.accountId=a.id) ORDER BY CASE WHEN a.teamId=? THEN 0 WHEN a.kind IN ('Analyst','Creator','Former pro','Media') THEN 1 ELSE 2 END,a.followers DESC LIMIT 4`).all(id, c.teamId).map(a=>this.accountData(id,a.id)),
+      people: query ? this.db.prepare(`SELECT a.id FROM chirp_accounts a WHERE a.careerId=? ${regionalNewsOnly(this.db)?`AND a.region IN (${regionSql(c.region)})`:''} AND (a.displayName LIKE ? OR a.handle LIKE ?) ORDER BY a.followers DESC LIMIT 10`).all(id, '%' + query.replace(/^@/, '') + '%', '%' + query.replace(/^@/, '') + '%').map(a=>this.accountData(id,a.id)) : [], regionalOnly:regionalNewsOnly(this.db),regions: regionalNewsOnly(this.db)?[c.region]:this.db.prepare("SELECT DISTINCT region FROM chirp_accounts WHERE careerId=? AND kind='Player' ORDER BY region").all(id).map(r => r.region) };
   }
   profile(id: string, account: string) {
     this.db.transaction(() => this.initialize(this.career(id)))(); const a = this.accountData(id, account);
@@ -538,11 +540,12 @@ export class Chirp {
   }
   thread(id: string, post: string) {
     const c = this.career(id), p = this.requirePost(id, post);
+    if(!this.db.prepare(`SELECT p.id FROM chirp_posts p JOIN chirp_accounts a ON a.careerId=p.careerId AND a.id=p.accountId WHERE p.id=? AND p.careerId=? AND ${this.newsScope(id)}`).get(post,id))throw Error('This thread is outside your regional news setting. Turn it off in Settings to view worldwide Chirp.');
     if(!this.db.prepare('SELECT postId FROM chirp_publications WHERE postId=? AND published=1').get(p.id))throw new Error('This comment is still being prepared.');
     if(this.text)this.db.transaction(()=>this.discussion(c,p))();
     this.db.prepare('UPDATE chirp_post_meta SET priority=MAX(priority,120) WHERE careerId=? AND postId IN(SELECT id FROM chirp_posts WHERE careerId=? AND parentId=?)').run(id,id,p.id);
     this.queueUpdates(id);
-    const replies = this.db.prepare(`SELECT reply.* FROM chirp_posts reply JOIN chirp_publication_order ordering ON ordering.postId=reply.id WHERE reply.careerId=? AND ${this.direct('reply')}=? AND ${this.visible('reply')} ORDER BY ordering.sequence LIMIT 100`).all(id,p.id);
+    const replies = this.db.prepare(`SELECT reply.* FROM chirp_posts reply JOIN chirp_accounts ra ON ra.careerId=reply.careerId AND ra.id=reply.accountId JOIN chirp_publication_order ordering ON ordering.postId=reply.id WHERE reply.careerId=? AND ${this.direct('reply')}=? AND ${this.visible('reply')} AND ${this.newsScope(id,'reply','ra')} ORDER BY ordering.sequence LIMIT 100`).all(id,p.id);
     const preparing=this.db.prepare(`SELECT COUNT(*) n FROM chirp_posts reply JOIN chirp_text_jobs j ON j.postId=reply.id WHERE reply.careerId=? AND ${this.direct('reply')}=? AND j.state='pending'`).get(id,p.id).n;
     // The selected reply is the main post. Earlier context is navigation,
     // never a flattened replacement for the selected comment.
@@ -606,14 +609,14 @@ export class Chirp {
   }
   notifications(id: string, markRead = false) {
     this.career(id);
-    const rows = this.db.prepare('SELECT n.* FROM chirp_notifications n JOIN chirp_publications publication ON publication.postId=n.postId AND publication.published=1 WHERE n.careerId=? ORDER BY n.date DESC,n.rowid DESC LIMIT 80').all(id);
+    const rows = this.db.prepare(`SELECT n.* FROM chirp_notifications n JOIN chirp_publications publication ON publication.postId=n.postId AND publication.published=1 JOIN chirp_posts p ON p.id=n.postId JOIN chirp_accounts a ON a.careerId=p.careerId AND a.id=p.accountId WHERE n.careerId=? AND ${this.newsScope(id)} ORDER BY n.date DESC,n.rowid DESC LIMIT 80`).all(id);
     if (markRead) this.db.prepare('UPDATE chirp_notifications SET isRead=1 WHERE careerId=? AND postId IN(SELECT postId FROM chirp_publications WHERE published=1)').run(id);
     return rows.map(n => ({ ...n, account: this.accountData(id, n.accountId) }));
   }
-  private unread(id:string){return this.db.prepare('SELECT COUNT(*) AS n FROM chirp_notifications n JOIN chirp_publications publication ON publication.postId=n.postId AND publication.published=1 WHERE n.careerId=? AND n.isRead=0').get(id).n;}
+  private unread(id:string){return this.db.prepare(`SELECT COUNT(*) AS n FROM chirp_notifications n JOIN chirp_publications publication ON publication.postId=n.postId AND publication.published=1 JOIN chirp_posts p ON p.id=n.postId JOIN chirp_accounts a ON a.careerId=p.careerId AND a.id=p.accountId WHERE n.careerId=? AND n.isRead=0 AND ${this.newsScope(id)}`).get(id).n;}
   updates(id: string) {
     this.career(id);
-    return {latest:this.db.prepare(`SELECT p.id FROM chirp_posts p WHERE p.careerId=? AND p.parentId IS NULL AND ${this.visible()} ORDER BY p.date DESC,p.position DESC LIMIT 1`).get(id)?.id || '',
+    return {latest:this.db.prepare(`SELECT p.id FROM chirp_posts p JOIN chirp_accounts a ON a.careerId=p.careerId AND a.id=p.accountId WHERE p.careerId=? AND p.parentId IS NULL AND ${this.visible()} AND ${this.newsScope(id)} ORDER BY p.date DESC,p.position DESC LIMIT 1`).get(id)?.id || '',
       revision:this.db.prepare("SELECT (SELECT COUNT(*) FROM chirp_publications WHERE careerId=? AND published=1)+(SELECT COUNT(*) FROM chirp_text_jobs WHERE careerId=? AND state='fallback') AS n").get(id,id).n,
       unread:this.unread(id)};
   }

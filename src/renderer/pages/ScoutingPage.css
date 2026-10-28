@@ -177,3 +177,5 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 10px;
 }
+
+.scout-brief{flex-basis:100%;min-width:0;border:1px solid #446352;border-radius:10px;padding:18px;margin-top:14px}.scout-skill-filters{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:14px}.scout-brief label{display:flex;flex-direction:column;gap:7px}.scout-brief input{width:100%;box-sizing:border-box}.scouting-dispatch:has(.scout-brief){flex-wrap:wrap}

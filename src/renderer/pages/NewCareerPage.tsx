@@ -4,6 +4,8 @@ import { useCareerStore } from '../../stores/careerStore';
 import { Region, Difficulty, Team, matchesRegion } from '../../types';
 import './NewCareerPage.css';
 import {selectableTeam,selectTeams,TEAM_SORTS,type TeamSort} from '../../game/team-selection';
+import {validateCustomOrganization} from '../../game/custom-organization';
+import {imageFilePng} from '../utils/design-images';
 
 export const NewCareerPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,6 +16,9 @@ export const NewCareerPage: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>(Region.EUROPE);
   const [selectedTeamId, setSelectedTeamId] = useState<string>('');
   const [customOrgName, setCustomOrgName] = useState<string>('');
+  const [customShort,setCustomShort]=useState(''),[customLogo,setCustomLogo]=useState<string|null>(null),[imageBusy,setImageBusy]=useState(false);
+  const [customPlayers,setCustomPlayers]=useState([{gamertag:'Striker',overall:70,age:18},{gamertag:'Playmaker',overall:70,age:18},{gamertag:'Anchor',overall:70,age:18}]);
+  const customDesign=()=>validateCustomOrganization({name:customOrgName,shortName:customShort,logo:customLogo,players:customPlayers});
   const [isCustomOrg, setIsCustomOrg] = useState<boolean>(false);
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.HARD);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -64,10 +69,7 @@ export const NewCareerPage: React.FC = () => {
       setError('Please select an organization.');
       return;
     }
-    if (step === 3 && isCustomOrg && !customOrgName.trim()) {
-      setError('Please enter your custom organization name.');
-      return;
-    }
+    if(step===3&&isCustomOrg){try{customDesign();}catch(e){setError(String(e));return;}if(imageBusy)return;}
     setStep((s) => Math.min(5, s + 1));
   };
 
@@ -77,6 +79,7 @@ export const NewCareerPage: React.FC = () => {
   };
 
   const handleFinish = async () => {
+    if(isCustomOrg){try{customDesign();}catch(e){setError(String(e));return;}}
     setSubmitting(true);
     setError(null);
 
@@ -88,6 +91,7 @@ export const NewCareerPage: React.FC = () => {
       region: selectedRegion,
       difficulty,
       customOrgName: isCustomOrg ? customOrgName.trim() : undefined,
+      customOrganization:isCustomOrg?customDesign():undefined,
     });
 
     setSubmitting(false);
@@ -246,13 +250,19 @@ export const NewCareerPage: React.FC = () => {
                     className="input-text"
                     placeholder="e.g. Apex Predators, Solar Esports"
                     value={customOrgName}
+                    maxLength={50}
                     onChange={(e) => setCustomOrgName(e.target.value)}
                     autoFocus
                   />
                 </div>
+                <div className="custom-squad-fields">
+                  <label className="input-field-group">TEAM ABBREVIATION<input className="input-text" maxLength={6} placeholder="e.g. APEX" value={customShort} onChange={e=>setCustomShort(e.target.value.toUpperCase())}/></label>
+                  <div className="input-field-group"><label htmlFor="custom-club-logo">TEAM LOGO · OPTIONAL</label><input id="custom-club-logo" type="file" accept="image/png,image/jpeg,image/webp" disabled={imageBusy} onChange={async e=>{const file=e.target.files?.[0];if(!file)return;setImageBusy(true);setError(null);try{setCustomLogo(await imageFilePng(file,512,512));}catch(err){setError(String(err));}finally{setImageBusy(false);e.target.value='';}}}/><small>PNG, JPG or WebP up to 10 MB. Used throughout RLM and the in-game timer.</small>{imageBusy&&<p role="status">Preparing logo…</p>}{customLogo&&<div className="custom-logo-preview"><img src={customLogo} alt="Your organization logo"/><button className="org-tab" onClick={()=>setCustomLogo(null)}>Remove logo</button></div>}</div>
+                </div>
+                <h3>Your starting squad</h3><p>Create your own three players. Their ratings set their attributes and affect simulation and live bot selection within your chosen difficulty. These players belong only to this save.</p>
+                <div className="custom-squad-grid">{customPlayers.map((p,i)=><article className="custom-player-card" key={i}><h4>Player {i+1} · {['Attack','Support','Defence'][i]}</h4><label>Gamertag<input className="input-text" maxLength={24} value={p.gamertag} onChange={e=>setCustomPlayers(v=>v.map((x,n)=>n===i?{...x,gamertag:e.target.value}:x))}/></label><label>OVR / rating<input className="input-text" type="number" min={1} max={99} value={p.overall} onChange={e=>setCustomPlayers(v=>v.map((x,n)=>n===i?{...x,overall:Number(e.target.value)}:x))}/></label><label>Age<input className="input-text" type="number" min={15} max={45} value={p.age} onChange={e=>setCustomPlayers(v=>v.map((x,n)=>n===i?{...x,age:Number(e.target.value)}:x))}/></label></article>)}</div>
                 <div className="custom-org-info">
-                  Starting budget will be standard expansion allotment ($350,000) with full
-                  free-agent signing priority.
+                  Starting cash: $350,000. Your custom squad is created directly; no free agents are taken from the database. You can change your club branding later in Club Studio.
                 </div>
               </div>
             )}

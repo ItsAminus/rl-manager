@@ -4,7 +4,7 @@ import {publicAssetUrl} from '../utils/public-assets';
 import {readSoundSettings} from '../audio/ui-sounds';
 import './CompetitionIntro.css';
 
-type Props = {presentation: CompetitionPresentation; fixtureKey: string; eventName: string};
+type Props = {presentation: CompetitionPresentation; fixtureKey: string; eventName: string; onComplete?:()=>void};
 const storageKey = (key: string) => `rlm:matchday-intro:${key}`;
 function alreadySeen(key: string) {
   try { return sessionStorage.getItem(storageKey(key)) === 'seen'; } catch { return false; }
@@ -12,7 +12,7 @@ function alreadySeen(key: string) {
 
 // The parent keys this component by career + fixture. No saved match results or
 // career data are touched by watching, skipping, or failing to load a video.
-export function CompetitionIntro({presentation, fixtureKey, eventName}: Props) {
+export function CompetitionIntro({presentation, fixtureKey, eventName,onComplete}: Props) {
   const [phase, setPhase] = useState<'loading' | 'playing' | 'blocked' | 'leaving' | 'done'>(() => alreadySeen(fixtureKey) ? 'done' : 'loading');
   const [muted, setMuted] = useState(() => !readSoundSettings().enabled);
   const [paused, setPaused] = useState(false);
@@ -24,6 +24,8 @@ export function CompetitionIntro({presentation, fixtureKey, eventName}: Props) {
   const frame = useRef(0);
   const stall = useRef<ReturnType<typeof setTimeout>>();
   const done = phase === 'done';
+  const notified=useRef(false);
+  useEffect(()=>{if(done&&!notified.current){notified.current=true;onComplete?.();}},[done,onComplete]);
 
   const finish = useCallback(() => {
     if (exiting.current) return;

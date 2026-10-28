@@ -1,0 +1,82 @@
+[
+  {
+    "id": "nation:Argentina",
+    "name": "Argentina"
+  },
+  {
+    "id": "nation:Australia",
+    "name": "Australia"
+  },
+  {
+    "id": "nation:Belgium",
+    "name": "Belgium"
+  },
+  {
+    "id": "nation:Brazil",
+    "name": "Brazil"
+  },
+  {
+    "id": "nation:Canada",
+    "name": "Canada"
+  },
+  {
+    "id": "nation:Chile",
+    "name": "Chile"
+  },
+  {
+    "id": "nation:Denmark",
+    "name": "Denmark"
+  },
+  {
+    "id": "nation:France",
+    "name": "France"
+  },
+  {
+    "id": "nation:Germany",
+    "name": "Germany"
+  },
+  {
+    "id": "nation:Ireland",
+    "name": "Ireland"
+  },
+  {
+    "id": "nation:Italy",
+    "name": "Italy"
+  },
+  {
+    "id": "nation:Japan",
+    "name": "Japan"
+  },
+  {
+    "id": "nation:Mongolia",
+    "name": "Mongolia"
+  },
+  {
+    "id": "nation:Morocco",
+    "name": "Morocco"
+  },
+  {
+    "id": "nation:Netherlands",
+    "name": "Netherlands"
+  },
+  {
+    "id": "nation:Saudi Arabia",
+    "name": "Saudi Arabia"
+  },
+  {
+    "id": "nation:Singapore",
+    "name": "Singapore"
+  },
+  {
+    "id": "nation:South Africa",
+    "name": "South Africa"
+  },
+  {
+    "id": "nation:Spain",
+    "name": "Spain"
+  },
+  {
+    "id": "nation:United States",
+    "name": "United States"
+  }
+]

@@ -54,6 +54,14 @@ class FinalBankTests(unittest.TestCase):
         self.assertEqual(len(self.loaded.categories['crowd_late_goal']), 1)
         self.assertNotIn('goal_01', self.loaded.categories['goal'])
 
+    def test_muted_caster_lane_keeps_crowd_without_spoken_goal_calls(self):
+        # The muted launcher uses ClipBroadcast, never the AI speech worker.
+        self.b.speech_muted=True
+        self.idle();self.player.played.clear();self.crowd.played.clear()
+        ClipBroadcast._event(self.b,'goal',0,0)
+        self.assertEqual(len(self.player.played),0)
+        self.assertGreater(len(self.crowd.played),0)
+
     def test_confirmed_goal_cuts_save_and_plays_crowd_and_one_spoken_call(self):
         self.b._event('save', 0, 0)
         self.assertTrue(self.player.interruptible)

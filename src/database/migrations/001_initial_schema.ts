@@ -1,6 +1,28 @@
 import {realismSchema} from '../../main/club-economy';
 export function runMigration(db: any) {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS scouting_teams (
+      id TEXT PRIMARY KEY, careerId TEXT NOT NULL, teamId TEXT NOT NULL,
+      startedDate TEXT NOT NULL, dueDate TEXT NOT NULL, status TEXT NOT NULL,
+      playerIds TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS scouting_region_discoveries (
+      assignmentId TEXT NOT NULL, playerId TEXT NOT NULL, firstReportDate TEXT NOT NULL,
+      PRIMARY KEY(assignmentId,playerId)
+    );
+    CREATE TABLE IF NOT EXISTS market_negotiations (
+      storyId TEXT PRIMARY KEY, askingFee INTEGER NOT NULL, signingBonus INTEGER NOT NULL DEFAULT 0,
+      rounds INTEGER NOT NULL DEFAULT 0, sellerResponse TEXT NOT NULL DEFAULT 'offered'
+    );
+    CREATE TABLE IF NOT EXISTS market_news_events (
+      id TEXT PRIMARY KEY, careerId TEXT NOT NULL, date TEXT NOT NULL,
+      fromTeamId TEXT, toTeamId TEXT, body TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_market_news_day ON market_news_events(careerId,date);
+    CREATE TABLE IF NOT EXISTS career_ai_lineups (
+      careerId TEXT NOT NULL, teamId TEXT NOT NULL, players TEXT NOT NULL,
+      PRIMARY KEY(careerId,teamId)
+    );
     CREATE TABLE IF NOT EXISTS careers (
       id TEXT PRIMARY KEY,
       managerName TEXT NOT NULL,
@@ -481,5 +503,12 @@ export function runMigration(db: any) {
     CREATE INDEX IF NOT EXISTS idx_fixtures_status_date ON fixtures(competitionId, status, scheduledDate);
   `);
   if(!db.prepare('PRAGMA table_info(transfers)').all().some((c:any)=>c.name==='careerId'))db.exec('ALTER TABLE transfers ADD COLUMN careerId TEXT');
+  db.exec(`CREATE TABLE IF NOT EXISTS agency_relationships(careerId TEXT,agencyId TEXT,trust INTEGER DEFAULT 50,PRIMARY KEY(careerId,agencyId));
+    CREATE TABLE IF NOT EXISTS club_departments(careerId TEXT,role TEXT,level INTEGER,effectiveDate TEXT,PRIMARY KEY(careerId,role));
+    CREATE TABLE IF NOT EXISTS negotiation_sessions(careerId TEXT,playerId TEXT,patience INTEGER DEFAULT 100,rounds INTEGER DEFAULT 0,blockedUntil TEXT,lastOffer TEXT,PRIMARY KEY(careerId,playerId));
+    CREATE TABLE IF NOT EXISTS scouting_briefs(assignmentId TEXT PRIMARY KEY,criteria TEXT);
+    CREATE TABLE IF NOT EXISTS hidden_prospects(playerId TEXT PRIMARY KEY,careerId TEXT,season TEXT);
+    CREATE TABLE IF NOT EXISTS talent_seasons(careerId TEXT,season TEXT,PRIMARY KEY(careerId,season));
+    CREATE TABLE IF NOT EXISTS attribute_variation(playerId TEXT PRIMARY KEY);`);
   realismSchema(db);
 }

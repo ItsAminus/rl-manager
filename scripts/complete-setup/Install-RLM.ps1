@@ -63,7 +63,7 @@ function Add-Lines([string]$File,[string[]]$Lines){
 }
 function Configure-Bakkes([string]$Root){
   Add-Lines (Join-Path $Root 'cfg\plugins.cfg') @('plugin load rconplugin','plugin load serverhost','plugin load rlmanagerhud')
-  Add-Lines (Join-Path $Root 'data\rcon_commands.cfg') @('rcon_password','plugin','rcon_refresh_allowed','disconnect','unreal_command','open','rlm_host_arm','rlm_host_stop','rlm_host_ready','rlm_hud_enabled','rlm_scoreboard_enabled')
+  Add-Lines (Join-Path $Root 'data\rcon_commands.cfg') @('ws_inventory','sendback','rcon_password','plugin','cl_settings_refreshplugins','rcon_refresh_allowed','disconnect','unreal_command','open','rlm_host_arm','rlm_host_stop','rlm_host_ready','rlm_hud_enabled','rlm_scoreboard_enabled')
   $cfg=Join-Path $Root 'cfg\config.cfg'
   $text=if(Test-Path -LiteralPath $cfg){[IO.File]::ReadAllText($cfg)}else{''}
   if($text -notmatch 'rcon_password\s+"[^"]+"'){

@@ -4,6 +4,7 @@ import { RatingBadge } from '../components/RatingBadge';
 import { tacticalFit } from '../../game/tactics';
 import './TacticsPage.css';
 import {botDifficulty} from '../../game/bot-difficulty';
+import {DEFAULT_TACTICS,TACTIC_CHOICES} from '../../game/tactics';
 
 export const TacticsPage: React.FC = () => {
   const { roster, team, career } = useCareerStore();
@@ -17,6 +18,7 @@ export const TacticsPage: React.FC = () => {
   const [demoFreq, setDemoFreq] = useState<string>('High');
   const [passingStyle, setPassingStyle] = useState<string>('Passing Focus');
   const [pressure, setPressure] = useState<string>('High');
+  const [local,setLocal]=useState<Record<string,string>>({supportDepth:'Balanced',outletWidth:'Balanced',demoTarget:'Star player',boostReserve:'0'});
 
   // Player assignments
   const [roles, setRoles] = useState<Record<string, string>>({
@@ -29,7 +31,7 @@ export const TacticsPage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const indexedRoles=Object.fromEntries(starters.map((p,i)=>[i,roles[p.id]??roles[i]]));
-  const plan = { overallStyle, challengeFreq, rotation, boostPriority, demoFreq, passingStyle, pressure, roles:indexedRoles,
+  const plan = { ...local,overallStyle, challengeFreq, rotation, boostPriority, demoFreq, passingStyle, pressure, roles:indexedRoles,
     rolesByPlayer:Object.fromEntries(starters.map((p,i)=>[p.id,roles[p.id]??roles[i]])) };
   useEffect(() => {
     if (!career) return;
@@ -37,6 +39,7 @@ export const TacticsPage: React.FC = () => {
       if (p.error) { setSaveError(p.error); return; }
       setOverallStyle(p.overallStyle); setChallengeFreq(p.challengeFreq); setRotation(p.rotation); setBoostPriority(p.boostPriority);
       setDemoFreq(p.demoFreq); setPassingStyle(p.passingStyle); setPressure(p.pressure); setRoles(p.rolesByPlayer||p.roles);
+      setLocal(Object.fromEntries(['supportDepth','outletWidth','demoTarget','boostReserve'].map(key=>[key,p[key]??(DEFAULT_TACTICS as any)[key]])));
     });
   }, [career?.id]);
 
@@ -76,6 +79,7 @@ export const TacticsPage: React.FC = () => {
       )}
 
       <div className="tactics-content-grid">
+        {career&&botDifficulty(career.difficulty)!=='Hard'&&<section className="tactics-panel"><h3>Local bot ground instructions</h3><p>These change off-ball positioning and grounded tactical attempts. Emergency saves, kickoffs and aerials retain the original bot policy.</p>{[['supportDepth','Support distance'],['outletWidth','Passing outlet width'],['demoTarget','Demo target priority'],['boostReserve','Minimum boost reserve']].map(([key,label])=><label key={key} style={{display:'block',marginBottom:14}}>{label}<select value={local[key]} onChange={e=>setLocal(old=>({...old,[key]:e.target.value}))}>{TACTIC_CHOICES[key].map(value=><option key={value}>{value}</option>)}</select></label>)}<small>Demo priority applies when demo pressure is ordered. Boost reserve controls tactical pursuit only; native emergency decisions stay with the bot.</small></section>}
         {/* Left: Tactical Parameters */}
         <div className="tactics-panel">
           <h3 className="panel-title">SYSTEM PREFERENCES</h3>

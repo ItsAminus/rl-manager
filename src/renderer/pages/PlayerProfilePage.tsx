@@ -1,3 +1,4 @@
+import {TeamLink} from '../components/TeamLink';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCareerStore } from '../../stores/careerStore';
@@ -138,7 +139,7 @@ export const PlayerProfilePage: React.FC = () => {
             {getPlayerPhotoCredit(player.gamertag,player.id) && <a className="portrait-credit" href={getPlayerPhotoCredit(player.gamertag,player.id)!} target="_blank" rel="noreferrer">{getPlayerPhotoKind(player.gamertag,player.id)==='headshot'?'Headshot source':'Account avatar · no verified headshot'} ↗</a>}
             <div className="header-realname">
               {player.realName || 'Real name unconfirmed'} • Age {player.age ?? 'unconfirmed'} • Team:{' '}
-              <strong className="header-team-name">{player.teamName || (isMyPlayer ? team?.name : player.affiliationStatus === 'unverified' ? 'Affiliation unverified' : player.affiliationStatus === 'inactive' ? 'Inactive' : 'Free Agent')}</strong>
+              <strong className="header-team-name"><TeamLink id={player.teamId}>{player.teamName || (isMyPlayer ? team?.name : player.affiliationStatus === 'unverified' ? 'Affiliation unverified' : player.affiliationStatus === 'inactive' ? 'Inactive' : 'Free Agent')}</TeamLink></strong>
             </div>
           </div>
         </div>

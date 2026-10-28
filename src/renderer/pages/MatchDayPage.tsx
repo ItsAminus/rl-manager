@@ -10,13 +10,16 @@ import './MatchDayPage.css';
 import { TeamTalkPanel } from '../components/TeamTalkPanel';
 import {SERIES_MAPS} from '../../services/series-maps';
 import {TeamCrest} from '../components/TeamCrest';
+import {OpponentReport} from '../components/OpponentReport';
+import {MatchdayOpponentPreview} from '../components/MatchdayOpponentPreview';
 import {botDifficulty} from '../../game/bot-difficulty';
 import {isPath} from '../../game/career-mode';
 import {PathMatchProgress} from '../components/SeriesTimeoutPanel';
 import {TimedSeriesTimeout as SeriesTimeoutPanel} from '../components/TimedSeriesTimeout';
-import {CompetitionIntro} from '../components/CompetitionIntro';
+import {PrematchDesk} from '../components/PrematchDesk';
 import {competitionPresentation} from '../utils/competition-presentation';
 import {publicAssetUrl} from '../utils/public-assets';
+import {matchStageLabel} from '../../services/match-stage';
 
 interface TeamStarters {
   teamName: string;
@@ -486,15 +489,14 @@ export const MatchDayPage: React.FC = () => {
   return (
     <div className={`matchday-page${presentation ? ' competition-matchday' : ''}`} data-competition={presentation?.id}
       style={presentation ? {backgroundImage: `linear-gradient(180deg,rgba(5,12,23,.42),rgba(5,12,23,.83) 62%,#080f19),url("${publicAssetUrl(presentation.background)}")`} : undefined}>
-      {presentation && fixture.status !== 'completed' && completedGames.length === 0 && !matchRunning && !bridgeBusy && !playedResultPending &&
-        <CompetitionIntro key={`${career?.id}:${fixture.id}`} fixtureKey={`${career?.id}:${fixture.id}`} presentation={presentation} eventName={fixture.competitionName || presentation.label}/>}
-      {/* Top Breadcrumb & Header */}
+            {/* Top Breadcrumb & Header */}
       <div className="matchday-topbar">
         <button className="back-btn" onClick={() => navigate('/dashboard')}>
           ← DASHBOARD
         </button>
         <div className="matchday-title-badge">
           {fixture.competitionName || 'RLCS TOURNAMENT'} • BEST OF {seriesFormatNum}
+          <strong className="match-stage-badge">{matchStageLabel((fixture as any).stage,(fixture as any).groupName,(fixture as any).roundLabel,fixture.round)}</strong>
           <button className="text-link" onClick={()=>navigate(`/competition/${fixture.competitionId}?tab=bracket`)}>View tournament bracket →</button>
         </div>
         <div className="series-tracker-pill">
@@ -508,6 +510,9 @@ export const MatchDayPage: React.FC = () => {
       </section>}
       <div className="matchday-map-rotation">{SERIES_MAPS.slice(0,seriesFormatNum).map((arena,i)=><span key={arena.code} className={i+1===currentGameNum&&!isSeriesOver?'current':''}><small>GAME {i+1}</small>{arena.name}</span>)}<small>Broadcast HUD supports Fullscreen with BakkesMod running. Hold Tab for player details.</small></div>
       {career&&(isPath(career)||botDifficulty(career.difficulty)!=='Hard')&&<details className="notice"><summary>In-game commands · D-pad Up: press · Down: defend · Right: pass · Left: demo</summary><p>Tap once. These controls work independently of exhibition chat. Keyboard: F1 press, F2 defend, F3 pass, F4 demo, F5 resume your saved plan. Orders expire automatically. Look for TEAM COMMS CONFIRMED and your teammates’ names.</p></details>}
+      {fixture.status!=='completed'&&completedGames.length===0&&!matchRunning&&!bridgeBusy&&!isPlayModalOpen&&<PrematchDesk key={`${career?.id}:${fixture.id}`} fixtureId={fixture.id} onPlay={handleStartPlayMatch} disabled={simulating||playedResultPending}/>}
+      {fixture&&!matchRunning&&<MatchdayOpponentPreview teamId={fixture.awayTeamId} playerIds={awayStarters.map(p=>p.id)} ownPlayerIds={homeStarters.map(p=>p.id)}/>}
+      {fixture&&!isPath(career)&&!matchRunning&&<details className="panel"><summary>Detailed recruitment scouting · Optional</summary><OpponentReport teamId={fixture.awayTeamId}/></details>}
       {(completedGames.length===0||isSeriesOver)&&<TeamTalkPanel fixtureId={fixtureId!} phase={isSeriesOver ? 'postgame' : 'pregame'} revision={completedGames.length} disabled={matchRunning || simulating || bridgeBusy} />}
       {completedGames.length>0&&!isSeriesOver&&!matchRunning&&<SeriesTimeoutPanel fixtureId={fixtureId!} game={currentGameNum} players={homeStarters} disabled={bridgeBusy||simulating||playedResultPending} local={botPlan?.route!=='Rocket Host'&&(isPath(career)||botDifficulty(career?.difficulty)!=='Hard')} onActiveChange={setTimeoutActive} onContinue={()=>{void handleConfirmLaunch();}}/>}
       {completedGames.length>0&&!matchRunning&&<PathMatchProgress revision={completedGames.length}/>}
@@ -771,8 +776,10 @@ export const MatchDayPage: React.FC = () => {
               const human = p.id === selectedHumanPlayerId;
               return <div key={p.id} className="bot-assignment-row">
                 <div><strong>{p.gamertag} • {p.overall??p.estimatedOverall??'Unscouted'}</strong><br />
-                  <small>{human ? 'You control this player' : `${assignment?.engine || 'Unassigned'} • ${p.preferredTendency}`}
+                  <small>{human ? 'You control this player' : `${assignment?.engine || (assignment?.assignmentError ? 'No healthy replacement available' : 'Assignment unavailable')} • ${p.preferredTendency}`}
                     {assignment?.luckyGame ? ' • Breakout game' : ''}</small>
+                  {!human&&assignment?.fallbackReason&&<small className="bot-assignment-detail">{assignment.fallbackReason}</small>}
+                  {!human&&assignment?.assignmentError&&<small className="bot-assignment-detail">{assignment.assignmentError}</small>}
                   {!human && assignment && <small className="bot-assignment-detail">{assignment.availableLevel}
                     {assignment.styleApplied ? ' • Ground support follows player style' : assignment.type === 'Rocket Host' ? ' • Hosted bot policy' : ' • Bot-pack policy'}</small>}
                   {!human&&p.teamId===team?.id&&assignment?.performance&&<small className="bot-assignment-detail">{assignment.performance.state} · Form {Math.round(assignment.performance.form)} · Confidence {Math.round(assignment.performance.confidence)} · Fatigue {Math.round(assignment.performance.fatigue*100)} · Cohesion {Math.round(assignment.performance.cohesion*100)}</small>}

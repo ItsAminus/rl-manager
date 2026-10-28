@@ -1,4 +1,5 @@
 import {clauseTerms} from '../../game/deal-terms';
+import {ClubFeeNegotiation} from '../components/ClubFeeNegotiation';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCareerStore } from '../../stores/careerStore';
@@ -69,7 +70,7 @@ export const NegotiationPage: React.FC = () => {
           const pricing = await window.api.management.signingQuote(career.id, p.id);
           if (!pricing.success) throw new Error(pricing.error);
           setQuote(pricing);
-          setPatience(100);
+          setPatience(pricing.negotiation?.patience??100);
           setMood(pricing.interest?.willing===false?'skeptical':'neutral');
           setOfferedRole(pricing.approach?.role||'Core Starter');
           const targetW = pricing.demands.salary;
@@ -86,7 +87,7 @@ export const NegotiationPage: React.FC = () => {
           // Agent name generator
           const agents = ['Matthias Vance', 'Claire Moreau', 'Julian Drake', 'Antoine Royer', 'Sven Lindholm'];
           const chosenAgent = agents[Array.from(p.id).reduce((n,c)=>n+c.charCodeAt(0),0) % agents.length];
-          setAgentName(chosenAgent);
+          setAgentName(pricing.agent?.name||chosenAgent);
 
           // Initial greeting
           const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -130,13 +131,17 @@ export const NegotiationPage: React.FC = () => {
 
     // Evaluate offer
     setTimeout(async () => {
+      if(!career)return;
+      const feedback=await window.api.management.negotiateTerms(career.id,player.id,{salary:offeredWage,bonus:offeredBonus}).catch(()=>({success:false,error:'Could not submit terms. Please retry.'}));
+      if(!feedback.success){setSaveError(feedback.error);setSubmitting(false);return;}
+      setPatience(feedback.patience);
       const overallScore = contractOfferScore({ salary: offeredWage, bonus: offeredBonus }, { salary: targetWage, bonus: targetBonus });
 
       if (overallScore >= 0.95) {
         await finalizeSignedContract();
       } else if (overallScore >= 0.82) {
         // CLOSE COUNTER
-        const newPatience = Math.max(0, patience - 12);
+        const newPatience = feedback.patience;
         setPatience(newPatience);
         setMood('skeptical');
         addMessage(
@@ -147,7 +152,7 @@ export const NegotiationPage: React.FC = () => {
         if (newPatience <= 0) handleWalkout();
       } else if (overallScore >= 0.65) {
         // LOWBALL
-        const newPatience = Math.max(0, patience - 28);
+        const newPatience = feedback.patience;
         setPatience(newPatience);
         setMood('frustrated');
         addMessage(
@@ -157,7 +162,7 @@ export const NegotiationPage: React.FC = () => {
         if (newPatience <= 0) handleWalkout();
       } else {
         // INSULTING OFFER
-        const newPatience = Math.max(0, patience - 45);
+        const newPatience = feedback.patience;
         setPatience(newPatience);
         setMood('furious');
         addMessage(
@@ -196,7 +201,7 @@ export const NegotiationPage: React.FC = () => {
       const result = await window.api.management.sign(career.id, player.id, {
         salary: terms?.salary ?? offeredWage, bonus: terms?.bonus ?? offeredBonus,
         duration: offeredDuration, buyout: offeredBuyout,
-        role:offeredRole,...clauses,
+        role:offeredRole,...clauses,clubAgreement:quote?.club?.talk?.status==='agreed',
       });
       if (!result.success) throw new Error(result.error);
       setDealStatus('signed');
@@ -220,25 +225,28 @@ export const NegotiationPage: React.FC = () => {
   }
   let clauseError='',adjustedFee=quote?.fee||0;try{adjustedFee=clauseTerms({salary:offeredWage,...clauses},quote?.renewal?null:player.teamId,adjustedFee).fee;}catch(error){clauseError=error instanceof Error?error.message:String(error);}
   if((offeredRole==='Star Carry'&&clauses.playingTime<80)||(offeredRole==='Core Starter'&&clauses.playingTime<60))clauseError='The playing-time guarantee must support the proposed role.';
-  const upfront = adjustedFee + offeredBonus + offeredWage;
+  const feeUpfront=quote?.club?.talk?.status==='agreed'?quote.transferUpfront:adjustedFee;
+  const upfront = feeUpfront + offeredBonus + offeredWage;
   const funds = quote?.clubFunds ?? 0;
   let demandsCost=(quote?.fee||0)+targetBonus+targetWage;try{demandsCost=clauseTerms({salary:targetWage,...clauses},quote?.renewal?null:player.teamId,quote?.fee||0).fee+targetBonus+targetWage;}catch{/* Validation is shown next to the clause controls. */}
+  if(quote?.club?.talk?.status==='agreed')demandsCost=feeUpfront+targetBonus+targetWage;
   const unavailable = !quote || !!quote.unavailableReason || !!clauseError;
 
   const patienceColor =
     patience >= 70 ? 'patience-high' :
     patience >= 35 ? 'patience-med' : 'patience-low';
 
+  if (!market.open) return <div className="management-page"><h1>Negotiations are closed</h1><p>{market.label}</p><button className="btn btn-primary" onClick={()=>navigate('/transfers')}>Back to transfers</button></div>;
+  if(quote?.club&&quote.club.talk?.status!=='agreed')return <div className="management-page"><button className="btn btn-secondary" onClick={()=>navigate('/transfers')}>Back to recruitment</button><ClubFeeNegotiation careerId={career!.id} playerId={player.id} club={quote.club} onRefresh={async()=>{const fresh=await window.api.management.signingQuote(career!.id,player.id);if(!fresh.success)throw Error(fresh.error);setQuote(fresh);setClauses(v=>({...v,profitPercent:0,buybackFee:0,contributionPercent:0,contributionMonths:0}));}}/></div>;
   if(quote&&!quote.renewal&&(quote.needsApproach||!quote.approach?.willing||quote.approach?.role!==offeredRole))return <div className="management-page">
     <button className="btn btn-secondary" onClick={()=>navigate('/transfers')}>Back to recruitment</button>
     <section className="panel"><span className="eyebrow">Confidential agent approach</span><h1>Would {player.gamertag} consider your club?</h1><p>First establish the sporting project and playing role. Financial offers cannot override a refusal.</p>
     <label>Proposed role <select value={offeredRole} onChange={e=>{setOfferedRole(e.target.value as any);setClauses({...clauses,playingTime:e.target.value==='Star Carry'?80:e.target.value==='Core Starter'?60:0});}}>{['Star Carry','Core Starter','Substitute'].map(r=><option key={r}>{r}</option>)}</select></label>
-    <p>Continental reputation: {Math.round(quote.interest?.continentalReputation||0)}/100 · Minimum transfer funds: ${(quote.fee||0).toLocaleString()} · Cash: ${(quote.clubFunds||0).toLocaleString()}</p>
+    <p>Continental reputation: {Math.round(quote.interest?.continentalReputation||0)}/100 · Club payment now: ${(quote.transferUpfront||0).toLocaleString()} · Cash: ${(quote.clubFunds||0).toLocaleString()}</p>
     {quote.approach&&<div role="status"><h3>{quote.approach.willing?'Open to discussions':'Agent declined'}</h3>{quote.approach.reasons.map((r:string)=><p key={r}>{r}</p>)}<p>Response valid until {quote.approach.expiresDate}. Repeating the same approach does not reroll the decision.</p></div>}
     {saveError&&<p role="alert">{saveError}</p>}
     <button className="btn btn-primary" disabled={submitting} onClick={async()=>{if(!career)return;setSubmitting(true);try{const r=await window.api.management.approachAgent(career.id,player.id,offeredRole);if(r.success===false)throw Error(r.error);const fresh=await window.api.management.signingQuote(career.id,player.id);setQuote(fresh);setDialogue([{sender:'agent',time:'Now',text:r.willing?'The sporting project is acceptable. We can discuss personal terms.':r.reasons.join(' ')}]);}catch(e){setSaveError(String(e));}finally{setSubmitting(false);}}}>Ask agent about this project</button>
     </section></div>;
-  if (!market.open) return <div className="management-page"><h1>Negotiations are closed</h1><p className="empty-state">{market.label}. You can scout and shortlist players while you wait.</p><button className="btn btn-primary" onClick={() => navigate('/transfers')}>Back to transfers</button></div>;
 
   return (
     <div className="negotiation-page">
@@ -270,11 +278,12 @@ export const NegotiationPage: React.FC = () => {
           </div>
 
           <div className="negotiation-card agent-dossier-card">
+            {quote?.agent&&<p>{quote.agent.style} negotiator · Relationship {quote.agent.trust}/100<br/><small>Fictional career agency. Completed deals build trust; collapsed talks can affect its other clients.</small></p>}
             <div className="agent-header">
               <div className="agent-avatar">👔</div>
               <div>
                 <h3 className="agent-name">{agentName}</h3>
-                <span className="agent-role">Licensed Esports Agent</span>
+                <span className="agent-role">Career player representative</span>
               </div>
             </div>
 
@@ -339,16 +348,18 @@ export const NegotiationPage: React.FC = () => {
               <h3 className="terms-heading">PROPOSED CONTRACT TERMS</h3>
               <div className="agent-demands-box signing-costs" aria-label="Signing costs">
                 <div className="demand-row"><span>Transfer fee / existing buyout</span><strong>${adjustedFee.toLocaleString()}</strong></div>
+                {quote?.club?.talk?.status==='agreed'&&<p>Club agreement: ${feeUpfront.toLocaleString()} upfront · ${(adjustedFee-feeUpfront).toLocaleString()} over {quote.club.talk.terms.months} monthly instalments. Expires {quote.club.talk.expiresDate}.</p>}
                 <div className="demand-row"><span>Signing bonus + first month's salary</span><strong>${(offeredBonus + offeredWage).toLocaleString()}</strong></div>
                 <div className="demand-row"><span>Total needed upfront</span><strong>${upfront.toLocaleString()}</strong></div>
+                <div className="demand-row"><span>Guaranteed contract commitment</span><strong>${(adjustedFee+offeredBonus+offeredWage*offeredDuration).toLocaleString()}</strong></div><small>Transfer fee, signing bonus and {offeredDuration} monthly wages. Conditional sell-on, buyback and wage-contribution clauses may add future obligations.</small>
                 <div className="demand-row"><span>Available club funds</span><strong>${funds.toLocaleString()}</strong></div>
                 {upfront > funds && <p className="notice notice-error" role="status">Short by ${(upfront - funds).toLocaleString()}. Complete a sale or reduce the terms before signing.</p>}
                 {quote?.unavailableReason && <p role="alert">{quote.unavailableReason}</p>}
                 <small>The transfer fee is paid to the current club. It is separate from this player's new contract.</small>
               </div>
 
-              <div className="panel" style={{marginBottom:16}}><h3>Transfer clauses and long-term commitments</h3>{clauseError&&<p className="notice notice-error" role="alert">{clauseError}</p>}<p>Sell-on rights and a buy-back option reduce the present fee. A selling-club wage contribution raises the agreed fee in exchange for lower future wage costs.</p>
-              <div className="terms-grid">{([{key:'profitPercent',label:'Future transfer profit to selling club (%)',max:50},{key:'contributionPercent',label:'Selling-club wage contribution (%)',max:50},{key:'contributionMonths',label:'Contribution duration (months)',max:12},{key:'buybackFee',label:'Selling-club buy-back option ($, valid two years)',max:100000000},{key:'playingTime',label:'Guaranteed series involvement (%)',max:100}] as const).map(f=><label className="term-group" key={f.key}>{f.label}<input type="number" min="0" max={f.max} step="1" value={clauses[f.key]} disabled={(!player.teamId||quote?.renewal)&&f.key!=='playingTime'} onChange={e=>setClauses({...clauses,[f.key]:Number(e.target.value)})}/></label>)}</div>
+              <div className="panel" style={{marginBottom:16}}><h3>Transfer clauses and long-term commitments</h3>{clauseError&&<p className="notice notice-error" role="alert">{clauseError}</p>}<p>{quote?.club?.talk?.status==='agreed'?'The selling club has fixed the fee and payment schedule. Selling-club clause controls are locked; you can negotiate the player’s playing-time promise below.':'Sell-on rights and a buy-back option reduce the present fee. A selling-club wage contribution raises the agreed fee in exchange for lower future wage costs.'}</p>
+              <div className="terms-grid">{([{key:'profitPercent',label:'Future transfer profit to selling club (%)',max:50},{key:'contributionPercent',label:'Selling-club wage contribution (%)',max:50},{key:'contributionMonths',label:'Contribution duration (months)',max:12},{key:'buybackFee',label:'Selling-club buy-back option ($, valid two years)',max:100000000},{key:'playingTime',label:'Guaranteed series involvement (%)',max:100}] as const).map(f=><label className="term-group" key={f.key}>{f.label}<input type="number" min="0" max={f.max} step="1" value={clauses[f.key]} disabled={(!player.teamId||quote?.renewal||quote?.club?.talk?.status==='agreed')&&f.key!=='playingTime'} onChange={e=>setClauses({...clauses,[f.key]:Number(e.target.value)})}/></label>)}</div>
               <p>Guaranteed cost over the next five years: <strong>${Math.max(0,adjustedFee+offeredBonus+offeredWage*Math.min(60,offeredDuration)-Math.round(offeredWage*clauses.contributionPercent/100)*Math.min(clauses.contributionMonths,offeredDuration)).toLocaleString()}</strong>. Includes this contract's wages, fee and bonus, less agreed contributions. A future resale may trigger the profit clause.</p><p>Playing-time promises are reviewed against actual series selections; repeated breaches lead to a transfer request.</p></div>
               <div className="terms-grid">
                 {/* Monthly Salary */}

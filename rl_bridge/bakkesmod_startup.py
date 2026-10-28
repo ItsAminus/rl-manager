@@ -178,6 +178,11 @@ def retire_outdated_injector(pid, managed):
 def prepare_hud_assets():
     """Install updates before opening the game, without launching the injector."""
     if os.name!='nt':return
+    # Runs for local and hosted games before injection, including existing installs.
+    # Do not make users replace their own allow-list or password configuration.
+    try:allow_career_commands()
+    except OSError as exc:
+        raise HUDStartupError('RLM could not update BakkesMod command permissions. Check that its data folder is writable, then retry. No match was joined.') from exc
     source=os.environ.get('RLM_HUD_SOURCE')
     if source and (Path(source)/'RLManagerHUD.dll').is_file():
         target=folder()/'plugins'/'RLManagerHUD.dll'
@@ -261,12 +266,26 @@ def allow_career_commands(root=None):
     """Add only this integration's commands; retain password and all other rules."""
     root=Path(root) if root else folder()
     path=root/'data'/'rcon_commands.cfg'
-    text=path.read_text(encoding='utf-8') if path.exists() else ''
-    names=('rlm_host_arm','rlm_host_stop','rlm_host_ready','rlm_hud_enabled','rlm_scoreboard_enabled')
-    missing=[n for n in names if n not in text.splitlines()]
+    text=path.read_text(encoding='utf-8-sig') if path.exists() else ''
+    names=('ws_inventory','sendback','rcon_password','plugin','cl_settings_refreshplugins',
+           'rcon_refresh_allowed','disconnect','unreal_command','open',
+           'rlm_host_arm','rlm_host_stop','rlm_hud_enabled','rlm_scoreboard_enabled','rlm_host_ready')
+    existing={line.strip() for line in text.splitlines()}
+    missing=[n for n in names if n not in existing]
     if missing:
         path.parent.mkdir(parents=True,exist_ok=True)
-        path.write_text(text.rstrip()+'\n'+'\n'.join(missing)+'\n',encoding='utf-8')
+        backup=path.with_name(path.name+'.before-rlm')
+        if path.exists() and not backup.exists():shutil.copy2(path,backup)
+        # Replace atomically, so an interrupted write cannot truncate the rules.
+        import tempfile
+        temporary=None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=path.parent,delete=False) as output:
+                temporary=Path(output.name)
+                output.write((text.rstrip()+'\n' if text.strip() else '')+'\n'.join(missing)+'\n')
+            os.replace(temporary,path)
+        finally:
+            if temporary and temporary.exists():temporary.unlink()
     return bool(missing)
 
 def rcon_commands(commands, root=None):

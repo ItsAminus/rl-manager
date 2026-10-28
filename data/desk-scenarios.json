@@ -1,0 +1,2415 @@
+[
+  {
+    "id": "slight_favourite_01",
+    "category": "slight_favourite",
+    "slot": "matchup",
+    "when": [
+      [
+        "gap",
+        ">=",
+        2
+      ],
+      [
+        "gap",
+        "<",
+        6
+      ]
+    ],
+    "text": "There is an edge on paper, but it is a small one. The favourite still has to win the difficult touches. A little extra quality will not cover a whole series of loose decisions.",
+    "file": "slight_favourite_01.mp3"
+  },
+  {
+    "id": "strong_favourite_01",
+    "category": "strong_favourite",
+    "slot": "matchup",
+    "when": [
+      [
+        "gap",
+        ">=",
+        6
+      ],
+      [
+        "gap",
+        "<",
+        13
+      ]
+    ],
+    "text": "The stronger lineup should be able to put pressure on this matchup. What I want to see is control. Do not invite a scrap when you have the quality to build a proper attack.",
+    "file": "strong_favourite_01.mp3"
+  },
+  {
+    "id": "heavy_favourite_01",
+    "category": "heavy_favourite",
+    "slot": "matchup",
+    "when": [
+      [
+        "gap",
+        ">=",
+        13
+      ]
+    ],
+    "text": "This is a significant gap in squad quality. The favourite should be setting the questions here. If they start chasing individual highlights, they are giving the other team opportunities it should not be getting.",
+    "file": "heavy_favourite_01.mp3"
+  },
+  {
+    "id": "slight_underdog_01",
+    "category": "slight_underdog",
+    "slot": "matchup",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -2
+      ],
+      [
+        "gap",
+        ">",
+        -6
+      ]
+    ],
+    "text": "The gap is small enough that the underdog can absolutely make a series of this. Stay connected, make the first challenge useful, and do not give away the next ball for free.",
+    "file": "slight_underdog_01.mp3"
+  },
+  {
+    "id": "clear_underdog_01",
+    "category": "clear_underdog",
+    "slot": "matchup",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -6
+      ],
+      [
+        "gap",
+        ">",
+        -13
+      ]
+    ],
+    "text": "This is a difficult matchup for the underdog. I want to see them create manageable situations instead of trading mechanical plays all series. Buy time, find an outlet, and make the stronger side defend.",
+    "file": "clear_underdog_01.mp3"
+  },
+  {
+    "id": "heavy_underdog_01",
+    "category": "heavy_underdog",
+    "slot": "matchup",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -13
+      ]
+    ],
+    "text": "The underdog is giving up a lot of quality here. Trying to match every individual play is a tough way to survive. Keep the middle protected, and make the few counterattacks count.",
+    "file": "heavy_underdog_01.mp3"
+  },
+  {
+    "id": "almost_identical_quality_01",
+    "category": "almost_identical_quality",
+    "slot": "matchup",
+    "when": [
+      [
+        "absGap",
+        "<",
+        1
+      ]
+    ],
+    "text": "There is barely anything between the selected lineups on paper. I am watching the decisions after a messy challenge. Those are the moments where a very close matchup can start leaning one way.",
+    "file": "almost_identical_quality_01.mp3"
+  },
+  {
+    "id": "elite_against_developing_01",
+    "category": "elite_against_developing",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownAvg",
+        ">=",
+        90
+      ],
+      [
+        "oppAvg",
+        "<=",
+        75
+      ]
+    ],
+    "text": "One squad brings elite quality into a matchup against developing opposition. The expectation is obvious. The challenge for the favourite is keeping the standards high even when there is space to play.",
+    "file": "elite_against_developing_01.mp3"
+  },
+  {
+    "id": "developing_against_elite_01",
+    "category": "developing_against_elite",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownAvg",
+        "<=",
+        75
+      ],
+      [
+        "oppAvg",
+        ">=",
+        90
+      ]
+    ],
+    "text": "This is a serious test for a developing squad. You cannot control everything the opponent can do, but you can control your spacing, your recoveries, and whether the next teammate has an option.",
+    "file": "developing_against_elite_01.mp3"
+  },
+  {
+    "id": "elite_on_both_sides_01",
+    "category": "elite_on_both_sides",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownAvg",
+        ">=",
+        90
+      ],
+      [
+        "oppAvg",
+        ">=",
+        90
+      ]
+    ],
+    "text": "There is high-end quality on both sides of this matchup. Give these players a clean opportunity and they can punish it. I want to see which team can force the awkward touches instead.",
+    "file": "elite_on_both_sides_01.mp3"
+  },
+  {
+    "id": "developing_on_both_sides_01",
+    "category": "developing_on_both_sides",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownAvg",
+        "<=",
+        75
+      ],
+      [
+        "oppAvg",
+        "<=",
+        75
+      ]
+    ],
+    "text": "Both lineups are still developing. This does not need to become a contest of who can attempt the hardest mechanic. Give me a clear plan, a useful first touch, and support behind it.",
+    "file": "developing_on_both_sides_01.mp3"
+  },
+  {
+    "id": "uneven_own_lineup_01",
+    "category": "uneven_own_lineup",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownSpread",
+        ">=",
+        12
+      ]
+    ],
+    "text": "There is a noticeable spread of quality in this squad. The stronger players have to make the game easier for their teammates. Leaving someone isolated is how that gap becomes a target.",
+    "file": "uneven_own_lineup_01.mp3"
+  },
+  {
+    "id": "uneven_opponent_lineup_01",
+    "category": "uneven_opponent_lineup",
+    "slot": "matchup",
+    "when": [
+      [
+        "oppSpread",
+        ">=",
+        12
+      ]
+    ],
+    "text": "The opponent has a noticeable difference between the top and bottom of the lineup on paper. I would test the whole rotation. Do not spend the entire series staring at the biggest name.",
+    "file": "uneven_opponent_lineup_01.mp3"
+  },
+  {
+    "id": "even_own_lineup_01",
+    "category": "even_own_lineup",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownSpread",
+        "<=",
+        3
+      ]
+    ],
+    "text": "There is a fairly even level across this selected lineup. That can give you options, because the attack does not have to depend on one person taking over every possession.",
+    "file": "even_own_lineup_01.mp3"
+  },
+  {
+    "id": "even_opponent_lineup_01",
+    "category": "even_opponent_lineup",
+    "slot": "matchup",
+    "when": [
+      [
+        "oppSpread",
+        "<=",
+        3
+      ]
+    ],
+    "text": "This opponent has a balanced lineup on paper. You cannot assume the pressure disappears when one particular player rotates out. The next player can be another problem.",
+    "file": "even_opponent_lineup_01.mp3"
+  },
+  {
+    "id": "stronger_weakest_link_01",
+    "category": "stronger_weakest_link",
+    "slot": "matchup",
+    "when": [
+      [
+        "floorGap",
+        ">=",
+        6
+      ]
+    ],
+    "text": "The depth of the selected lineup is part of the advantage here. Even the lowest-rated starter compares well on paper. Use all three players instead of trying to funnel everything through one carry.",
+    "file": "stronger_weakest_link_01.mp3"
+  },
+  {
+    "id": "star_and_supporting_cast_01",
+    "category": "star_and_supporting_cast",
+    "slot": "matchup",
+    "when": [
+      [
+        "ownStarGap",
+        ">=",
+        10
+      ]
+    ],
+    "text": "One player stands well above the rest of this lineup on paper. Let that quality create something, but give it support. A star still needs somebody to collect the ball that comes loose.",
+    "file": "star_and_supporting_cast_01.mp3"
+  },
+  {
+    "id": "opponent_star_and_support_01",
+    "category": "opponent_star_and_support",
+    "slot": "matchup",
+    "when": [
+      [
+        "oppStarGap",
+        ">=",
+        10
+      ]
+    ],
+    "text": "There is a clear standout in the opponent's lineup on paper. Make their touches uncomfortable, but keep track of the support. Committing everybody to the star can leave somebody else completely free.",
+    "file": "opponent_star_and_support_01.mp3"
+  },
+  {
+    "id": "two_attacking_lineups_01",
+    "category": "two_attacking_lineups",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownStrikers",
+        ">=",
+        2
+      ],
+      [
+        "oppStrikers",
+        ">=",
+        2
+      ]
+    ],
+    "text": "There are several naturally attacking players across these lineups. The question is who accepts the covering job when the attack develops. Someone still has to be in a position to stop the counter.",
+    "file": "two_attacking_lineups_01.mp3"
+  },
+  {
+    "id": "own_defensive_roles_01",
+    "category": "own_defensive_roles",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownAnchors",
+        ">=",
+        2
+      ]
+    ],
+    "text": "This lineup includes multiple players listed in defensive roles. I want to see how they share responsibility going forward. If everybody waits for someone else to attack, the opposition gets comfortable.",
+    "file": "own_defensive_roles_01.mp3"
+  },
+  {
+    "id": "opponent_defensive_roles_01",
+    "category": "opponent_defensive_roles",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppAnchors",
+        ">=",
+        2
+      ]
+    ],
+    "text": "The opposition has several players listed in defensive roles. I would move them sideways before looking for the finish. A straight shot into a settled defence might be exactly what they want.",
+    "file": "opponent_defensive_roles_01.mp3"
+  },
+  {
+    "id": "own_win_streak_two_01",
+    "category": "own_win_streak_two",
+    "slot": "form",
+    "when": [
+      [
+        "ownStreak",
+        "==",
+        2
+      ]
+    ],
+    "text": "Back-to-back wins give this squad a platform. Now build on it. Keep the things that have been working, but do not assume a new opponent is going to give you the same space.",
+    "file": "own_win_streak_two_01.mp3"
+  },
+  {
+    "id": "own_win_streak_three_01",
+    "category": "own_win_streak_three",
+    "slot": "form",
+    "when": [
+      [
+        "ownStreak",
+        "==",
+        3
+      ]
+    ],
+    "text": "Three straight wins is something to feel good about. The next challenge is staying sharp when the matchup changes. Confidence should help the decision, not replace it.",
+    "file": "own_win_streak_three_01.mp3"
+  },
+  {
+    "id": "own_win_streak_four_01",
+    "category": "own_win_streak_four",
+    "slot": "form",
+    "when": [
+      [
+        "ownStreak",
+        "==",
+        4
+      ]
+    ],
+    "text": "Four wins in a row brings a little expectation with it. I want to see this team stay disciplined if the first game is awkward. A good run does not have to mean an easy afternoon.",
+    "file": "own_win_streak_four_01.mp3"
+  },
+  {
+    "id": "own_win_streak_five_01",
+    "category": "own_win_streak_five",
+    "slot": "form",
+    "when": [
+      [
+        "ownStreak",
+        ">=",
+        5
+      ]
+    ],
+    "text": "The recent record shows a strong winning run. That confidence matters. But the next series starts level, and the opponent is not obliged to respect what happened in the last five.",
+    "file": "own_win_streak_five_01.mp3"
+  },
+  {
+    "id": "opponent_win_streak_01",
+    "category": "opponent_win_streak",
+    "slot": "form",
+    "when": [
+      [
+        "oppStreak",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The opponent has put a winning streak together. You want to disrupt the rhythm without abandoning your own game. Make them solve something different from the opening kickoff.",
+    "file": "opponent_win_streak_01.mp3"
+  },
+  {
+    "id": "own_losing_streak_two_01",
+    "category": "own_losing_streak_two",
+    "slot": "form",
+    "when": [
+      [
+        "ownLosingStreak",
+        "==",
+        2
+      ]
+    ],
+    "text": "Two defeats in a row is a moment to reset, not a reason to panic. Start with a clear first game and give each other a few possessions you can actually build from.",
+    "file": "own_losing_streak_two_01.mp3"
+  },
+  {
+    "id": "own_losing_streak_three_01",
+    "category": "own_losing_streak_three",
+    "slot": "form",
+    "when": [
+      [
+        "ownLosingStreak",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The losses have started to stack up. I want to see a team response here. Stay available after a mistake, keep the next touch simple, and do not leave one player trying to rescue everything.",
+    "file": "own_losing_streak_three_01.mp3"
+  },
+  {
+    "id": "opponent_losing_streak_01",
+    "category": "opponent_losing_streak",
+    "slot": "form",
+    "when": [
+      [
+        "oppLosingStreak",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The opponent is coming in off a difficult sequence of results. Do not give them a free confidence boost. Make the opening pressure organised, and force them to play their way out.",
+    "file": "opponent_losing_streak_01.mp3"
+  },
+  {
+    "id": "favourite_in_bad_form_01",
+    "category": "favourite_in_bad_form",
+    "slot": "form",
+    "when": [
+      [
+        "gap",
+        ">=",
+        4
+      ],
+      [
+        "ownWins",
+        "<=",
+        1
+      ],
+      [
+        "ownRecentCount",
+        ">=",
+        3
+      ]
+    ],
+    "text": "This is the interesting part. The stronger squad on paper has not been backing it up in the recent results. The talent is there. Now we need to see a performance that makes the favourites tag convincing.",
+    "file": "favourite_in_bad_form_01.mp3"
+  },
+  {
+    "id": "underdog_in_hot_form_01",
+    "category": "underdog_in_hot_form",
+    "slot": "form",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -4
+      ],
+      [
+        "ownWins",
+        ">=",
+        4
+      ]
+    ],
+    "text": "The underdog is arriving with some real momentum in the recent results. That does not erase the quality gap, but it does give them a reason to trust their approach when the pressure comes.",
+    "file": "underdog_in_hot_form_01.mp3"
+  },
+  {
+    "id": "favourite_meets_hot_underdog_01",
+    "category": "favourite_meets_hot_underdog",
+    "slot": "form",
+    "when": [
+      [
+        "gap",
+        ">=",
+        4
+      ],
+      [
+        "oppWins",
+        ">=",
+        4
+      ]
+    ],
+    "text": "The favourite is meeting an opponent that has been winning recently. This is not the time to coast through the first game. Make them defend properly before that confidence gets room to grow.",
+    "file": "favourite_meets_hot_underdog_01.mp3"
+  },
+  {
+    "id": "underdog_meets_cold_favourite_01",
+    "category": "underdog_meets_cold_favourite",
+    "slot": "form",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -4
+      ],
+      [
+        "oppWins",
+        "<=",
+        1
+      ],
+      [
+        "oppRecentCount",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The stronger opponent has not looked convincing in the recent results. For the underdog, there is an opening here. Make the first game uncomfortable and see whether that pressure brings the hesitation back.",
+    "file": "underdog_meets_cold_favourite_01.mp3"
+  },
+  {
+    "id": "both_teams_hot_01",
+    "category": "both_teams_hot",
+    "slot": "form",
+    "when": [
+      [
+        "ownWins",
+        ">=",
+        4
+      ],
+      [
+        "oppWins",
+        ">=",
+        4
+      ]
+    ],
+    "text": "Both teams have been putting wins together. Somebody is going to have their confidence tested today. I want to see who can stay patient when the game stops going entirely their way.",
+    "file": "both_teams_hot_01.mp3"
+  },
+  {
+    "id": "both_teams_cold_01",
+    "category": "both_teams_cold",
+    "slot": "form",
+    "when": [
+      [
+        "ownWins",
+        "<=",
+        1
+      ],
+      [
+        "oppWins",
+        "<=",
+        1
+      ],
+      [
+        "ownRecentCount",
+        ">=",
+        3
+      ],
+      [
+        "oppRecentCount",
+        ">=",
+        3
+      ]
+    ],
+    "text": "Neither side has had a comfortable run of results. There is a chance here to reset the story. Start with the next possession, rather than trying to fix the entire season at once.",
+    "file": "both_teams_cold_01.mp3"
+  },
+  {
+    "id": "hot_against_cold_01",
+    "category": "hot_against_cold",
+    "slot": "form",
+    "when": [
+      [
+        "ownWins",
+        ">=",
+        4
+      ],
+      [
+        "oppWins",
+        "<=",
+        1
+      ],
+      [
+        "oppRecentCount",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The recent form points in very different directions. One side has momentum, the other needs a response. The in-form team should make the opponent earn every little bit of confidence.",
+    "file": "hot_against_cold_01.mp3"
+  },
+  {
+    "id": "cold_against_hot_01",
+    "category": "cold_against_hot",
+    "slot": "form",
+    "when": [
+      [
+        "ownWins",
+        "<=",
+        1
+      ],
+      [
+        "ownRecentCount",
+        ">=",
+        3
+      ],
+      [
+        "oppWins",
+        ">=",
+        4
+      ]
+    ],
+    "text": "This is a difficult moment to meet an in-form opponent. Still, the first game starts level. Give me good spacing and a few controlled exits before anyone starts searching for a miracle play.",
+    "file": "cold_against_hot_01.mp3"
+  },
+  {
+    "id": "bounce_back_after_defeat_01",
+    "category": "bounce_back_after_defeat",
+    "slot": "form",
+    "when": [
+      [
+        "ownRecentCount",
+        ">=",
+        1
+      ],
+      [
+        "ownLastWon",
+        "==",
+        0
+      ]
+    ],
+    "text": "This squad is coming off a defeat. I am interested in the opening response. Do they stay composed after the first mistake, or does the last result start following them into this series?",
+    "file": "bounce_back_after_defeat_01.mp3"
+  },
+  {
+    "id": "opponent_bounce_back_01",
+    "category": "opponent_bounce_back",
+    "slot": "form",
+    "when": [
+      [
+        "oppRecentCount",
+        ">=",
+        1
+      ],
+      [
+        "oppLastWon",
+        "==",
+        0
+      ]
+    ],
+    "text": "The opponent lost their last recorded series. I would expect them to want a cleaner start here. Meet that energy with a plan, rather than assuming they are going to stay on the back foot.",
+    "file": "opponent_bounce_back_01.mp3"
+  },
+  {
+    "id": "own_last_clean_sweep_01",
+    "category": "own_last_clean_sweep",
+    "slot": "form",
+    "when": [
+      [
+        "ownLastWon",
+        "==",
+        1
+      ],
+      [
+        "ownLastClean",
+        "==",
+        1
+      ]
+    ],
+    "text": "A clean sweep in the last series gives this team a strong result to build from. Different opponent now, though. Keep the standards, and make sure the next game gets the same attention.",
+    "file": "own_last_clean_sweep_01.mp3"
+  },
+  {
+    "id": "own_last_swept_01",
+    "category": "own_last_swept",
+    "slot": "form",
+    "when": [
+      [
+        "ownRecentCount",
+        ">=",
+        1
+      ],
+      [
+        "ownLastWon",
+        "==",
+        0
+      ],
+      [
+        "ownLastClean",
+        "==",
+        1
+      ]
+    ],
+    "text": "They were swept in the last recorded series. The first job is to stop that result from dictating this one. Stay connected, take a good possession when it comes, and build a response from there.",
+    "file": "own_last_swept_01.mp3"
+  },
+  {
+    "id": "own_last_decider_win_01",
+    "category": "own_last_decider_win",
+    "slot": "form",
+    "when": [
+      [
+        "ownLastWon",
+        "==",
+        1
+      ],
+      [
+        "ownLastDecider",
+        "==",
+        1
+      ]
+    ],
+    "text": "They came through a deciding game in their last series. There is something useful in knowing you can finish a close contest. Today, I want to see whether they can make the route a little cleaner.",
+    "file": "own_last_decider_win_01.mp3"
+  },
+  {
+    "id": "own_last_decider_loss_01",
+    "category": "own_last_decider_loss",
+    "slot": "form",
+    "when": [
+      [
+        "ownRecentCount",
+        ">=",
+        1
+      ],
+      [
+        "ownLastWon",
+        "==",
+        0
+      ],
+      [
+        "ownLastDecider",
+        "==",
+        1
+      ]
+    ],
+    "text": "The last series went the distance and ended in defeat. That is a tough result to put down. The response has to be about the next decision, not replaying the final mistake in your head.",
+    "file": "own_last_decider_loss_01.mp3"
+  },
+  {
+    "id": "opponent_last_sweep_win_01",
+    "category": "opponent_last_sweep_win",
+    "slot": "form",
+    "when": [
+      [
+        "oppLastWon",
+        "==",
+        1
+      ],
+      [
+        "oppLastClean",
+        "==",
+        1
+      ]
+    ],
+    "text": "The opposition is coming off a clean sweep. Do not let them slide straight back into that rhythm. Give the first challenge some purpose and make them deal with pressure of their own.",
+    "file": "opponent_last_sweep_win_01.mp3"
+  },
+  {
+    "id": "opponent_last_swept_01",
+    "category": "opponent_last_swept",
+    "slot": "form",
+    "when": [
+      [
+        "oppRecentCount",
+        ">=",
+        1
+      ],
+      [
+        "oppLastWon",
+        "==",
+        0
+      ],
+      [
+        "oppLastClean",
+        "==",
+        1
+      ]
+    ],
+    "text": "The opponent was swept in the last recorded series. There could be a reaction coming. Stay alert in the first game and make them show that the response is more than just a fast start.",
+    "file": "opponent_last_swept_01.mp3"
+  },
+  {
+    "id": "opponent_last_decider_win_01",
+    "category": "opponent_last_decider_win",
+    "slot": "form",
+    "when": [
+      [
+        "oppLastWon",
+        "==",
+        1
+      ],
+      [
+        "oppLastDecider",
+        "==",
+        1
+      ]
+    ],
+    "text": "The opposition just won a series that went to a deciding game. They have a close result behind them. I want to see whether your side can take control before this becomes another test of nerve.",
+    "file": "opponent_last_decider_win_01.mp3"
+  },
+  {
+    "id": "opponent_last_decider_loss_01",
+    "category": "opponent_last_decider_loss",
+    "slot": "form",
+    "when": [
+      [
+        "oppRecentCount",
+        ">=",
+        1
+      ],
+      [
+        "oppLastWon",
+        "==",
+        0
+      ],
+      [
+        "oppLastDecider",
+        "==",
+        1
+      ]
+    ],
+    "text": "The opposition lost their last series in a deciding game. You cannot assume that makes them fragile. It also means they were close, so make the new series difficult from the first touch.",
+    "file": "opponent_last_decider_loss_01.mp3"
+  },
+  {
+    "id": "own_alternating_results_01",
+    "category": "own_alternating_results",
+    "slot": "form",
+    "when": [
+      [
+        "ownAlternating",
+        "==",
+        1
+      ]
+    ],
+    "text": "The recent results have been alternating between wins and losses. The challenge is consistency. I want the same level of support after a bad play that we see when the attack is working.",
+    "file": "own_alternating_results_01.mp3"
+  },
+  {
+    "id": "opponent_alternating_results_01",
+    "category": "opponent_alternating_results",
+    "slot": "form",
+    "when": [
+      [
+        "oppAlternating",
+        "==",
+        1
+      ]
+    ],
+    "text": "The opponent's recent results have swung back and forth. I would test how steady they are when the pressure lasts longer than one attack. Make them defend the follow-up as well.",
+    "file": "opponent_alternating_results_01.mp3"
+  },
+  {
+    "id": "own_streak_just_broken_01",
+    "category": "own_streak_just_broken",
+    "slot": "form",
+    "when": [
+      [
+        "ownBrokenWinRun",
+        "==",
+        1
+      ]
+    ],
+    "text": "A winning run ended in the last recorded series. That does not mean the good work has disappeared. Keep what was working, identify what changed, and do not turn one defeat into an identity crisis.",
+    "file": "own_streak_just_broken_01.mp3"
+  },
+  {
+    "id": "own_first_win_after_losses_01",
+    "category": "own_first_win_after_losses",
+    "slot": "form",
+    "when": [
+      [
+        "ownBrokenLossRun",
+        "==",
+        1
+      ]
+    ],
+    "text": "They have just put a win on the board after a run of defeats. That is a starting point. Now I want to see whether the decisions behind that result can hold up against a different opponent.",
+    "file": "own_first_win_after_losses_01.mp3"
+  },
+  {
+    "id": "opponent_streak_just_broken_01",
+    "category": "opponent_streak_just_broken",
+    "slot": "form",
+    "when": [
+      [
+        "oppBrokenWinRun",
+        "==",
+        1
+      ]
+    ],
+    "text": "The opponent has just had a winning run stopped. This is an opportunity to keep the pressure on them. Do not hand over an easy opening while they are trying to reset.",
+    "file": "opponent_streak_just_broken_01.mp3"
+  },
+  {
+    "id": "both_without_recent_results_01",
+    "category": "both_without_recent_results",
+    "slot": "form",
+    "when": [
+      [
+        "ownRecentCount",
+        "==",
+        0
+      ],
+      [
+        "oppRecentCount",
+        "==",
+        0
+      ]
+    ],
+    "text": "There are no recent series on record for either side in this career. We have the lineups to work from, but I am not inventing form. The first game should tell us much more.",
+    "file": "both_without_recent_results_01.mp3"
+  },
+  {
+    "id": "own_without_recent_results_01",
+    "category": "own_without_recent_results",
+    "slot": "form",
+    "when": [
+      [
+        "ownRecentCount",
+        "==",
+        0
+      ],
+      [
+        "oppRecentCount",
+        ">=",
+        3
+      ]
+    ],
+    "text": "Your squad has no recent series on record here, while the opposition has a run we can look at. The opening game is a chance to show what this lineup actually looks like together.",
+    "file": "own_without_recent_results_01.mp3"
+  },
+  {
+    "id": "opponent_without_recent_results_01",
+    "category": "opponent_without_recent_results",
+    "slot": "form",
+    "when": [
+      [
+        "ownRecentCount",
+        ">=",
+        3
+      ],
+      [
+        "oppRecentCount",
+        "==",
+        0
+      ]
+    ],
+    "text": "There is recent evidence for your squad, but not for this opponent in the career records. Respect the unknowns. Make them show their approach before committing to an assumption.",
+    "file": "opponent_without_recent_results_01.mp3"
+  },
+  {
+    "id": "rematch_after_defeat_01",
+    "category": "rematch_after_defeat",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        ">=",
+        1
+      ],
+      [
+        "headLastOwnWon",
+        "==",
+        0
+      ]
+    ],
+    "text": "The last recent meeting went against your club. That gives this rematch a little extra weight. I want to see an adjustment that helps the play, not frustration disguised as aggression.",
+    "file": "rematch_after_defeat_01.mp3"
+  },
+  {
+    "id": "rematch_after_victory_01",
+    "category": "rematch_after_victory",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        ">=",
+        1
+      ],
+      [
+        "headLastOwnWon",
+        "==",
+        1
+      ]
+    ],
+    "text": "Your club won the last recent meeting. That is useful context, but the opponent gets to respond. Do not assume the same opening is going to work without a different question coming back.",
+    "file": "rematch_after_victory_01.mp3"
+  },
+  {
+    "id": "rematch_after_heavy_defeat_01",
+    "category": "rematch_after_heavy_defeat",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        ">=",
+        1
+      ],
+      [
+        "headLastOwnWon",
+        "==",
+        0
+      ],
+      [
+        "headLastMargin",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The last recent meeting was a heavy series defeat for your club. There is a response to make, but it has to be measured. Find a way into the game before trying to settle the whole score.",
+    "file": "rematch_after_heavy_defeat_01.mp3"
+  },
+  {
+    "id": "rematch_after_dominant_win_01",
+    "category": "rematch_after_dominant_win",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        ">=",
+        1
+      ],
+      [
+        "headLastOwnWon",
+        "==",
+        1
+      ],
+      [
+        "headLastMargin",
+        ">=",
+        3
+      ]
+    ],
+    "text": "Your club won the last recent meeting by a clear series margin. The challenge now is avoiding complacency. Treat the opening like a new problem, because the opponent has had something to think about.",
+    "file": "rematch_after_dominant_win_01.mp3"
+  },
+  {
+    "id": "rematch_after_close_series_01",
+    "category": "rematch_after_close_series",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        ">=",
+        1
+      ],
+      [
+        "headLastMargin",
+        "==",
+        1
+      ]
+    ],
+    "text": "The last recent meeting was decided by a single game in the series score. That is a small margin. I am watching whether either team can create a little more control this time.",
+    "file": "rematch_after_close_series_01.mp3"
+  },
+  {
+    "id": "multiple_recent_meetings_01",
+    "category": "multiple_recent_meetings",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        ">=",
+        2
+      ]
+    ],
+    "text": "These teams have met more than once in the recent records. There is information on both sides now. The interesting part is which habits they keep and which ones they decide to challenge.",
+    "file": "multiple_recent_meetings_01.mp3"
+  },
+  {
+    "id": "own_recent_head_to_head_edge_01",
+    "category": "own_recent_head_to_head_edge",
+    "slot": "story",
+    "when": [
+      [
+        "headOwnDominant",
+        "==",
+        1
+      ]
+    ],
+    "text": "Your club has won the recent meetings we have on record. That can build confidence, but it can also create a dangerous expectation. Keep making the opponent earn the next ball.",
+    "file": "own_recent_head_to_head_edge_01.mp3"
+  },
+  {
+    "id": "opponent_recent_head_to_head_edge_01",
+    "category": "opponent_recent_head_to_head_edge",
+    "slot": "story",
+    "when": [
+      [
+        "headOppDominant",
+        "==",
+        1
+      ]
+    ],
+    "text": "The recent meetings have gone the opponent's way. Your side needs a different answer, but not a desperate one. Stay in useful positions and make the adjustment something you can repeat.",
+    "file": "opponent_recent_head_to_head_edge_01.mp3"
+  },
+  {
+    "id": "split_recent_meetings_01",
+    "category": "split_recent_meetings",
+    "slot": "story",
+    "when": [
+      [
+        "headSplit",
+        "==",
+        1
+      ]
+    ],
+    "text": "Both clubs have taken wins in the recent meetings. Neither side can claim this matchup is solved. I want to see who reads the new series faster.",
+    "file": "split_recent_meetings_01.mp3"
+  },
+  {
+    "id": "no_recent_head_to_head_01",
+    "category": "no_recent_head_to_head",
+    "slot": "story",
+    "when": [
+      [
+        "headCount",
+        "==",
+        0
+      ]
+    ],
+    "text": "There is no meeting between these clubs in the recent records we are using. So let us read the matchup in front of us. The lineup matters, but the first game will add some real evidence.",
+    "file": "no_recent_head_to_head_01.mp3"
+  },
+  {
+    "id": "world_championship_final_01",
+    "category": "world_championship_final",
+    "slot": "stage",
+    "when": [
+      [
+        "isWorlds",
+        "==",
+        1
+      ],
+      [
+        "isFinal",
+        "==",
+        1
+      ]
+    ],
+    "text": "A world title is the prize at the end of this series. That is an enormous occasion. The team that can bring its attention back to the next touch gives itself a chance to play its best.",
+    "file": "world_championship_final_01.mp3"
+  },
+  {
+    "id": "major_final_01",
+    "category": "major_final",
+    "slot": "stage",
+    "when": [
+      [
+        "isMajor",
+        "==",
+        1
+      ],
+      [
+        "isFinal",
+        "==",
+        1
+      ]
+    ],
+    "text": "This is a Major final. The preparation has brought both teams here, and now the details become everything. Give your teammate an option when the pressure makes the obvious play difficult.",
+    "file": "major_final_01.mp3"
+  },
+  {
+    "id": "regional_final_01",
+    "category": "regional_final",
+    "slot": "stage",
+    "when": [
+      [
+        "isRegional",
+        "==",
+        1
+      ],
+      [
+        "isFinal",
+        "==",
+        1
+      ]
+    ],
+    "text": "A regional title is on the line in this final. It is a chance to turn a good tournament into a winning one. Keep the approach clear, especially if the first game gets messy.",
+    "file": "regional_final_01.mp3"
+  },
+  {
+    "id": "ewc_final_01",
+    "category": "ewc_final",
+    "slot": "stage",
+    "when": [
+      [
+        "isEwc",
+        "==",
+        1
+      ],
+      [
+        "isFinal",
+        "==",
+        1
+      ]
+    ],
+    "text": "We have reached the Esports World Cup final. The occasion is big enough without adding extra panic to every touch. Trust the player behind you and stay part of the next play.",
+    "file": "ewc_final_01.mp3"
+  },
+  {
+    "id": "fifae_final_01",
+    "category": "fifae_final",
+    "slot": "stage",
+    "when": [
+      [
+        "isFifae",
+        "==",
+        1
+      ],
+      [
+        "isFinal",
+        "==",
+        1
+      ]
+    ],
+    "text": "This is the FIFAe final. A title is waiting on the other side of the series, but nobody gets it by looking at the trophy. The focus has to stay on the next possession.",
+    "file": "fifae_final_01.mp3"
+  },
+  {
+    "id": "worlds_semifinal_01",
+    "category": "worlds_semifinal",
+    "slot": "stage",
+    "when": [
+      [
+        "isWorlds",
+        "==",
+        1
+      ],
+      [
+        "isSemi",
+        "==",
+        1
+      ]
+    ],
+    "text": "A place in the World Championship final is at stake. You can understand why the pressure rises here. I want to see which team keeps its spacing when the game gets uncomfortable.",
+    "file": "worlds_semifinal_01.mp3"
+  },
+  {
+    "id": "major_semifinal_01",
+    "category": "major_semifinal",
+    "slot": "stage",
+    "when": [
+      [
+        "isMajor",
+        "==",
+        1
+      ],
+      [
+        "isSemi",
+        "==",
+        1
+      ]
+    ],
+    "text": "This Major semifinal is the last step before the final. Both teams have something to protect and something to chase. The danger is getting caught between those two ideas instead of committing together.",
+    "file": "major_semifinal_01.mp3"
+  },
+  {
+    "id": "group_stage_series_01",
+    "category": "group_stage_series",
+    "slot": "stage",
+    "when": [
+      [
+        "isGroup",
+        "==",
+        1
+      ]
+    ],
+    "text": "This is a group-stage series, so the result becomes part of the qualification picture. Focus on the matchup first. You do not want to be thinking about other teams while the ball is coming towards your net.",
+    "file": "group_stage_series_01.mp3"
+  },
+  {
+    "id": "playoff_series_01",
+    "category": "playoff_series",
+    "slot": "stage",
+    "when": [
+      [
+        "isPlayoff",
+        "==",
+        1
+      ]
+    ],
+    "text": "We are into the playoff stage. The bracket gives the matchup its stakes, but the players still have to build the performance. I want to see a clear opening plan and a sensible response if it fails.",
+    "file": "playoff_series_01.mp3"
+  },
+  {
+    "id": "last_chance_qualifier_01",
+    "category": "last_chance_qualifier",
+    "slot": "stage",
+    "when": [
+      [
+        "isLcq",
+        "==",
+        1
+      ]
+    ],
+    "text": "The last-chance qualifier is exactly where you want your preparation to be clear. There is another opportunity here. Stay connected and make the opponent beat the whole rotation, rather than one isolated defender.",
+    "file": "last_chance_qualifier_01.mp3"
+  },
+  {
+    "id": "open_qualifier_01",
+    "category": "open_qualifier",
+    "slot": "stage",
+    "when": [
+      [
+        "isQualifier",
+        "==",
+        1
+      ]
+    ],
+    "text": "Qualifiers can get uncomfortable quickly if you start looking past the opponent in front of you. Give this series the attention it deserves. There is no shortcut through the first kickoff.",
+    "file": "open_qualifier_01.mp3"
+  },
+  {
+    "id": "best_of_three_01",
+    "category": "best_of_three",
+    "slot": "stage",
+    "when": [
+      [
+        "format",
+        "==",
+        3
+      ]
+    ],
+    "text": "In a best of three, there is not much time to find your feet. The opening game matters. Get the communication clear early and do not wait until you are behind to start reading the matchup.",
+    "file": "best_of_three_01.mp3"
+  },
+  {
+    "id": "best_of_five_01",
+    "category": "best_of_five",
+    "slot": "stage",
+    "when": [
+      [
+        "format",
+        "==",
+        5
+      ]
+    ],
+    "text": "A best of five gives you a little room to adjust, but you still need a useful start. Find out what the opponent is giving you and build from that information.",
+    "file": "best_of_five_01.mp3"
+  },
+  {
+    "id": "best_of_seven_01",
+    "category": "best_of_seven",
+    "slot": "stage",
+    "when": [
+      [
+        "format",
+        "==",
+        7
+      ]
+    ],
+    "text": "A best of seven asks a different kind of question. You need a plan that survives adjustments. The first thing that works might not keep working all the way through the series.",
+    "file": "best_of_seven_01.mp3"
+  },
+  {
+    "id": "long_final_01",
+    "category": "long_final",
+    "slot": "stage",
+    "when": [
+      [
+        "format",
+        "==",
+        7
+      ],
+      [
+        "isFinal",
+        "==",
+        1
+      ]
+    ],
+    "text": "A best-of-seven final gives both teams time to show their hand and make a response. I want to see who can change the approach without losing the habits that got them here.",
+    "file": "long_final_01.mp3"
+  },
+  {
+    "id": "short_series_underdog_01",
+    "category": "short_series_underdog",
+    "slot": "matchup",
+    "when": [
+      [
+        "format",
+        "==",
+        3
+      ],
+      [
+        "gap",
+        "<=",
+        -4
+      ]
+    ],
+    "text": "A short series can give the underdog a chance to make a fast start count. You still have to earn it. Stay compact, take a good opportunity, and make the favourite react.",
+    "file": "short_series_underdog_01.mp3"
+  },
+  {
+    "id": "long_series_underdog_01",
+    "category": "long_series_underdog",
+    "slot": "matchup",
+    "when": [
+      [
+        "format",
+        "==",
+        7
+      ],
+      [
+        "gap",
+        "<=",
+        -4
+      ]
+    ],
+    "text": "For the underdog, a long series means the plan has to hold up more than once. You cannot rely on one surprise. Keep finding ways to get possession and make the stronger side defend.",
+    "file": "long_series_underdog_01.mp3"
+  },
+  {
+    "id": "opening_group_fixture_01",
+    "category": "opening_group_fixture",
+    "slot": "stage",
+    "when": [
+      [
+        "isGroup",
+        "==",
+        1
+      ],
+      [
+        "round",
+        "==",
+        1
+      ]
+    ],
+    "text": "The group stage is just getting started. I want to see a team establish good habits before the standings become the main conversation. A clean opening result begins with a clean opening approach.",
+    "file": "opening_group_fixture_01.mp3"
+  },
+  {
+    "id": "high_squad_morale_01",
+    "category": "high_squad_morale",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownMorale",
+        ">=",
+        85
+      ]
+    ],
+    "text": "The squad morale is high coming into this series. That is a good platform. I want to see it in the support after a mistake, when backing your teammate actually costs you something.",
+    "file": "high_squad_morale_01.mp3"
+  },
+  {
+    "id": "low_squad_morale_01",
+    "category": "low_squad_morale",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownMorale",
+        "<=",
+        45
+      ]
+    ],
+    "text": "Morale in the squad is low, so the first setback matters. Give the next player a clear option. The response to a mistake can help the team settle far more than a frustrated challenge.",
+    "file": "low_squad_morale_01.mp3"
+  },
+  {
+    "id": "high_opponent_morale_01",
+    "category": "high_opponent_morale",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppMorale",
+        ">=",
+        85
+      ]
+    ],
+    "text": "The opponent is carrying high squad morale into this one. You want to challenge that confidence with sustained, organised pressure. Make them solve more than one defensive play in a row.",
+    "file": "high_opponent_morale_01.mp3"
+  },
+  {
+    "id": "low_opponent_morale_01",
+    "category": "low_opponent_morale",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppMorale",
+        "<=",
+        45
+      ]
+    ],
+    "text": "The opponent's squad morale is low in the career data. That is not a free win. You still have to apply pressure properly and avoid giving them an easy moment to build around.",
+    "file": "low_opponent_morale_01.mp3"
+  },
+  {
+    "id": "own_fatigue_concern_01",
+    "category": "own_fatigue_concern",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownFatigue",
+        ">=",
+        35
+      ]
+    ],
+    "text": "There is some fatigue in this selected lineup. Be smart about the possessions you choose. Chasing a low-percentage play and then racing back to recover is an expensive way to spend the series.",
+    "file": "own_fatigue_concern_01.mp3"
+  },
+  {
+    "id": "opponent_fatigue_concern_01",
+    "category": "opponent_fatigue_concern",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppFatigue",
+        ">=",
+        35
+      ]
+    ],
+    "text": "The opposition has some fatigue in the lineup. I would make them turn and recover, but keep the attack connected. You do not want your own overcommitment doing the hard work for them.",
+    "file": "opponent_fatigue_concern_01.mp3"
+  },
+  {
+    "id": "both_lineups_fresh_01",
+    "category": "both_lineups_fresh",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownFatigue",
+        "<=",
+        10
+      ],
+      [
+        "oppFatigue",
+        "<=",
+        10
+      ]
+    ],
+    "text": "Both selected lineups are fairly fresh in the career data. There is no reason to make excuses for the opening. I want to see who puts that energy into useful pressure.",
+    "file": "both_lineups_fresh_01.mp3"
+  },
+  {
+    "id": "own_chemistry_low_01",
+    "category": "own_chemistry_low",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownChemistry",
+        "<=",
+        45
+      ]
+    ],
+    "text": "The club's chemistry is still low. Keep the responsibilities clear. If one player goes, the next player has to know whether they are supporting the challenge or covering the space behind it.",
+    "file": "own_chemistry_low_01.mp3"
+  },
+  {
+    "id": "own_chemistry_high_01",
+    "category": "own_chemistry_high",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownChemistry",
+        ">=",
+        85
+      ]
+    ],
+    "text": "There is strong chemistry in this squad on the career numbers. I want to see that connection when the play gets awkward. Trust is most useful when the easy option disappears.",
+    "file": "own_chemistry_high_01.mp3"
+  },
+  {
+    "id": "opponent_chemistry_low_01",
+    "category": "opponent_chemistry_low",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppChemistry",
+        "<=",
+        45
+      ]
+    ],
+    "text": "The opposition's club chemistry is low. Make them hand defensive responsibility from one player to the next. Those transitions are a good place to test whether the rotation is really connected.",
+    "file": "opponent_chemistry_low_01.mp3"
+  },
+  {
+    "id": "opponent_chemistry_high_01",
+    "category": "opponent_chemistry_high",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppChemistry",
+        ">=",
+        85
+      ]
+    ],
+    "text": "The opponent has strong club chemistry in the career data. Breaking one challenge might not be enough. Be ready to deal with the next player arriving in a useful position.",
+    "file": "opponent_chemistry_high_01.mp3"
+  },
+  {
+    "id": "own_recent_arrival_01",
+    "category": "own_recent_arrival",
+    "slot": "story",
+    "when": [
+      [
+        "ownIncoming",
+        ">=",
+        1
+      ]
+    ],
+    "text": "There has been a recent arrival at your club. That creates a new option, but it also asks the squad to settle its responsibilities. I want the support around the ball to stay clear.",
+    "file": "own_recent_arrival_01.mp3"
+  },
+  {
+    "id": "opponent_recent_arrival_01",
+    "category": "opponent_recent_arrival",
+    "slot": "story",
+    "when": [
+      [
+        "oppIncoming",
+        ">=",
+        1
+      ]
+    ],
+    "text": "The opposition has made a recent signing. That is something to keep in mind, without assuming we know exactly how it changes their game. Read the selected lineup and make them show the new approach.",
+    "file": "opponent_recent_arrival_01.mp3"
+  },
+  {
+    "id": "both_recent_arrivals_01",
+    "category": "both_recent_arrivals",
+    "slot": "story",
+    "when": [
+      [
+        "ownIncoming",
+        ">=",
+        1
+      ],
+      [
+        "oppIncoming",
+        ">=",
+        1
+      ]
+    ],
+    "text": "Both clubs have had a recent arrival. There is some fresh context around this matchup. I want to see which selected lineup looks more settled when the first play breaks down.",
+    "file": "both_recent_arrivals_01.mp3"
+  },
+  {
+    "id": "own_recent_departure_01",
+    "category": "own_recent_departure",
+    "slot": "story",
+    "when": [
+      [
+        "ownOutgoing",
+        ">=",
+        1
+      ]
+    ],
+    "text": "There has been a recent departure from your club. The players on the field still need a clear plan together. Keep the focus on the current lineup, rather than the version that used to be here.",
+    "file": "own_recent_departure_01.mp3"
+  },
+  {
+    "id": "path_first_recent_series_01",
+    "category": "path_first_recent_series",
+    "slot": "story",
+    "when": [
+      [
+        "isPath",
+        "==",
+        1
+      ],
+      [
+        "ownRecentCount",
+        "==",
+        0
+      ]
+    ],
+    "text": "This squad is beginning its Path to Glory journey without a recent result on record. Start with habits you can build on. The first series is a chance to learn what this team needs.",
+    "file": "path_first_recent_series_01.mp3"
+  },
+  {
+    "id": "path_after_losses_01",
+    "category": "path_after_losses",
+    "slot": "story",
+    "when": [
+      [
+        "isPath",
+        "==",
+        1
+      ],
+      [
+        "ownLosingStreak",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The Path to Glory run has hit a difficult stretch. Development does not stop because the results hurt. Find one thing the squad can do better together, and make that the next useful step.",
+    "file": "path_after_losses_01.mp3"
+  },
+  {
+    "id": "path_on_winning_run_01",
+    "category": "path_on_winning_run",
+    "slot": "story",
+    "when": [
+      [
+        "isPath",
+        "==",
+        1
+      ],
+      [
+        "ownStreak",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The Path to Glory squad has put a winning run together. Enjoy the progress, but keep the standards. The next opponent is another chance to show that the improvement can travel with you.",
+    "file": "path_on_winning_run_01.mp3"
+  },
+  {
+    "id": "path_big_step_up_01",
+    "category": "path_big_step_up",
+    "slot": "matchup",
+    "when": [
+      [
+        "isPath",
+        "==",
+        1
+      ],
+      [
+        "gap",
+        "<=",
+        -13
+      ]
+    ],
+    "text": "This is a major step up for the Path to Glory squad. Be realistic about the challenge without surrendering the game. Good recoveries and connected support are still things you can bring into any matchup.",
+    "file": "path_big_step_up_01.mp3"
+  },
+  {
+    "id": "own_aerial_quality_01",
+    "category": "own_aerial_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownAerial",
+        ">=",
+        88
+      ]
+    ],
+    "text": "The selected squad has strong aerial attributes on paper. I want to see them create the space to use that quality, rather than jumping into a challenge with no useful next touch.",
+    "file": "own_aerial_quality_01.mp3"
+  },
+  {
+    "id": "opponent_aerial_quality_01",
+    "category": "opponent_aerial_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppAerial",
+        ">=",
+        88
+      ]
+    ],
+    "text": "The opposition has strong aerial attributes in this lineup. Challenge the setup when you can. Waiting until the ball is already above the last defender makes the job much harder.",
+    "file": "opponent_aerial_quality_01.mp3"
+  },
+  {
+    "id": "own_passing_quality_01",
+    "category": "own_passing_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownPassing",
+        ">=",
+        88
+      ]
+    ],
+    "text": "There is passing quality in this selected lineup. Show for the ball. A good passer cannot use an option that nobody is offering, especially when the first defender closes the obvious lane.",
+    "file": "own_passing_quality_01.mp3"
+  },
+  {
+    "id": "opponent_passing_quality_01",
+    "category": "opponent_passing_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppPassing",
+        ">=",
+        88
+      ]
+    ],
+    "text": "The opposition has good passing attributes on paper. Keep an eye on the player arriving away from the ball. If everybody follows the carrier, the next pass can remove the whole defence.",
+    "file": "opponent_passing_quality_01.mp3"
+  },
+  {
+    "id": "own_shooting_quality_01",
+    "category": "own_shooting_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownShooting",
+        ">=",
+        88
+      ]
+    ],
+    "text": "This lineup has finishing quality on paper. Give that shooting a useful opportunity. Sometimes the extra pass is the play that makes the eventual finish look simple.",
+    "file": "own_shooting_quality_01.mp3"
+  },
+  {
+    "id": "opponent_shooting_quality_01",
+    "category": "opponent_shooting_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppShooting",
+        ">=",
+        88
+      ]
+    ],
+    "text": "The opponent has strong shooting attributes in the selected lineup. Do not make it easy for them to choose a corner. Pressure the setup and make the last touch uncomfortable.",
+    "file": "opponent_shooting_quality_01.mp3"
+  },
+  {
+    "id": "own_saving_quality_01",
+    "category": "own_saving_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownSaving",
+        ">=",
+        88
+      ]
+    ],
+    "text": "There is shot-stopping quality in this squad on paper. That is valuable, but you do not want to depend on it every possession. Make the first challenge help the defender behind it.",
+    "file": "own_saving_quality_01.mp3"
+  },
+  {
+    "id": "opponent_saving_quality_01",
+    "category": "opponent_saving_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppSaving",
+        ">=",
+        88
+      ]
+    ],
+    "text": "There is good shot-stopping quality across the opposition lineup. I want to see the attack move the defence first. A routine shot from a comfortable angle might just be another clearance coming back.",
+    "file": "opponent_saving_quality_01.mp3"
+  },
+  {
+    "id": "own_ground_quality_01",
+    "category": "own_ground_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownGround",
+        ">=",
+        88
+      ]
+    ],
+    "text": "The squad has good ground-control attributes on paper. Use a little space when it appears. A controlled touch can bring a teammate into the play instead of handing possession straight back.",
+    "file": "own_ground_quality_01.mp3"
+  },
+  {
+    "id": "opponent_ground_quality_01",
+    "category": "opponent_ground_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppGround",
+        ">=",
+        88
+      ]
+    ],
+    "text": "The opponent has strong ground-control attributes. Make sure the first challenger has cover. If the carrier gets past that challenge, somebody still has to be able to deal with the next touch.",
+    "file": "opponent_ground_quality_01.mp3"
+  },
+  {
+    "id": "own_aerial_edge_01",
+    "category": "own_aerial_edge",
+    "slot": "tactics",
+    "when": [
+      [
+        "aerialGap",
+        ">=",
+        6
+      ]
+    ],
+    "text": "There is an aerial attribute advantage for your selected lineup. I want to see a good setup before the take-off. Winning the air is much less useful if nobody can collect what comes next.",
+    "file": "own_aerial_edge_01.mp3"
+  },
+  {
+    "id": "own_passing_edge_01",
+    "category": "own_passing_edge",
+    "slot": "tactics",
+    "when": [
+      [
+        "passingGap",
+        ">=",
+        6
+      ]
+    ],
+    "text": "Your lineup has a passing attribute edge on paper. Try to make the opponent move before showing the final option. A lane is much more useful when the defender has already committed.",
+    "file": "own_passing_edge_01.mp3"
+  },
+  {
+    "id": "own_saving_edge_01",
+    "category": "own_saving_edge",
+    "slot": "tactics",
+    "when": [
+      [
+        "savingGap",
+        ">=",
+        6
+      ]
+    ],
+    "text": "The shot-stopping attributes lean towards your lineup. That can help you stay in a difficult game, but do not confuse surviving the shot with controlling the possession afterwards.",
+    "file": "own_saving_edge_01.mp3"
+  },
+  {
+    "id": "own_shooting_edge_01",
+    "category": "own_shooting_edge",
+    "slot": "tactics",
+    "when": [
+      [
+        "shootingGap",
+        ">=",
+        6
+      ]
+    ],
+    "text": "There is a shooting attribute advantage for your side. The challenge is earning clean looks. Keep a second option available so the defence cannot sit on the only shot.",
+    "file": "own_shooting_edge_01.mp3"
+  },
+  {
+    "id": "both_aerial_quality_01",
+    "category": "both_aerial_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownAerial",
+        ">=",
+        88
+      ],
+      [
+        "oppAerial",
+        ">=",
+        88
+      ]
+    ],
+    "text": "Both lineups have aerial quality on paper. That makes the setup touches important. I want to see which side can deny the comfortable take-off without exposing the space behind the first challenge.",
+    "file": "both_aerial_quality_01.mp3"
+  },
+  {
+    "id": "both_passing_quality_01",
+    "category": "both_passing_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownPassing",
+        ">=",
+        88
+      ],
+      [
+        "oppPassing",
+        ">=",
+        88
+      ]
+    ],
+    "text": "There is passing quality on both sides. Watch how the defenders share the lanes. If two players cover the same option, there is usually another teammate being left free.",
+    "file": "both_passing_quality_01.mp3"
+  },
+  {
+    "id": "both_shooting_quality_01",
+    "category": "both_shooting_quality",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownShooting",
+        ">=",
+        88
+      ],
+      [
+        "oppShooting",
+        ">=",
+        88
+      ]
+    ],
+    "text": "Both selected lineups have strong shooting attributes. The defence cannot afford to keep giving away clean looks. Make the attacker take the difficult touch before they get to choose the finish.",
+    "file": "both_shooting_quality_01.mp3"
+  },
+  {
+    "id": "playmaker_in_lineup_01",
+    "category": "playmaker_in_lineup",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownPlaymakers",
+        ">=",
+        1
+      ]
+    ],
+    "text": "There is a player listed as a playmaker in this lineup. Give them something to work with. A passing idea becomes a real threat when somebody actually arrives in the space.",
+    "file": "playmaker_in_lineup_01.mp3"
+  },
+  {
+    "id": "opponent_playmaker_01",
+    "category": "opponent_playmaker",
+    "slot": "tactics",
+    "when": [
+      [
+        "oppPlaymakers",
+        ">=",
+        1
+      ]
+    ],
+    "text": "The opposition has a player listed as a playmaker. Do not just watch that player's first touch. Keep checking where the support is going, because that is where the next problem may come from.",
+    "file": "opponent_playmaker_01.mp3"
+  },
+  {
+    "id": "anchor_in_attacking_matchup_01",
+    "category": "anchor_in_attacking_matchup",
+    "slot": "tactics",
+    "when": [
+      [
+        "ownAnchors",
+        ">=",
+        1
+      ],
+      [
+        "oppStrikers",
+        ">=",
+        2
+      ]
+    ],
+    "text": "Your defensive anchor is facing a lineup with multiple naturally attacking players. That covering role matters, but the rest of the squad has to help. Nobody wants to defend every counterattack alone.",
+    "file": "anchor_in_attacking_matchup_01.mp3"
+  },
+  {
+    "id": "own_confident_squad_01",
+    "category": "own_confident_squad",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownConfidence",
+        ">=",
+        80
+      ]
+    ],
+    "text": "Confidence in the selected squad is high. Use that to make a clear decision. Do not use it as a reason to take a challenge that leaves nobody covering the next ball.",
+    "file": "own_confident_squad_01.mp3"
+  },
+  {
+    "id": "own_low_confidence_01",
+    "category": "own_low_confidence",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownConfidence",
+        "<=",
+        45
+      ]
+    ],
+    "text": "The selected squad is low on confidence in the career data. A couple of connected possessions can help the opening feel different. Give the next player a straightforward job before asking for something spectacular.",
+    "file": "own_low_confidence_01.mp3"
+  },
+  {
+    "id": "opponent_high_confidence_01",
+    "category": "opponent_high_confidence",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppConfidence",
+        ">=",
+        80
+      ]
+    ],
+    "text": "The opposition comes in with high confidence in the selected squad. I would make them work for the first clean possession. Do not give them easy touches to settle straight into the game.",
+    "file": "opponent_high_confidence_01.mp3"
+  },
+  {
+    "id": "opponent_low_confidence_01",
+    "category": "opponent_low_confidence",
+    "slot": "mentality",
+    "when": [
+      [
+        "oppConfidence",
+        "<=",
+        45
+      ]
+    ],
+    "text": "The opponent's selected squad is low on confidence in the career data. Apply the pressure with structure. An uncontrolled rush can hand them the exact chance they need to feel comfortable again.",
+    "file": "opponent_low_confidence_01.mp3"
+  },
+  {
+    "id": "high_pressure_resistance_01",
+    "category": "high_pressure_resistance",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownPressure",
+        ">=",
+        80
+      ]
+    ],
+    "text": "The selected players have strong pressure-resistance traits on paper. This is a chance to show that composure in the difficult moments. Keep the support visible and let the next decision be a clear one.",
+    "file": "high_pressure_resistance_01.mp3"
+  },
+  {
+    "id": "low_pressure_resistance_01",
+    "category": "low_pressure_resistance",
+    "slot": "mentality",
+    "when": [
+      [
+        "ownPressure",
+        "<=",
+        40
+      ]
+    ],
+    "text": "Pressure resistance is a concern in the selected squad's traits. Keep the plan easy to recognise. When the game gets frantic, a clear covering player and an obvious outlet can make a real difference.",
+    "file": "low_pressure_resistance_01.mp3"
+  },
+  {
+    "id": "favourite_but_tired_01",
+    "category": "favourite_but_tired",
+    "slot": "mentality",
+    "when": [
+      [
+        "gap",
+        ">=",
+        4
+      ],
+      [
+        "ownFatigue",
+        ">=",
+        35
+      ]
+    ],
+    "text": "The favourite has a quality advantage, but the selected lineup is carrying fatigue. Make the possession work for you. You do not want every attack to end in a long recovery race.",
+    "file": "favourite_but_tired_01.mp3"
+  },
+  {
+    "id": "underdog_with_freshness_01",
+    "category": "underdog_with_freshness",
+    "slot": "mentality",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -4
+      ],
+      [
+        "ownFatigue",
+        "<=",
+        10
+      ],
+      [
+        "oppFatigue",
+        ">=",
+        35
+      ]
+    ],
+    "text": "The underdog is fresher in the career data, while the opponent is carrying fatigue. That is something to work with. Make the stronger side turn around, but keep your own rotation connected.",
+    "file": "underdog_with_freshness_01.mp3"
+  },
+  {
+    "id": "favourite_with_low_confidence_01",
+    "category": "favourite_with_low_confidence",
+    "slot": "mentality",
+    "when": [
+      [
+        "gap",
+        ">=",
+        4
+      ],
+      [
+        "ownConfidence",
+        "<=",
+        45
+      ]
+    ],
+    "text": "The lineup has the quality to be favoured, but confidence is low. I want a composed opening. The answer is not to prove everything with the first touch.",
+    "file": "favourite_with_low_confidence_01.mp3"
+  },
+  {
+    "id": "underdog_with_confidence_01",
+    "category": "underdog_with_confidence",
+    "slot": "mentality",
+    "when": [
+      [
+        "gap",
+        "<=",
+        -4
+      ],
+      [
+        "ownConfidence",
+        ">=",
+        80
+      ]
+    ],
+    "text": "The underdog has confidence in the selected squad. That is useful if it helps them commit together. It becomes a problem if everybody decides they have to win the series on their own.",
+    "file": "underdog_with_confidence_01.mp3"
+  },
+  {
+    "id": "final_even_matchup_01",
+    "category": "final_even_matchup",
+    "slot": "stage",
+    "when": [
+      [
+        "isFinal",
+        "==",
+        1
+      ],
+      [
+        "absGap",
+        "<",
+        2
+      ]
+    ],
+    "text": "A final with very little separating the lineups on paper is exactly where the small decisions feel enormous. Stay part of the next play, even after the first touch does not work.",
+    "file": "final_even_matchup_01.mp3"
+  },
+  {
+    "id": "final_big_underdog_01",
+    "category": "final_big_underdog",
+    "slot": "stage",
+    "when": [
+      [
+        "isFinal",
+        "==",
+        1
+      ],
+      [
+        "gap",
+        "<=",
+        -8
+      ]
+    ],
+    "text": "The underdog has reached the final, and now the quality gap gives them another test. Do not spend the whole series respecting the favourite. Find a way to make them defend.",
+    "file": "final_big_underdog_01.mp3"
+  },
+  {
+    "id": "final_favourite_bad_form_01",
+    "category": "final_favourite_bad_form",
+    "slot": "stage",
+    "when": [
+      [
+        "isFinal",
+        "==",
+        1
+      ],
+      [
+        "gap",
+        ">=",
+        4
+      ],
+      [
+        "ownWins",
+        "<=",
+        1
+      ],
+      [
+        "ownRecentCount",
+        ">=",
+        3
+      ]
+    ],
+    "text": "The favourite on paper has reached a final without convincing recent form. This is a chance to put the performance right. Make the decisions match the quality before worrying about the occasion.",
+    "file": "final_favourite_bad_form_01.mp3"
+  },
+  {
+    "id": "semifinal_rematch_01",
+    "category": "semifinal_rematch",
+    "slot": "stage",
+    "when": [
+      [
+        "isSemi",
+        "==",
+        1
+      ],
+      [
+        "headCount",
+        ">=",
+        1
+      ]
+    ],
+    "text": "A semifinal rematch adds a little more context to an already important series. Both teams have a recent meeting to work from. Now we find out who has the more useful response.",
+    "file": "semifinal_rematch_01.mp3"
+  },
+  {
+    "id": "final_rematch_01",
+    "category": "final_rematch",
+    "slot": "stage",
+    "when": [
+      [
+        "isFinal",
+        "==",
+        1
+      ],
+      [
+        "headCount",
+        ">=",
+        1
+      ]
+    ],
+    "text": "These clubs have a recent meeting on record, and now they meet in a final. That history gives us a talking point. The players still have to find the answer to today's version of the matchup.",
+    "file": "final_rematch_01.mp3"
+  },
+  {
+    "id": "group_even_matchup_01",
+    "category": "group_even_matchup",
+    "slot": "stage",
+    "when": [
+      [
+        "isGroup",
+        "==",
+        1
+      ],
+      [
+        "absGap",
+        "<",
+        2
+      ]
+    ],
+    "text": "A close group-stage matchup can make the qualification picture very interesting. For the players, the job is simpler than the standings. Win the next useful touch and keep the rotation connected.",
+    "file": "group_even_matchup_01.mp3"
+  },
+  {
+    "id": "qualifier_heavy_favourite_01",
+    "category": "qualifier_heavy_favourite",
+    "slot": "stage",
+    "when": [
+      [
+        "isQualifier",
+        "==",
+        1
+      ],
+      [
+        "gap",
+        ">=",
+        13
+      ]
+    ],
+    "text": "The squad is a clear favourite in this qualifier matchup. Treat that as a responsibility, not permission to switch off. There is still an opponent waiting to punish an unnecessary mistake.",
+    "file": "qualifier_heavy_favourite_01.mp3"
+  },
+  {
+    "id": "lcq_underdog_01",
+    "category": "lcq_underdog",
+    "slot": "stage",
+    "when": [
+      [
+        "isLcq",
+        "==",
+        1
+      ],
+      [
+        "gap",
+        "<=",
+        -4
+      ]
+    ],
+    "text": "The underdog is trying to keep a qualification route alive through the last-chance event. Be brave with a plan. A controlled counterattack can ask a question that another desperate clearance never will.",
+    "file": "lcq_underdog_01.mp3"
+  },
+  {
+    "id": "long_series_even_matchup_01",
+    "category": "long_series_even_matchup",
+    "slot": "matchup",
+    "when": [
+      [
+        "format",
+        "==",
+        7
+      ],
+      [
+        "absGap",
+        "<",
+        2
+      ]
+    ],
+    "text": "A long series between evenly matched lineups can become a real adjustment battle. Do not mistake the first successful idea for a permanent answer. Watch what changes when the opponent has seen it.",
+    "file": "long_series_even_matchup_01.mp3"
+  },
+  {
+    "id": "short_series_even_matchup_01",
+    "category": "short_series_even_matchup",
+    "slot": "matchup",
+    "when": [
+      [
+        "format",
+        "==",
+        3
+      ],
+      [
+        "absGap",
+        "<",
+        2
+      ]
+    ],
+    "text": "A best of three between close lineups leaves very little room for a slow read. I want to see who understands the first game quickly enough to make that information count.",
+    "file": "short_series_even_matchup_01.mp3"
+  }
+]

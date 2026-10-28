@@ -10,13 +10,15 @@ from host_bot_health import excluded_engines, family_key
 from local_performance import performance_profile
 from local_skill_progression import eligible_tier
 
-TIERS=[(98,('Kiyo3',),'Elite'),
-       (96,('Chronos',),'Elite'),
-       (94,('BonkDaddy',),'Elite'),
-       (90,('Ripple','Ordis','London','Byte','Opti'),'Elite'),
-       (89,('Nexto','NextoPlus','Daizen','Fury'),'GC / SSL'),
-       (84,('Astra','Zeus'),'Champ'),
-       (79,('Necto','Element'),'Diamond'),
+TIERS=[(99,('Kiyo3',),'Elite'),
+       (98,('Chronos',),'Elite'),
+       (97,('BonkDaddy',),'Elite'),
+       (96,('Byte',),'Elite'),
+       (93,('OptiGP','Opti','RippleV1','London'),'High GC'),
+       (90,('NextoPlus','Ducky'),'GC / SSL'),
+       (89,('AstraV5','Daizen','Zeus','OptiFR'),'Champ'),
+       (86,('AstraV5','Daizen','Zeus'),'Champ'),
+       (79,('Necto',),'Diamond'),
        # Use the locally installed policies that pass import/readiness checks.
        (74,('ReliefBot','Botimus Prime','Bumblebee','RedBot'),'Platinum'),
        (69,('Wildfire','Codename Cryo'),'Gold'),
@@ -83,7 +85,7 @@ def path_breakout_slot(context, assignments):
     candidates=sorted(candidates,key=lambda a:a['playerId'])
     return candidates[int.from_bytes(digest[8:16],'big') % len(candidates)]['slot']
 
-def rating_plan(context,catalog=None,lock_series=False):
+def rating_plan(context,catalog=None,lock_series=False,allow_partial=False):
     mode=difficulty(context)
     path_mode=context.get('gameMode')=='Path To Glory'
     path_hosted=path_mode and bool(context.get('pathHostedUnlocked'))
@@ -104,7 +106,7 @@ def rating_plan(context,catalog=None,lock_series=False):
         catalog=[engine for engine in catalog if family_key(engine) not in blocked]
     # Fixture seed: random across series, identical across games of one series.
     game_key=f"{context.get('careerId','')}:{context.get('fixtureId','exhibition')}:{context.get('botSelectionRevision',0)}:{mode}"
-    assignments=[];bags={};draws={}
+    assignments=[];bags={};draws={};errors=[]
     def draw_engine(cutoff,pool):
         # Shuffle within a tier before reusing any policy. Five elite bots
         # can therefore draw five distinct families rather than all BonkDaddy.
@@ -135,6 +137,12 @@ def rating_plan(context,catalog=None,lock_series=False):
         identity=str(p.get('playerId') or p['gamertag'])
         minimum=False
         old=previous.get(identity);saved=old and old.get('engine')
+        fallback={}
+        actual_cutoff=cutoff
+        if remote and old and old.get('engine'):
+            # Recover from the failed policy's strength, not a new form rating.
+            actual_cutoff=old.get('actualTierCutoff',old.get('tierCutoff',cutoff))
+            cutoff,pool,level=next((t for t in tiers if t[0]==old.get('tierCutoff')), (cutoff,pool,level))
         if mode in ('Easy','Medium'):saved=LOCAL_CONDITION_ALIASES.get(saved,saved)
         if saved and family_key(saved) not in blocked and remote and catalog is not None and saved not in catalog:
             family=next((f for _,pool,_ in TIERS for f in pool if family_key(f)==family_key(saved)),saved)
@@ -144,21 +152,48 @@ def rating_plan(context,catalog=None,lock_series=False):
             anchor=old.get('tierCutoff',(old.get('performance') or {}).get('baseCutoff'))
             cutoff,pool,level=next(t for t in tiers if t[0]==anchor) if anchor is not None else next(t for t in tiers if old.get('rating',rating)>=t[0])
         if p.get('isHuman'):engine=None
-        elif saved:engine=saved;minimum=old.get('hostedMinimum',False)
+        elif saved:
+            engine=saved;minimum=old.get('hostedMinimum',False)
+            fallback={key:old[key] for key in ('fallbackFrom','fallbackReason','actualTierCutoff','actualLevel') if key in old}
         elif remote and rating<79:
             engine=resolve_hosted('Necto',catalog) if catalog is not None else 'Necto';minimum=True
             if family_key(engine) in blocked:engine=None
-        else:engine=draw_engine(cutoff,pool)
+        else:
+            requested=next((t for t in tiers if t[0]==actual_cutoff),(cutoff,pool,level))
+            engine=draw_engine(requested[0],requested[1])
+        if remote and not p.get('isHuman') and not saved:
+            requested=next((t for t in tiers if t[0]==actual_cutoff),(cutoff,pool,level))
+            actual_level=requested[2]
+            if engine is None and not minimum:
+                # Nearest weaker healthy tier first. Hosted matches cannot mix
+                # local policies in, and Necto is the hosted minimum.
+                for lower_cutoff,lower_pool,lower_level in tiers:
+                    if lower_cutoff>=actual_cutoff or lower_cutoff<79:continue
+                    engine=draw_engine(lower_cutoff,lower_pool)
+                    if engine:
+                        actual_cutoff=lower_cutoff;actual_level=lower_level;break
+            if engine and (actual_cutoff!=cutoff or old and old.get('engine') and old['engine']!=engine):
+                unavailable=old.get('engine') if old and old.get('engine') else ', '.join(pool)
+                fallback={'fallbackFrom':unavailable,'actualTierCutoff':actual_cutoff,'actualLevel':actual_level,
+                          'fallbackReason':f'{unavailable} unavailable; using {engine} ({actual_level}, {actual_cutoff}+ tier).'}
+            elif engine:
+                fallback={'actualTierCutoff':actual_cutoff,'actualLevel':actual_level}
+        assignment_error=None
         if not p.get('isHuman') and engine is None:
-            raise ValueError(f'Rocket Host has no healthy available bot in {rating}-rated {level} tier. Failed policies are excluded; retry after the host is repaired.')
+            assignment_error=f'{p["gamertag"]}: no healthy hosted bot in the requested {level} tier or any weaker supported tier.'
+            if not remote:assignment_error=f'{p["gamertag"]}: no available local bot in the requested {level} tier.'
+            if not allow_partial:raise ValueError(assignment_error)
+            errors.append(assignment_error)
         effective=rating if remote or mode=='Hard' and not path_mode else {'Elite':85,'GC / SSL':85,'Champ':85,'Diamond':82,'Platinum':76,'Gold':70,'Silver':60,'Silver / developing':55,'Bronze / Rookie':35}[level]
         performance=performance_profile(p,'Medium' if path_mode and not remote else mode,cutoff,level)
         assignments.append({'playerId':identity,'name':p['gamertag'],'team':team,'slot':slot,
             'rating':rating,'effectiveRating':effective,'tierCutoff':cutoff,'difficulty':'Medium' if path_mode and not remote else mode,'botSkill':0.0 if level=='Bronze / Rookie' else 1.0,'luckyGame':False,'beta':1,
             'engine':None if p.get('isHuman') else engine,
             'type':'Human' if p.get('isHuman') else 'Rocket Host' if remote else 'Local',
-            'target':level,'availableLevel':'Rocket Host Necto (hosted minimum)' if minimum else 'Local Nexto (approximately GC)' if path_mode and not remote and engine=='Nexto' else level,
+            'target':level,'availableLevel':'Rocket Host Necto (Champ; hosted minimum)' if minimum else 'Rocket Host Necto (Champ; local Diamond version unavailable here)' if remote and not path_mode and engine=='Necto' else 'Local Nexto (approximately GC)' if path_mode and not remote and engine=='Nexto' else fallback.get('actualLevel',level),
             'hostedMinimum':minimum,'styleApplied':not remote and not p.get('isHuman'), 'tendency':p.get('tendency','BALANCED'),
+            **fallback,
+            **({'assignmentError':assignment_error} if assignment_error else {}),
             **({'development':development} if development and not p.get('isHuman') else {}),
             **({'performance':performance,'attributes':p.get('attributes',{}),'traits':p.get('traits',{}),'condition':p.get('condition',{}),'matchRole':p.get('matchRole'),'matchTactics':p.get('matchTactics',{})} if performance else {}),
             **({'temporaryForm':True} if form and form.get('fixtureId')==context.get('fixtureId') else {})})
@@ -178,12 +213,15 @@ def rating_plan(context,catalog=None,lock_series=False):
         if a['type']=='Human' or a['playerId'] in retained:continue
         old=previous.get(a['playerId'])
         if old and old.get('engine'):
-            cutoff,pool,_=next(t for t in tiers if t[0]==a['tierCutoff'])
+            cutoff,pool,_=next(t for t in tiers if t[0]==a.get('actualTierCutoff',a['tierCutoff']))
             alternatives=[resolve_hosted(f,catalog) if remote and catalog is not None else f for f in pool]
             alternatives=[e for e in alternatives if e and family_key(e) not in blocked and e not in used]
-            if alternatives:a['engine']=random.Random(game_key+a['playerId']).choice(alternatives)
+            if alternatives:
+                a['engine']=random.Random(game_key+a['playerId']).choice(alternatives)
+                if a.get('fallbackReason'):
+                    a['fallbackReason']=f'{a["fallbackFrom"]} unavailable; using {a["engine"]} ({a.get("actualLevel",a["target"])}, {cutoff}+ tier).'
         used.add(a['engine'])
-    if lock_series and file:
+    if lock_series and file and not errors:
         # Launch commits actual catalog identifiers; preview never commits guesses.
         SERIES_ROOT.mkdir(parents=True,exist_ok=True)
         with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=SERIES_ROOT,delete=False) as temp:
@@ -198,9 +236,12 @@ def rating_plan(context,catalog=None,lock_series=False):
                       'effectiveRating':85,'target':'GC / SSL',
                       'availableLevel':'Local Nexto (one-game breakout)'} if a['slot']==breakout else a
                      for a in assignments]
-    return {'route':'Rocket Host' if remote else 'Local','difficulty':'Path To Glory' if path_mode else mode,'assignments':assignments,'seriesLocked':bool(locked) or bool(lock_series and file),
+    return {'success':not errors,**({'error':' '.join(errors)} if errors else {}),
+        'route':'Rocket Host' if remote else 'Local','difficulty':'Path To Glory' if path_mode else mode,'assignments':assignments,'seriesLocked':bool(locked) or bool(lock_series and file and not errors),
         'notice':('Hosted bot choices follow your rating tiers. Private bot policies cannot be modified locally.'+
                   ' Bot families are shuffled per series and locked to player identities for every game. Only failed or unavailable policies are replaced.'+
+                  (' Unavailable bots were replaced by the next strongest healthy choices; replacements are shown per player.' if any(a.get('fallbackReason') for a in assignments) else '')+
                   (' Failed hosted policies excluded: '+', '.join(sorted(blocked))+'.' if blocked else '')+
+                  (' Rocket Host advertises Necto as Champ; its local Diamond version cannot be mixed into a hosted match.' if not path_mode and any(a['engine']=='Necto' and a['type']!='Human' for a in assignments) else '')+
                   (' Rocket Host only offers Necto or stronger; lower-rated players in this mixed match use Necto.' if any(a['hostedMinimum'] and a['type']!='Human' for a in assignments) else '')) if remote
                  else ('Path To Glory: local bot tiers follow skills and completed promotion trials. The Champ trial unlocks Rocket Host for the squad. Normal bot choices stay fixed for this series; each local game has a 5% chance of one AI teammate using Nexto for that game only.' if path_mode else f'{mode}: local RLBot matches with career HUD, portraits, titles and pro names. Bot choices stay fixed per series and difficulty. Changing difficulty applies next game.')}

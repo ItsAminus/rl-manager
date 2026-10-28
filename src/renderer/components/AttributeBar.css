@@ -45,30 +45,31 @@
   font-weight: 700;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  background-color: transparent;
 }
 
 /* Color tiers */
-.attr-tier-s {
+.attribute-bar-fill.attr-tier-s {
   background-color: #ffd700;
-  color: #ffd700;
 }
+.attribute-bar-value.attr-tier-s { color: #ffd700; }
 
-.attr-tier-a {
+.attribute-bar-fill.attr-tier-a {
   background-color: #2ecc71;
-  color: #2ecc71;
 }
+.attribute-bar-value.attr-tier-a { color: #2ecc71; }
 
-.attr-tier-b {
+.attribute-bar-fill.attr-tier-b {
   background-color: #00d2ff;
-  color: #00d2ff;
 }
+.attribute-bar-value.attr-tier-b { color: #00d2ff; }
 
-.attr-tier-c {
+.attribute-bar-fill.attr-tier-c {
   background-color: #af7ac5;
-  color: #af7ac5;
 }
+.attribute-bar-value.attr-tier-c { color: #cf9be5; }
 
-.attr-tier-d {
+.attribute-bar-fill.attr-tier-d {
   background-color: #7f8c8d;
-  color: #9aa0a6;
 }
+.attribute-bar-value.attr-tier-d { color: #c3cdd1; }

@@ -12,6 +12,7 @@ import wave
 sys.path.insert(0, str(Path(__file__).parent / 'commentary'))
 from clip_broadcast import audio_dependencies
 import native_audio_worker as worker
+from native_audio import ClipPlayer,commentary_volume
 
 
 def recording():
@@ -25,6 +26,23 @@ def recording():
 
 
 class NativeAudioTests(unittest.TestCase):
+    def test_commentator_gain_changes_actual_pcm_without_mutating_recordings(self):
+        np,_=audio_dependencies()
+        source=np.array([.5,-.5,1,-1],dtype=np.float32)
+        original=source.copy()
+        samples=[]
+        for volume in (1,.5,0):
+            player=ClipPlayer.__new__(ClipPlayer);player.volume=volume
+            with wave.open(io.BytesIO(player._encode(source)),'rb') as wav:
+                samples.append(np.frombuffer(wav.readframes(wav.getnframes()),dtype='<i2'))
+        self.assertTrue(np.array_equal(source,original))
+        self.assertTrue(np.all(np.abs(samples[1].astype(float)-samples[0]*.5)<=1))
+        self.assertFalse(np.any(samples[2]))
+
+    def test_saved_commentary_gain_is_validated_independently_of_effects(self):
+        for setting,expected in [('0.35',.35),('0',0),('1',1),('4',1),('-2',0),('nan',1),('bad',1)]:
+            with patch.dict(os.environ,{'RLM_COMMENTARY_VOLUME':setting}):self.assertEqual(commentary_volume(),expected)
+
     def test_missing_portaudio_does_not_disable_recorded_audio(self):
         with patch.dict(os.environ, {'RLM_AUDIO_BACKEND': ''}), \
              patch.object(worker, 'analysis_dependencies', side_effect=ImportError('PortAudio unavailable')), \

@@ -175,9 +175,12 @@ def run_showcase(manager, context, dispatcher, log):
     loaded = False
     hud = None
     transition_sent = False
+    from introduction_music import IntroductionMusic
+    music = IntroductionMusic(log)
     def cover_transition():
         nonlocal transition_sent
         if transition_sent:return
+        music.stop(wait=False)
         from launcher import log_event
         try:window=hud.window() if hud else {}
         except Exception:window={}
@@ -261,6 +264,8 @@ def run_showcase(manager, context, dispatcher, log):
                 if began is None:
                     if ack and ack.get('cameraApplied'):
                         began = now
+                        if index == 0:
+                            music.start()
                         if pcm is not None:
                             dispatcher.play_presentation_audio(pcm)
                         else:
@@ -270,6 +275,7 @@ def run_showcase(manager, context, dispatcher, log):
                 elif now - began >= duration:
                     played = True
                     break
+                music.set_ducked(pcm is not None and began is not None and now-began < speech_duration)
                 if index==5 and began is not None and now-began>=speech_duration:
                     cover_transition()
                 if dispatcher and dispatcher.stopped.is_set():
@@ -280,6 +286,7 @@ def run_showcase(manager, context, dispatcher, log):
         log(f'Player introductions unavailable ({exc}); continuing to the match')
         return played
     finally:
+        music.stop()
         if loaded:cover_transition()
         if dispatcher and hasattr(dispatcher, 'finish_player_showcase'):
             dispatcher.finish_player_showcase(played)

@@ -7,11 +7,15 @@
 
 Build your Rocket League career in **Manager Career** or take a fixed squad from the bottom to the top in **Path To Glory**.
 
-**Latest version: 1.5.2 · Windows PC only**
+**Latest version: 1.7.0 · MAJOR UPDATE · Windows PC only**
 
-**[Download the 1.5.2 update installer](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.2/RL.Manager.1.5.2.Setup.exe)** · [Release notes](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.2)
+**[Download the 1.7.0 update installer](https://github.com/ItsAminus/rl-manager/releases/download/v1.7.0/RL.Manager.1.7.0.Setup.exe)** · [Release notes](https://github.com/ItsAminus/rl-manager/releases/tag/v1.7.0)
 
-1.5.2 adds a personal player-information editor and JSON import. Open a player's profile in Manager Career to correct real name, age or nationality in your current save, or preview and import an edited `players.json`. Changes apply immediately, with automatic backups, and leave other saves and gameplay attributes untouched. [Editor guide](docs/PLAYER_INFORMATION_EDITOR.md).
+**v1.7.0 is a major management update:** expanded scouting and hidden young prospects, negotiated board visions, club-to-club bargaining and instalment transfers, backroom departments, custom clubs and starting players, automatic matchday reports and recorded analyst desks, additional SSA/APAC teams, a rebalanced Hard bot ladder, Steam/BakkesMod startup repairs, and separate commentator volume. [Full announcement and update notes](docs/releases/1.7.0.md).
+
+The save-specific player-information editor and JSON importer remain available. [Editor guide](docs/PLAYER_INFORMATION_EDITOR.md).
+
+[RLM v1.7.0 Full Patch Notes](docs/releases/1.7.0-full-patch-notes.md) — the complete player guide to what changed.
 
 1.5.1 fixes a local-match kickoff timeout when Rocket League assigns bots different car slots from the configured lineup. Bots are now tracked by their configured identity and still must produce working controls before kickoff. This addresses one cause of “Bots failed to initialize before kickoff”; unrelated bot crashes may still need a support log. Existing users only need the app update installer. Close RLM and Rocket League before installing; no saves or settings need to be deleted.
 
@@ -19,9 +23,9 @@ Major career expansion: national management and playable FIFAe finals, the RLCS 
 
 ## Start here: first-time installation
 
-**New players need the COMPLETE 1.5.0 download: all four numbered parts below, followed by the 1.5.2 update installer linked above.**
+**New players need the COMPLETE 1.5.0 download: all four numbered parts below, followed by the 1.7.0 update installer linked above.**
 
-The separate `RL.Manager.1.5.2.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
+The separate `RL.Manager.1.7.0.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
 
 ### 1. What you need before downloading
 
@@ -36,14 +40,14 @@ The separate `RL.Manager.1.5.2.Setup.exe` file updates the app. It is **not the 
 
 ### 2. Download ALL FOUR parts
 
-Open the **[complete 1.5.0 download page](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.0)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.5.2:
+Open the **[complete 1.5.0 download page](https://github.com/ItsAminus/rl-manager/releases/tag/v1.5.0)** and expand **Assets**, or use these links. This supplies the bots, models and mod components used by 1.7.0:
 
 | Download | File | Approximate size |
 | --- | --- | --- |
-| [Part 1](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.001) | `RL-Manager-Complete-1.5.0.7z.001` | 1.99 GB |
-| [Part 2](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.002) | `RL-Manager-Complete-1.5.0.7z.002` | 1.99 GB |
-| [Part 3](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.003) | `RL-Manager-Complete-1.5.0.7z.003` | 1.99 GB |
-| [Part 4](https://github.com/MyMedicalCenters/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | Remaining part; see GitHub size |
+| [Part 1](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.001) | `RL-Manager-Complete-1.5.0.7z.001` | 1.99 GB |
+| [Part 2](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.002) | `RL-Manager-Complete-1.5.0.7z.002` | 1.99 GB |
+| [Part 3](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.003) | `RL-Manager-Complete-1.5.0.7z.003` | 1.99 GB |
+| [Part 4](https://github.com/ItsAminus/rl-manager/releases/download/v1.5.0/RL-Manager-Complete-1.5.0.7z.004) | `RL-Manager-Complete-1.5.0.7z.004` | Remaining part; see GitHub size |
 
 **Put all four files in the same folder. Keep their original names.** They are four pieces of one download, not four installers.
 
@@ -55,9 +59,9 @@ Open the **[complete 1.5.0 download page](https://github.com/MyMedicalCenters/rl
 4. Open the extracted **`RL-Manager-Complete-1.5.0`** folder.
 5. Close Rocket League, BakkesMod and any running RL Manager window.
 6. Double-click **`Install RL Manager.exe`**, then click **Install everything**. Allow the included component installers to finish and approve their installation prompts when asked.
-7. When setup finishes, close RLM if it opened and run the **1.5.2 update installer** linked above. Then open **RL Manager** from its desktop or Start menu shortcut.
+7. When setup finishes, close RLM if it opened and run the **1.7.0 update installer** linked above. Then open **RL Manager** from its desktop or Start menu shortcut.
 
-**Keep the extracted folder and its `Packages`, `Setup` and `Tools` subfolders together until setup finishes.** The wizard handles the internal `Runtime.7z` files itself. You do not need to open them. Apply the 1.5.2 app update after the complete kit finishes.
+**Keep the extracted folder and its `Packages`, `Setup` and `Tools` subfolders together until setup finishes.** The wizard handles the internal `Runtime.7z` files itself. You do not need to open them. Apply the 1.7.0 app update after the complete kit finishes.
 
 ### 4. Prepare Rocket League: launch WITHOUT Easy Anti-Cheat
 
@@ -95,13 +99,13 @@ In Manager Career, **Easy and Medium use local bots**. **Hard is experimental** 
 **Do I install parts 1, 2, 3 and 4 separately?**  
 No. Download all four, extract `.001`, then run **Install RL Manager.exe** inside the extracted folder.
 
-**Do I also download `RL.Manager.1.5.2.Setup.exe`?**
+**Do I also download `RL.Manager.1.7.0.Setup.exe`?**
 
-Existing users only need this update. New users install the complete 1.5.0 kit first, then apply 1.5.2. If you already have the complete 1.0.8 runtime, the update installer reuses it.
+Existing users only need this update. New users install the complete 1.5.0 kit first, then apply 1.7.0. If you already have the complete 1.0.8 runtime, the update installer reuses it.
 
 **Steam launch repeats the Rocket League tutorial or does not keep me signed in.**  
-Install 1.5.2, fully close Rocket League, keep Steam open and signed in, and retry.
-RLM now launches Steam installations through Steam instead of trying the Epic login workaround.
+Install 1.7.0, fully close Rocket League, keep Steam open and signed in, and retry.
+RLM launches the selected Steam game executable directly with Steam authentication identifiers and the mod connection arguments, avoiding the previous `-applaunch` route. Required BakkesMod command permissions are repaired automatically; no separate patch or config replacement is needed.
 If it persists, share **Settings → Help → Open support logs → rl-manager.log**.
 Do not delete your saves, unlink accounts or reset your game settings.
 

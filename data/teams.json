@@ -25558,5 +25558,20 @@
     "sponsorIncome": 7350,
     "teamChemistry": 65,
     "teamForm": 60
+  },
+  {
+    "id": "scr_esports_ssa",
+    "name": "SCR Esports",
+    "shortName": "SCR",
+    "region": "Sub-Saharan Africa",
+    "reputation": 35,
+    "budget": 60000,
+    "cashBalance": 40000,
+    "coachRating": 50,
+    "facilityLevel": 1,
+    "fanbase": 1500,
+    "sponsorIncome": 1000,
+    "teamChemistry": 50,
+    "teamForm": 50
   }
 ]

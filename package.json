@@ -1,7 +1,7 @@
 {
   "name": "rl-manager",
-  "version": "1.5.2",
-  "releaseType": "patch",
+  "version": "1.7.0",
+  "releaseType": "major",
   "description": "Rocket League esports management game",
   "main": "dist-electron/main.js",
   "author": "RL Manager Team",

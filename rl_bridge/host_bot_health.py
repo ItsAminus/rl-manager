@@ -8,11 +8,14 @@ import time
 HEALTH_PATH = Path(__file__).parent / 'local_runtime' / 'host-bot-health.json'
 # Confirmed user reports: London idle across two games; RippleV1.1 idle in game 2.
 # Exclude the family in previews too, where version identifiers are unavailable.
-KNOWN_BROKEN = {'london', 'ripple'}
+KNOWN_BROKEN = {'london', 'ripple', 'ripplev11'}
 
 
 def family_key(engine):
     key = re.sub(r'[^a-z0-9]', '', str(engine).lower())
+    # V1 and V1.1 are different strength policies. Never quarantine V1 just
+    # because V1.1 failed, or silently resolve V1 to the stronger V1.1 model.
+    if key in ('ripplev1','ripplev11'):return key
     for family in ('bonkdaddy', 'ripple', 'astra'):
         if key.startswith(family):
             return family
@@ -25,9 +28,13 @@ def excluded_engines(context=None):
         data = json.loads(HEALTH_PATH.read_text(encoding='utf-8'))
         if isinstance(data, dict) and isinstance(data.get('disabled', {}), dict):
             blocked.update(data.get('disabled', {}))
+            # Old builds recorded every Ripple version under one family key.
+            # Preserve that machine's existing exclusion conservatively.
+            if 'ripple' in data.get('disabled',{}):blocked.update(('ripplev1','ripplev11'))
     except (OSError, ValueError, TypeError):
         pass
     blocked.update(family_key(e) for e in (context or {}).get('_excludedHostedBots', []))
+    if 'Ripple' in (context or {}).get('_excludedHostedBots',[]):blocked.update(('ripplev1','ripplev11'))
     return blocked
 
 

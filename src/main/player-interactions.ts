@@ -4,6 +4,7 @@ import {botDifficulty} from '../game/bot-difficulty';
 import { addDays, DEFAULT_TRAINING } from '../game/career-rules';
 import { DEFAULT_TACTICS, MATCH_ROLES,playerMatchRole } from '../game/tactics';
 import { OutgoingTransfers } from './outgoing-transfers';
+import {squadDynamics} from './squad-dynamics';
 
 const json = (value: string | null, fallback: any = {}) => { try { return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
 const clamp = (n: number) => Math.max(0, Math.min(100, n));
@@ -93,6 +94,10 @@ export class PlayerInteractions {
     const selection = json(this.db.prepare('SELECT players FROM series_selections WHERE careerId = ? AND fixtureId = ?').get(careerId, fixture.id)?.players, this.starters(c));
     this.db.prepare('INSERT INTO interaction_series (careerId, fixtureId, date, starters) VALUES (?, ?, ?, ?)').run(careerId, fixture.id, c.currentDate, JSON.stringify(played.length ? played : selection));
     const won = fixture.homeTeamId === c.teamId ? fixture.homeScore > fixture.awayScore : fixture.awayScore > fixture.homeScore;
+    const previous=this.db.prepare('SELECT starters FROM interaction_series WHERE careerId=? AND fixtureId<>? ORDER BY date DESC,rowid DESC LIMIT 1').get(c.id,fixture.id);
+    const current=played.length?played:selection,shared=current.filter((id:string)=>json(previous?.starters,[]).includes(id)).length;
+    this.db.prepare('UPDATE teams SET teamChemistry=MIN(100,COALESCE(teamChemistry,50)+?) WHERE id=?').run(shared>=2?.35:.1,c.teamId);
+    for(const id of current)this.db.prepare('UPDATE players SET chemistry=MIN(100,COALESCE(chemistry,50)+.2) WHERE id=?').run(id);
     for (const id of played.length ? played : this.starters(c)) {
       const score = this.db.prepare('SELECT COALESCE(SUM(gps.score), 0) AS score FROM game_player_stats gps JOIN game_results gr ON gr.id = gps.gameResultId WHERE gr.fixtureId = ? AND gps.playerId = ?').get(fixture.id, id).score;
       const games = this.db.prepare('SELECT COUNT(*) AS count FROM game_results WHERE fixtureId = ?').get(fixture.id).count;
@@ -190,6 +195,7 @@ export class PlayerInteractions {
     this.tick(careerId);
     const c = this.career(careerId);
     return {
+      dynamics:squadDynamics(this.db,c),
       players: this.db.prepare('SELECT p.id, p.gamertag, p.overall, p.morale, p.fatigue, p.form, pt.confidence, r.trust, r.transferRequested, r.lastChatDate,u.requestedDate,u.reason AS requestReason,u.requestStatus FROM players p LEFT JOIN player_traits pt ON pt.playerId=p.id JOIN manager_relationships r ON r.playerId=p.id AND r.careerId=? LEFT JOIN player_unrest u ON u.playerId=p.id AND u.careerId=r.careerId WHERE p.teamId=? ORDER BY p.overall DESC,p.id').all(careerId,c.teamId),
       conversations: this.db.prepare('SELECT pc.*, p.gamertag FROM player_conversations pc JOIN players p ON p.id = pc.playerId WHERE pc.careerId = ? ORDER BY pc.date DESC, pc.rowid DESC LIMIT 100').all(careerId).map(pc => ({ ...pc, transcript: json(pc.transcript, []), responses: pc.status === 'pending' ? (RESPONSES[pc.topic] || []).map(id => ({ id, label: RESPONSE_LABELS[id] })) : [] })),
       promises: this.db.prepare('SELECT pp.*, p.gamertag FROM player_promises pp JOIN players p ON p.id = pp.playerId WHERE pp.careerId = ? ORDER BY pp.rowid DESC LIMIT 100').all(careerId).map(pp => ({ ...pp, label: RESPONSE_LABELS[pp.kind] })),

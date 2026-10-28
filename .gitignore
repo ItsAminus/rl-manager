@@ -51,3 +51,7 @@ rl_bridge/runtime/
 /match_result.json
 /scratch_test_config.py
 distribution/
+
+# Local support archives and video prototype renders are not application source.
+/artifacts/
+/rlm-prematch-prototype/

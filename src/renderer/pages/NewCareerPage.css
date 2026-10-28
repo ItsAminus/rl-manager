@@ -392,3 +392,6 @@
   color: #000;
   font-weight: 800;
 }
+
+.custom-squad-fields{display:grid;grid-template-columns:1fr 2fr;gap:24px;margin:24px 0}.custom-squad-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:24px 0}.custom-player-card{background:var(--bg-card,#17221e);border:1px solid var(--border-color,#34483d);border-radius:14px;padding:20px;display:grid;gap:16px}.custom-player-card label{display:grid;gap:8px}.custom-logo-preview{display:flex;align-items:center;gap:16px;margin-top:12px}.custom-logo-preview img{width:100px;height:100px;object-fit:contain}
+

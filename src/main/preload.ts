@@ -1,3 +1,4 @@
+import type {CustomOrganization} from '../game/custom-organization';
 import { contextBridge, ipcRenderer } from 'electron';
 
 const api = {
@@ -43,6 +44,7 @@ const api = {
 
   // Team Operations
   teams: {
+    recentResults:(id:string)=>ipcRenderer.invoke('teams:recentResults',id),
     getSelectable:()=>ipcRenderer.invoke('teams:getSelectable'),
     getAll: () => ipcRenderer.invoke('teams:getAll'),
     getById: (id: string) => ipcRenderer.invoke('teams:getById', id),
@@ -93,10 +95,24 @@ const api = {
 
   // Settings
   management: {
+    prematchDesk:(id:string,fixture:string,national=false)=>ipcRenderer.invoke('management:prematchDesk',id,fixture,national),
+    prepareDeskAudio:(id:string,fixture:string,national=false)=>ipcRenderer.invoke('management:prepareDeskAudio',id,fixture,national),
+    deskAudioStatus:(id:string,fixture:string)=>ipcRenderer.invoke('management:deskAudioStatus',id,fixture),
+    deskAudioClip:(id:string,fixture:string,index:number)=>ipcRenderer.invoke('management:deskAudioClip',id,fixture,index),
+    cancelDeskAudio:(id:string,fixture:string)=>ipcRenderer.invoke('management:cancelDeskAudio',id,fixture),
     simulation:(id:string,fixture:string)=>ipcRenderer.invoke('management:simulation',id,fixture),
     finances:(id:string)=>ipcRenderer.invoke('management:finances',id),
     scoutingRegions:(id:string)=>ipcRenderer.invoke('management:scoutingRegions',id),
-    dispatchRegion:(id:string,region:string,months:number)=>ipcRenderer.invoke('management:dispatchRegion',id,region,months),
+    scoutingDossier:(id:string,player:string)=>ipcRenderer.invoke('management:scoutingDossier',id,player),
+    opponentPreview:(id:string,team:string,starters:string[],ownStarters:string[]=[])=>ipcRenderer.invoke('management:opponentPreview',id,team,starters,ownStarters),
+    scoutingCancel:(id:string,kind:'player'|'region'|'team',assignment:string)=>ipcRenderer.invoke('management:scoutingCancel',id,kind,assignment),
+    scoutingTeamReport:(id:string,team:string)=>ipcRenderer.invoke('management:scoutingTeamReport',id,team),
+    scoutingDispatchTeam:(id:string,team:string)=>ipcRenderer.invoke('management:scoutingDispatchTeam',id,team),
+    dispatchRegion:(id:string,region:string,months:number,brief?:any)=>ipcRenderer.invoke('management:dispatchRegion',id,region,months,brief),
+    hireDepartment:(id:string,role:string)=>ipcRenderer.invoke('management:hireDepartment',id,role),
+    negotiateVision:(id:string,terms:any,accept=false)=>ipcRenderer.invoke('management:negotiateVision',id,terms,accept),
+    negotiateClubFee:(id:string,player:string,terms:any,accept=false)=>ipcRenderer.invoke('management:negotiateClubFee',id,player,terms,accept),
+    negotiateTerms:(id:string,player:string,offer:any)=>ipcRenderer.invoke('management:negotiateTerms',id,player,offer),
     approachAgent:(id:string,player:string,role:string)=>ipcRenderer.invoke('management:approachAgent',id,player,role),
     clubBranding:(id:string)=>ipcRenderer.invoke('management:clubBranding',id),
     saveClubBranding:(id:string,design:any)=>ipcRenderer.invoke('management:saveClubBranding',id,design),
@@ -180,7 +196,7 @@ const api = {
     getPath: (name: string) => ipcRenderer.invoke('app:getPath', name),
     playerInfo:()=>ipcRenderer.invoke('app:playerInfo'),
     integration:()=>ipcRenderer.invoke('app:integration'),
-    saveIntegration:(values:{rocketLeague:string;botPack:string;aiRuntime:string;speechPython?:string;speechDevice?:string})=>ipcRenderer.invoke('app:saveIntegration',values),
+    saveIntegration:(values:{rocketLeague?:string;botPack?:string;aiRuntime?:string;speechPython?:string;speechDevice?:string;commentaryEnabled?:boolean;commentaryVolume?:number})=>ipcRenderer.invoke('app:saveIntegration',values),
     ready:()=>ipcRenderer.send('app:rendererReady'),
     startup:()=>ipcRenderer.invoke('app:startup'),
     onStartup:(callback:(state:any)=>void)=>{const listener=(_:unknown,state:any)=>callback(state);ipcRenderer.on('app:startupProgress',listener);return()=>ipcRenderer.removeListener('app:startupProgress',listener);},

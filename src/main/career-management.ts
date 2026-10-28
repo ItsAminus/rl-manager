@@ -9,6 +9,10 @@ import { DEFAULT_TACTICS, MATCH_ROLES, TACTIC_CHOICES,bindTactics } from '../gam
 import { repairFutureRosterEntries } from './roster-sync';
 import { PlayerInteractions } from './player-interactions';
 import { OutgoingTransfers } from './outgoing-transfers';
+import {ensureTalentPool,knownProspect} from './talent-pool';
+import {staffDepartment} from './club-structure';
+import {clubFeeQuote,agreedTransfer,paymentPlan,calendarMonth} from './transfer-agreements';
+import {negotiationState,playerRepresentative,changeAgencyTrust} from './contract-negotiations';
 import { Chirp } from './chirp';
 import {Tournament} from './tournament';
 import {TransferMarket} from './transfer-market';
@@ -37,7 +41,7 @@ export class CareerManagement {
   }
   orderRoster(careerId: string, teamId: string, rows: any[]) {
     const career = this.career(careerId);
-    const saved: string[] = career.teamId === teamId ? parse(this.db.prepare('SELECT players FROM career_lineup WHERE careerId = ?').get(careerId)?.players, []) : [];
+    const saved: string[] = career.teamId === teamId ? parse(this.db.prepare('SELECT players FROM career_lineup WHERE careerId = ?').get(careerId)?.players, []) : parse(this.db.prepare('SELECT players FROM career_ai_lineups WHERE careerId=? AND teamId=?').get(careerId,teamId)?.players,[]);
     const confirmed: string[] = parse(this.db.prepare('SELECT starterIds FROM team_roster_sources WHERE teamId = ?').get(teamId)?.starterIds, []);
     const ids = saved.length ? saved : confirmed;
     return [...rows].sort((a, b) => {
@@ -58,11 +62,12 @@ export class CareerManagement {
   tactics(careerId: string) {
     const career=this.career(careerId);
     const previous=parse(this.db.prepare('SELECT plan FROM career_tactics WHERE careerId = ?').get(careerId)?.plan, DEFAULT_TACTICS);
-    const bound=bindTactics(previous,this.roster(careerId,career.teamId).slice(0,3));
+    const bound=bindTactics({...DEFAULT_TACTICS,...previous},this.roster(careerId,career.teamId).slice(0,3));
     if(!previous.rolesByPlayer)this.db.prepare('INSERT OR REPLACE INTO career_tactics(careerId,plan) VALUES (?,?)').run(careerId,JSON.stringify(bound));
     return bound;
   }
   saveTactics(careerId: string, plan: any) {
+    plan={...DEFAULT_TACTICS,...plan};
     const career=this.career(careerId);
     new SeriesTimeouts(this.db).assertCanEdit(careerId);
     if (!plan || Object.entries(TACTIC_CHOICES).some(([key, choices]) => !choices.includes(plan[key])) || [0, 1, 2].some(i => !MATCH_ROLES.includes(plan.roles?.[i]))) throw new Error('Choose valid tactics and a role for each starter.');
@@ -690,6 +695,7 @@ export class CareerManagement {
     new TransferMarket(this.db).tick(careerId);
     this.resolveDueMatches(careerId,date);
     new Chirp(this.db).tick(careerId);
+    ensureTalentPool(this.db,career);
     new RecruitmentNetwork(this.db).tick(career);
     new ClubEconomy(this.db).tick(career);
   }
@@ -713,24 +719,25 @@ export class CareerManagement {
     const schedule = this.training(career.id).schedule;
     const day = (new Date(date + 'T12:00:00Z').getUTCDay() + 6) % 7, session = schedule[day];
     const team = this.db.prepare('SELECT * FROM teams WHERE id = ?').get(career.teamId);
+    team.coachRating=Math.min(100,(team.coachRating||50)+staffDepartment(this.db,career,'Coaching').level*4);
     for (const p of this.db.prepare('SELECT p.*, pt.developmentRate, pt.professionalism FROM players p LEFT JOIN player_traits pt ON p.id = pt.playerId WHERE p.teamId = ?').all(career.teamId)) {
       const rest = session.category === 'Rest';
       const intensity = session.intensity === 'High' ? 1.5 : session.intensity === 'Low' ? .5 : 1;
-      const fatigue = Math.max(0, Math.min(100, p.fatigue + (rest ? -20 : intensity === 1.5 ? 10 : intensity === .5 ? -2 : 3)));
+      const fatigue = Math.max(0, Math.min(100, p.fatigue + (rest ? -20-staffDepartment(this.db,career,'Player care').level*1.5 : intensity === 1.5 ? 10 : intensity === .5 ? -2 : 3)));
       this.db.prepare('UPDATE players SET fatigue = ?, morale = MIN(100, morale + ?) WHERE id = ?').run(fatigue, rest ? 1 : 0, p.id);
+      if(session.category==='Team Play'&&fatigue<=70)this.db.prepare('UPDATE players SET chemistry=MIN(100,COALESCE(chemistry,50)+?) WHERE id=?').run(.3*intensity,p.id);
       const earned=new EarnedDevelopment(this.db);
       if(earned.enabled(career)){
         if(!rest){
           const growth=earned.train(career,{...p,fatigue},date,intensity,team);
           if(!isPath(career))for(const attribute of TRAINING_ATTRIBUTES[session.category])this.db.prepare(`UPDATE player_attributes SET ${attribute}=MAX(${attribute},MIN(?,${attribute}+?)) WHERE playerId=?`).run(Math.min(100,p.potential+3),growth,p.id);
-          if(growth>0&&session.category==='Team Play')this.db.prepare('UPDATE players SET chemistry=MIN(100,COALESCE(chemistry,50)+?) WHERE id=?').run(.35*intensity,p.id);
           if(session.category==='Mental / Pressure'&&fatigue<=70)this.db.prepare('UPDATE player_traits SET confidence=MIN(75,COALESCE(confidence,50)+1) WHERE playerId=? AND confidence<75').run(p.id);
         }
         continue;
       }
       if (rest || p.overall >= p.potential || p.fatigue > 70) continue;
       const growth = .045 * intensity * (p.age == null ? 1 : p.age <= 21 ? 1.3 : .8) * (.5 + (p.developmentRate || 50) / 100)
-        * (.7 + (team.coachRating || 50) / 200) * (1 + (team.facilityLevel || 1) * .05);
+        * (.8+(p.professionalism??50)/250) * (.7 + (team.coachRating || 50) / 200) * (1 + (team.facilityLevel || 1) * .05);
       const progress = this.db.prepare('SELECT progress FROM player_development WHERE careerId = ? AND playerId = ?').get(career.id, p.id)?.progress || 0;
       const total = progress + growth;
       const gain = Math.min(Math.floor(total), p.potential - p.overall);
@@ -743,6 +750,10 @@ export class CareerManagement {
         this.message(career.id, date, 'general', `${p.gamertag}: development update`, body, '/training');
       }
     }
+    if(session.category==='Team Play'){
+      const squad=this.db.prepare('SELECT AVG(chemistry) chemistry,AVG(fatigue) fatigue FROM players WHERE teamId=?').get(career.teamId);
+      if(squad.chemistry!=null&&squad.fatigue<=70)this.db.prepare('UPDATE teams SET teamChemistry=MIN(100,COALESCE(teamChemistry,50)+?) WHERE id=?').run(.4*(session.intensity==='High'?1.5:session.intensity==='Low'?.5:1),career.teamId);
+    }
     this.db.prepare('UPDATE player_traits SET confidence = MIN(100, confidence + 1) WHERE playerId IN (SELECT id FROM players WHERE teamId = ?) AND confidence < 50').run(career.teamId);
   }
   scouting(careerId: string) {
@@ -751,7 +762,7 @@ export class CareerManagement {
     return this.db.prepare('SELECT s.*, p.gamertag, p.region, p.preferredTendency, p.overall, p.potential FROM scout_assignments s JOIN players p ON p.id = s.playerId WHERE s.careerId = ? ORDER BY s.dueDate DESC, s.rowid DESC').all(careerId).map(s => {
       const p=this.db.prepare('SELECT * FROM players WHERE id=?').get(s.playerId);
       const view=new RecruitmentNetwork(this.db).visible(this.career(careerId),p);
-      return {...s,overall:undefined,potential:undefined,preferredTendency:view.preferredTendency,knowledge:view.scoutKnowledge,
+      return {...s,overall:undefined,potential:undefined,preferredTendency:view.preferredTendency,knowledge:view.scoutKnowledge,attributes:view.attributes,form:view.form,observedDate:view.lastScouted,
         estOvr:s.status==='pending'?'—':view.estimatedOverall,estPot:s.status==='pending'?'—':view.estimatedPotential,
         note:s.status==='pending'?`Scouting in progress. Report due ${s.dueDate}.`:'Reports narrow estimates through sustained observation. Potential remains an assessment, not a guaranteed ceiling.'};
     });
@@ -761,10 +772,10 @@ export class CareerManagement {
     return this.db.transaction(() => {
       const career = this.career(careerId);
       const player = this.db.prepare('SELECT * FROM players WHERE id = ? OR LOWER(gamertag) = LOWER(?)').get(target, target.trim());
-      if (!player) throw new Error('Player not found. Enter an exact gamertag.');
+      if (!player||!knownProspect(this.db,career,player.id)) throw new Error('Player not found. Discover unsigned prospects through regional scouting first.');
       if (player.teamId === career.teamId) throw new Error('Your own squad is already fully known.');
       if (this.db.prepare("SELECT id FROM scout_assignments WHERE careerId = ? AND playerId = ? AND status = 'pending'").get(careerId, player.id)) throw new Error('A scout is already observing this player.');
-      const occupied=this.db.prepare("SELECT COUNT(*) n FROM scout_assignments WHERE careerId=? AND status='pending'").get(careerId).n+this.db.prepare("SELECT COUNT(*) n FROM scouting_regions WHERE careerId=? AND status='active'").get(careerId).n;
+      const occupied=new RecruitmentNetwork(this.db).occupied(careerId);
       if(occupied>=3)throw Error('All three scout slots are occupied.');
       const depth = new RecruitmentNetwork(this.db).depth(careerId,player.id);
       if (depth >= 3) throw new Error('This player is already fully scouted.');
@@ -779,6 +790,7 @@ export class CareerManagement {
   signingQuote(careerId: string, playerId: string) {
     if(isPath(this.career(careerId)))throw Error('Transfers are unavailable in Path To Glory.');
     const career = this.career(careerId);
+    if(!knownProspect(this.db,career,playerId))throw Error('Your scouts have not discovered this player.');
     const p = this.db.prepare('SELECT * FROM players WHERE id = ?').get(playerId);
     if (!p) throw new Error('Player not found.');
     const affiliation = this.db.prepare('SELECT status FROM player_affiliations WHERE playerId = ?').get(playerId)?.status;
@@ -787,14 +799,20 @@ export class CareerManagement {
     let fee = !renewal && p.teamId ? Math.max(active?.buyout || 0,p.marketValue || 0) : 0;
     const option=this.db.prepare('SELECT buybackFee FROM deal_clauses WHERE careerId=? AND playerId=? AND sellerId=? AND buyerId=? AND settled=0 AND buybackFee>0 AND buybackUntil>=? ORDER BY rowid DESC LIMIT 1').get(careerId,playerId,career.teamId,p.teamId,career.currentDate);
     if(option&&!renewal)fee=Math.min(fee,option.buybackFee);
+    const club=clubFeeQuote(this.db,career,playerId),agreement=club?.talk?.status==='agreed'?club.talk:null;
+    if(agreement)fee=agreement.terms.fee;
+    const transferUpfront=agreement?paymentPlan(fee,agreement.terms.upfrontPercent,agreement.terms.months,career.currentDate).upfront:fee;
     const clubFunds = this.db.prepare('SELECT cashBalance FROM teams WHERE id = ?').get(career.teamId).cashBalance;
     const window = careerWindow(this.db,careerId,career.currentDate);
     const approach=this.db.prepare('SELECT * FROM agent_approaches WHERE careerId=? AND playerId=?').get(careerId,playerId);
     const needsApproach=!renewal&&(!approach||approach.expiresDate<career.currentDate);
     const interest=recruitmentInterest(this.db,careerId,career.teamId,p,career.currentDate,approach?.role||'Core Starter');
+    const negotiation=negotiationState(this.db,career,playerId);
+    const agent=playerRepresentative(this.db,career,playerId);
     const unavailableReason = !window.open ? window.label : !p.teamId && ['unverified', 'inactive'].includes(affiliation)
-      ? 'This player is not a confirmed available free agent.' : clubFunds<fee?`Insufficient transfer funds. You must be able to afford $${fee.toLocaleString()} before approaching this player (short by $${(fee-clubFunds).toLocaleString()}).`:needsApproach?'Speak to the agent about the sporting project before negotiating.':!renewal&&!approach?.willing?JSON.parse(approach.reasons)[0]:interest.reasons[0]||'';
-    return { success: true, fee, clubFunds, renewal, demands:interest.demands,interest,unavailableReason,needsApproach,approach:approach?{...approach,willing:!!approach.willing,reasons:JSON.parse(approach.reasons)}:null };
+      ? 'This player is not a confirmed available free agent.' : clubFunds<transferUpfront?`Insufficient transfer funds. You need $${transferUpfront.toLocaleString()} for the club payment before approaching this player (short by $${(transferUpfront-clubFunds).toLocaleString()}).`:needsApproach?'Speak to the agent about the sporting project before negotiating.':!renewal&&!approach?.willing?JSON.parse(approach.reasons)[0]:interest.reasons[0]||'';
+    const publicClub:any=club?Object.fromEntries(Object.entries(club).filter(([key])=>key!=='floor')):null;
+    return { success: true, fee, transferUpfront,club:club?publicClub:null,clubFunds, renewal, demands:interest.demands,interest,agent,negotiation,unavailableReason:negotiation.blockedUntil?`Talks cannot reopen before ${negotiation.blockedUntil}.`:unavailableReason,needsApproach,approach:approach?{...approach,willing:!!approach.willing,reasons:JSON.parse(approach.reasons)}:null };
   }
   sign(careerId: string, playerId: string, offer: any) {
     return this.db.transaction(() => {
@@ -816,35 +834,67 @@ export class CareerManagement {
       let baseFee=quote.fee;
       const option=this.db.prepare('SELECT buybackFee FROM deal_clauses WHERE careerId=? AND playerId=? AND sellerId=? AND buyerId=? AND settled=0 AND buybackFee>0 AND buybackUntil>=? ORDER BY rowid DESC LIMIT 1').get(careerId,playerId,career.teamId,p.teamId,career.currentDate);
       if(option&&!renewal)baseFee=Math.min(baseFee,option.buybackFee);
-      const clauses=clauseTerms(offer,renewal?null:p.teamId,baseFee),fee=clauses.fee;
-      if(clauses.contribution&&p.teamId){const seller=this.db.prepare('SELECT cashBalance FROM teams WHERE id=?').get(p.teamId);if((seller?.cashBalance||0)+fee<clauses.contribution*clauses.contributionMonths)throw Error('The selling club cannot fund the requested wage contribution.');}
+      const agreement=agreedTransfer(this.db,career,playerId);
+      if(offer.clubAgreement&&!agreement)throw Error('The club agreement has expired or the player changed clubs. Reopen club talks.');
+      if(quote.club?.talk&&quote.club.talk.status!=='agreed')throw Error('Reach agreement with the selling club before signing.');
+      const clauses=clauseTerms(offer,renewal?null:p.teamId,baseFee),fee=agreement?agreement.terms.fee:clauses.fee;
+      if(agreement&&(clauses.profitPercent||clauses.buybackFee||clauses.contributionPercent))throw Error('This negotiated fee is fixed without selling-club clauses. Do not add new club terms during personal negotiations.');
+      const plan=agreement?paymentPlan(fee,agreement.terms.upfrontPercent,agreement.terms.months,career.currentDate):paymentPlan(fee);
+      if(plan.deferred&&p.teamId){
+        const resale=this.db.prepare('SELECT * FROM deal_clauses WHERE careerId=? AND playerId=? AND buyerId=? AND settled=0').all(careerId,p.id,p.teamId).filter(d=>d.sellerId&&d.sellerId!==p.teamId).reduce((n,d)=>n+Math.round(Math.max(0,fee-d.baseFee)*d.profitPercent/100),0);
+        const sellerCash=this.db.prepare('SELECT cashBalance FROM teams WHERE id=?').get(p.teamId)?.cashBalance||0;
+        if(sellerCash+plan.upfront<resale)throw Error('The selling club needs more upfront cash to settle its existing sell-on obligations.');
+      }
+      if(clauses.contribution&&p.teamId){const seller=this.db.prepare('SELECT cashBalance FROM teams WHERE id=?').get(p.teamId);if((seller?.cashBalance||0)+plan.upfront<clauses.contribution*clauses.contributionMonths)throw Error('The selling club cannot fund the requested wage contribution.');}
       const accounts=new ClubEconomy(this.db).overview(career);
       const previousWage=renewal?(this.db.prepare('SELECT salary FROM contracts WHERE playerId=? AND isActive=1').get(playerId)?.salary||0):0;
-      if(accounts.wages-previousWage+offer.salary>accounts.wageLimit*1.25)throw Error('The board blocks this deal: it exceeds the wage structure by more than 25%.');
+      const wagePercent=accounts.vision?.status==='agreed'?accounts.vision.terms.wagePercent:125;
+      if(accounts.wages-previousWage+offer.salary>accounts.wageLimit*wagePercent/100)throw Error(`The board blocks this deal: it exceeds your ${wagePercent}% wage ceiling.`);
       const team = this.db.prepare('SELECT * FROM teams WHERE id = ?').get(career.teamId);
-      if (team.cashBalance < fee + offer.bonus + offer.salary) throw new Error(`Insufficient club funds. This deal needs $${(fee + offer.bonus + offer.salary).toLocaleString()} upfront; your club has $${team.cashBalance.toLocaleString()} (short by $${(fee + offer.bonus + offer.salary - team.cashBalance).toLocaleString()}).`);
+      const cashNeeded=plan.upfront+offer.bonus+offer.salary;
+      if (team.cashBalance < cashNeeded) throw new Error(`Insufficient club funds. This deal needs $${cashNeeded.toLocaleString()} upfront; your club has $${team.cashBalance.toLocaleString()} (short by $${(cashNeeded-team.cashBalance).toLocaleString()}).`);
+      if(plan.deferred){
+        const monthly=accounts.structure.netAfterStaff-offer.salary+previousWage;
+        for(let month=1;month<=plan.months;month++){
+          const due=calendarMonth(career.currentDate,month);
+          const existing=accounts.obligations.rows.filter((r:any)=>!r.paidDate&&r.dueDate<=due).reduce((n:number,r:any)=>n+(r.buyerId===team.id?-r.amount:r.amount),0);
+          const projected=team.cashBalance-cashNeeded+monthly*month+existing-plan.schedule.filter(r=>r.dueDate<=due).reduce((n,r)=>n+r.amount,0);
+          if(projected<0)throw Error(`The board cannot fund the instalment plan: projected cash falls below zero by ${due}. Reduce the fee or wage bill.`);
+        }
+      }
       const end = new Date(career.currentDate + 'T12:00:00Z'); end.setUTCMonth(end.getUTCMonth() + offer.duration);
       this.db.prepare('UPDATE contracts SET isActive = 0 WHERE playerId = ?').run(playerId);
       const contractId=uuid();
       this.db.prepare('INSERT INTO contracts (id, playerId, teamId, salary, duration, startDate, endDate, signingBonus, buyout, isActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)')
         .run(contractId, playerId, team.id, offer.salary, offer.duration, career.currentDate, end.toISOString().slice(0, 10), offer.bonus, offer.buyout);
       this.db.prepare('INSERT INTO contract_payments VALUES(?,1)').run(contractId);
-      this.db.prepare('UPDATE teams SET cashBalance = cashBalance - ? WHERE id = ?').run(fee + offer.bonus + offer.salary, team.id);
-      if (fee) this.db.prepare('UPDATE teams SET cashBalance = cashBalance + ? WHERE id = ?').run(fee, p.teamId);
+      this.db.prepare('UPDATE teams SET cashBalance = cashBalance - ? WHERE id = ?').run(cashNeeded, team.id);
+      if (fee) this.db.prepare('UPDATE teams SET cashBalance = cashBalance + ? WHERE id = ?').run(plan.upfront, p.teamId);
+      const transferId=uuid();
+      for(const [i,payment] of plan.schedule.entries())this.db.prepare('INSERT INTO transfer_payments VALUES(?,?,?,?,?,?,?,?,NULL)').run(transferId+':'+i,careerId,transferId,p.id,team.id,p.teamId,payment.dueDate,payment.amount);
+      if(fee)for(const [club,amount] of [[team.id,-plan.upfront],[p.teamId,plan.upfront]])this.db.prepare('INSERT INTO club_ledger VALUES(?,?,?,?,?,?,?)').run(uuid(),careerId,club,career.currentDate,'Transfer upfront',amount,`${p.gamertag}; total fee $${fee}; deferred $${plan.deferred}`);
       if(!renewal)settleSellOn(this.db,careerId,p.id,p.teamId,team.id,fee);
       const promised=offer.playingTime??(role==='Star Carry'?80:role==='Core Starter'?60:0);
       if((role==='Star Carry'&&promised<80)||(role==='Core Starter'&&promised<60))throw Error('The playing-time guarantee must support the agreed role.');
       this.db.prepare('INSERT INTO deal_clauses(contractId,careerId,playerId,buyerId,sellerId,baseFee,profitPercent,buybackFee,buybackUntil,contribution,contributionUntil,playingTime) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)').run(contractId,careerId,p.id,team.id,renewal?null:p.teamId,fee,clauses.profitPercent,clauses.buybackFee,addDays(career.currentDate,730),clauses.contribution,addDays(career.currentDate,clauses.contributionMonths*30),promised);
       this.db.prepare('DELETE FROM agent_approaches WHERE careerId=? AND playerId=?').run(careerId,p.id);
+      this.db.prepare('DELETE FROM negotiation_sessions WHERE careerId=? AND playerId=?').run(careerId,p.id);
+      changeAgencyTrust(this.db,career,p.id,3);
+      this.db.prepare('DELETE FROM club_fee_talks WHERE careerId=? AND playerId=?').run(careerId,p.id);
+      if(!renewal){
+        this.db.prepare('UPDATE teams SET teamChemistry=MAX(15,COALESCE(teamChemistry,50)-8) WHERE id=?').run(team.id);
+        if(p.teamId)this.db.prepare('UPDATE teams SET teamChemistry=MAX(15,COALESCE(teamChemistry,50)-3) WHERE id=?').run(p.teamId);
+        this.db.prepare('UPDATE players SET chemistry=45 WHERE id=?').run(p.id);
+      }
       this.db.prepare('UPDATE players SET teamId = ?, morale = MIN(100, morale + 5) WHERE id = ?').run(team.id, p.id);
       this.db.prepare("UPDATE player_affiliations SET status = 'career', note = 'Signed in this simulated career.' WHERE playerId = ?").run(p.id);
       if (p.teamId && !renewal) ensurePlayableRoster(this.db, p.teamId, career.currentDate);
-      this.db.prepare('INSERT INTO transfers (id, playerId, fromTeamId, toTeamId, fee, date, type,careerId) VALUES (?, ?, ?, ?, ?, ?, ?,?)').run(uuid(), p.id, p.teamId || null, team.id, fee, career.currentDate, renewal ? 'renewal' : 'signing',careerId);
+      this.db.prepare('INSERT INTO transfers (id, playerId, fromTeamId, toTeamId, fee, date, type,careerId) VALUES (?, ?, ?, ?, ?, ?, ?,?)').run(transferId, p.id, p.teamId || null, team.id, fee, career.currentDate, renewal ? 'renewal' : 'signing',careerId);
       this.message(careerId, career.currentDate, 'contract_signed', `${p.gamertag}: ${renewal ? 'contract renewed' : 'signing completed'}`, `${offer.duration}-month deal at $${offer.salary.toLocaleString()}/month. Signing bonus: $${offer.bonus.toLocaleString()}. Transfer fee: $${fee.toLocaleString()}.`, `/player/${p.id}`);
       this.post(careerId, p, 'positive', 'RosterWire', `${p.gamertag} ${renewal ? 'commits to' : 'joins'} ${team.name}. A fresh chapter for the roster.`);
       // A replacement signed on deadline day can release an already agreed sale.
       new OutgoingTransfers(this.db).tick(careerId);
-      return { success: true, fee };
+      return { success: true, fee,upfront:plan.upfront,deferred:plan.deferred,schedule:plan.schedule };
     })();
   }
   post(careerId: string, p: any, sentiment: 'positive' | 'negative', author: string, body: string, fixtureId?: string) {

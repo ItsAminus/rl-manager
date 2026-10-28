@@ -3,8 +3,9 @@ export const TACTIC_CHOICES: Record<string, string[]> = {
   overallStyle: ['Defensive', 'Balanced', 'Aggressive'], challengeFreq: ['Conservative', 'Balanced', 'Aggressive'],
   rotation: ['Structured', 'Balanced', 'Fluid'], boostPriority: ['Conservative', 'Balanced', 'Heavy'],
   demoFreq: ['Low', 'Normal', 'High'], passingStyle: ['Solo Focus', 'Balanced', 'Passing Focus'], pressure: ['Low', 'Medium', 'High'],
+  supportDepth:['Close','Balanced','Deep'],outletWidth:['Narrow','Balanced','Wide'],demoTarget:['Star player','Nearest opponent','Last defender'],boostReserve:['0','15','30'],
 };
-export const DEFAULT_TACTICS = { overallStyle: 'Balanced', challengeFreq: 'Balanced', rotation: 'Structured', boostPriority: 'Balanced', demoFreq: 'Normal', passingStyle: 'Balanced', pressure: 'Medium', roles: Object.fromEntries(MATCH_ROLES.map((role, i) => [i, role])) };
+export const DEFAULT_TACTICS = { supportDepth:'Balanced',outletWidth:'Balanced',demoTarget:'Star player',boostReserve:'0',overallStyle: 'Balanced', challengeFreq: 'Balanced', rotation: 'Structured', boostPriority: 'Balanced', demoFreq: 'Normal', passingStyle: 'Balanced', pressure: 'Medium', roles: Object.fromEntries(MATCH_ROLES.map((role, i) => [i, role])) };
 export const playerMatchRole=(plan:any,playerId:string,index:number)=>plan.rolesByPlayer?.[playerId]??plan.roles?.[index]??MATCH_ROLES[index];
 export function bindTactics(plan:any,players:any[]){
   const rolesByPlayer={...plan.rolesByPlayer};

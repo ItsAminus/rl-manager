@@ -1,3 +1,17 @@
+import {commentatorVolume} from '../game/commentary-audio';
+import {createCustomOrganization,saveCustomOrganizationBrand} from './custom-organization';
+import type {CustomOrganization} from '../game/custom-organization';
+import {prematchDesk} from './prematch-desk';
+import {ensureTalentPool,knownProspect} from './talent-pool';
+import {hireDepartment} from './club-structure';
+import {negotiateVision} from './board-visions';
+import {negotiateClubFee} from './transfer-agreements';
+import {negotiateTerms} from './contract-negotiations';
+import {nationalPrematchDesk} from './national-desk';
+import {DeskAudio} from './desk-audio';
+import {addAdditionalClubs} from './additional-clubs';
+import {opponentPreview} from './opponent-preview';
+import {scoutDossier} from './scout-dossier';
 import {ClubEconomy} from './club-economy';
 import {PlayerIdentity,type IdentityPreview} from './player-identity';
 import {applyTeamStatusAudit,selectableTeams} from './team-pool';
@@ -23,7 +37,7 @@ import {InjectorConfirmation} from '../services/injector-confirmation';
 import { playedMatchResult } from '../services/played-match-result';
 import { Chirp } from './chirp';
 import { LocalChirpText } from './chirp-text';
-import {markAllInboxRead} from './inbox';
+import {markAllInboxRead,inboxMessages} from './inbox';
 import { seriesMap } from '../services/series-maps';
 import { broadcastMatch } from '../services/broadcast-assets';
 import {FifaWorldCup} from './fifae-world-cup';
@@ -51,6 +65,8 @@ export function setupIpcHandlers() {
   ensureDatabaseSeeded();
   configureCareerWorlds(()=>ensureDatabaseSeeded());
   const management = new CareerManagement(db);
+  const deskAudio=new DeskAudio();
+  app.on('before-quit',()=>deskAudio.cancel());
   const interactions = new PlayerInteractions(db);
   const outgoing = new OutgoingTransfers(db);
   const chirps=new Map<string,Chirp>();
@@ -72,23 +88,25 @@ export function setupIpcHandlers() {
   const integrationPaths=()=>{
     const saved=preferences.read().integration||{};
     const legacy=(key:string)=>{const value=db.prepare('SELECT value FROM settings WHERE key=?').get(key)?.value;try{return JSON.parse(value);}catch{return value;}};
-    return {rocketLeague:saved.rocketLeague||legacy('rl_install_path')||'',botPack:saved.botPack||legacy('rlbot_path')||'',aiRuntime:installedAiRuntime(),speechPython:saved.speechPython||'',speechDevice:saved.speechDevice==='cpu'?'cpu':'auto'};
+    return {rocketLeague:saved.rocketLeague||legacy('rl_install_path')||'',botPack:saved.botPack||legacy('rlbot_path')||'',aiRuntime:installedAiRuntime(),speechPython:saved.speechPython||'',speechDevice:saved.speechDevice==='cpu'?'cpu':'auto',commentaryEnabled:saved.commentaryEnabled!==false,commentaryVolume:commentatorVolume(saved.commentaryVolume)};
   };
   ipcMain.handle('app:integration',()=>integrationPaths());
   ipcMain.handle('app:saveIntegration',(_,values:any)=>{
     if(practiceActive)throw Error('Integration settings are read-only during practice.');
     for(const [key,value] of Object.entries(values||{})){
-      if(key==='speechDevice'){if(value!=='auto'&&value!=='cpu')throw Error('Choose automatic or CPU voice processing.');continue;}
+      if(key==='commentaryVolume'){if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('Choose a commentator volume from 0 to 100%.');continue;}
+      if(key==='commentaryEnabled'){if(typeof value!=='boolean')throw Error('Choose whether commentary is enabled.');continue;}if(key==='speechDevice'){if(value!=='auto'&&value!=='cpu')throw Error('Choose automatic or CPU voice processing.');continue;}
       if(!['rocketLeague','botPack','aiRuntime','speechPython'].includes(key)||typeof value!=='string'||value.length>2000||(value&&!fs.existsSync(value)))throw Error('Choose an existing game file or folder.');
       if(key==='speechPython'&&value&&(!value.toLowerCase().endsWith('.exe')||!fs.statSync(value).isFile()))throw Error('Choose the Python executable in your AMD speech environment.');
     }
-    preferences.update({integration:{...preferences.read().integration,rocketLeague:values.rocketLeague||'',botPack:values.botPack||'',speechPython:values.speechPython||'',speechDevice:values.speechDevice==='cpu'?'cpu':'auto'}});
+    preferences.update({integration:{...preferences.read().integration,rocketLeague:values.rocketLeague??integrationPaths().rocketLeague,botPack:values.botPack??integrationPaths().botPack,speechPython:values.speechPython??integrationPaths().speechPython,speechDevice:values.speechDevice??integrationPaths().speechDevice,commentaryEnabled:values.commentaryEnabled??integrationPaths().commentaryEnabled,commentaryVolume:values.commentaryVolume??integrationPaths().commentaryVolume}});
     if(values.aiRuntime)fs.writeFileSync(runtimePreferencesFile(),JSON.stringify({path:values.aiRuntime}));
     return {success:true};
   });
   // AsyncLocalStorage binds promises, timers and match-process callbacks to
   // their original save, even if another career is loaded before they finish.
   const handle=(channel:string,action:(event:any,...args:any[])=>any)=>ipcMain.handle(channel,async(event,...args)=>{
+    if(channel==='career:load'||channel==='career:delete'||channel==='career:create')deskAudio.cancel();
     if(practiceActive&&(['rlbot:launch','rlbot:testMatch','career:create','career:delete'].includes(channel)||channel==='career:load'&&!String(args[0]).startsWith('tutorial-')))
       throw Error('Finish or skip the practice tour before starting a real career or Rocket League match.');
     const id=channel==='career:load'||channel==='career:save'||channel==='career:delete'?args[0]:activeCareerId;
@@ -163,8 +181,33 @@ export function setupIpcHandlers() {
   manage('saveTactics', (id, plan) => management.saveTactics(id, plan));
   manage('simulation',(id,fixture)=>{if(matchHandoff.busy)throw Error('Finish the live game first.');return management.simulation(id,fixture);});
   manage('finances',id=>db.transaction(()=>new ClubEconomy(db).overview(management.career(id)))());
+  manage('hireDepartment',(id,role)=>db.transaction(()=>{new ClubEconomy(db).assertEmployed(id);return hireDepartment(db,management.career(id),role);})());
+  manage('negotiateVision',(id,terms,accept)=>db.transaction(()=>negotiateVision(db,management.career(id),terms,accept))());
+  manage('negotiateClubFee',(id,player,terms,accept)=>db.transaction(()=>negotiateClubFee(db,management.career(id),player,terms,accept))());
+  manage('negotiateTerms',(id,player,offer)=>db.transaction(()=>negotiateTerms(db,management.career(id),player,offer,management.signingQuote(id,player)))());
   manage('scoutingRegions',id=>new RecruitmentNetwork(db).regions(management.career(id)));
-  manage('dispatchRegion',(id,region,months)=>db.transaction(()=>new RecruitmentNetwork(db).dispatchRegion(management.career(id),region,months))());
+  manage('scoutingDossier',(id,player)=>scoutDossier(db,management.career(id),player));
+  manage('prematchDesk',(id,fixture,national)=>national?nationalPrematchDesk(db,id,fixture):prematchDesk(db,management.career(id),fixture));
+  manage('prepareDeskAudio',(id,fixture,national)=>{
+    if(matchHandoff.busy)throw Error('The live match has priority over desk preparation.');
+    const desk=national?nationalPrematchDesk(db,id,fixture):prematchDesk(db,management.career(id),fixture),key=id+':'+fixture;
+    if(desk.tier==='graphics')return {state:'idle',clips:[],message:''};
+    const publicFolder=app.isPackaged?path.join(app.getAppPath(),'public'):path.resolve(__dirname,'../public');
+    return deskAudio.prepare(key,desk.turns,publicFolder);
+  });
+  manage('deskAudioStatus',(id,fixture)=>deskAudio.snapshot(id+':'+fixture));
+  manage('deskAudioClip',(id,fixture,index)=>deskAudio.audio(id+':'+fixture,Number(index)));
+  manage('cancelDeskAudio',(id,fixture)=>{deskAudio.cancel(id+':'+fixture);return {success:true};});
+  manage('opponentPreview',(id,team,starters,ownStarters)=>{
+    const career=management.career(id);
+    const rows=db.prepare('SELECT id,overall FROM players WHERE teamId=?').all(team);
+    const selected=Array.isArray(starters)&&starters.length?starters:management.orderRoster(id,team,rows).slice(0,3).map(p=>p.id);
+    return opponentPreview(db,career,team,selected,Array.isArray(ownStarters)?ownStarters:[]);
+  });
+  manage('scoutingCancel',(id,kind,assignment)=>new RecruitmentNetwork(db).cancel(management.career(id),kind,assignment));
+  manage('scoutingTeamReport',(id,team)=>new RecruitmentNetwork(db).teamReport(management.career(id),team));
+  manage('scoutingDispatchTeam',(id,team)=>db.transaction(()=>new RecruitmentNetwork(db).dispatchTeam(management.career(id),team))());
+  manage('dispatchRegion',(id,region,months,brief)=>db.transaction(()=>new RecruitmentNetwork(db).dispatchRegion(management.career(id),region,months,brief))());
   manage('approachAgent',(id,player,role)=>db.transaction(()=>new RecruitmentNetwork(db).approach(management.career(id),player,role))());
   manage('scouting', id => management.scouting(id));
   manage('dispatchScout', (id, target) => management.dispatchScout(id, target));
@@ -242,6 +285,7 @@ export function setupIpcHandlers() {
     region: string;
     difficulty: string;
     customOrgName?: string;
+    customOrganization?: CustomOrganization;
     mode?:string;
     pathRank?:string;
   },practice=false) => {
@@ -256,27 +300,16 @@ export function setupIpcHandlers() {
         ensureDatabaseSeeded();
         if(data.mode==='Path To Glory'&&data.pathRank){const generated=new PathToGlory(db).generateSquad(data.pathRank,data.region,data.customOrgName);data={...data,teamId:generated.id,region:generated.region};}
 
-        // Handle custom organization if needed
-        const existingTeam = db.prepare('SELECT id FROM teams WHERE id = ?').get(data.teamId);
-        const rosterSource = db.prepare('SELECT status FROM team_roster_sources WHERE teamId = ?').get(data.teamId);
-        if (rosterSource && (['inactive','incomplete','disbanded'].includes(rosterSource.status) || db.prepare('SELECT COUNT(*) AS count FROM players WHERE teamId = ?').get(data.teamId).count < 3)) throw new Error('This organization has no eligible complete roster. Choose another club or create your own.');
-        if (!existingTeam) {
-          const customName = data.customOrgName || (data.teamId === 'team_custom' ? 'Custom Esports' : 'New Franchise');
-          const customShort = customName.slice(0, 3).toUpperCase();
-          const mappedRegion = REGION_CODE_MAP[data.region] || data.region;
-          db.prepare(`
-            INSERT INTO teams (id, name, shortName, region, reputation, budget, cashBalance, coachRating, facilityLevel, fanbase, sponsorIncome, teamChemistry, teamForm)
-            VALUES (?, ?, ?, ?, 60, 350000, 350000, 70, 1, 5000, 20000, 70, 70)
-          `).run(data.teamId, customName, customShort, mappedRegion);
-
-          // Assign 3 free agent players to custom team if available
-          const freeAgents = db.prepare(`SELECT p.id FROM players p JOIN player_affiliations af ON af.playerId = p.id WHERE p.teamId IS NULL AND af.status IN ('free_agent','career') AND NOT EXISTS(SELECT 1 FROM generated_entities g WHERE g.id = p.id) ORDER BY p.overall DESC LIMIT 3`).all() as any[];
-          if (freeAgents.length < 3) throw new Error('There are fewer than three confirmed available real free agents. Choose an existing real club with a complete roster.');
-          for (const fa of freeAgents) {
-            db.prepare(`UPDATE players SET teamId = ? WHERE id = ?`).run(data.teamId, fa.id);
-          }
-          ensurePlayableRoster(db, data.teamId, startDate);
+        let custom:ReturnType<typeof createCustomOrganization>|null=null;
+        if(data.customOrganization){
+          if(data.mode==='Path To Glory')throw Error('Use the Path To Glory squad setup for this mode.');
+          custom=createCustomOrganization(db,id,REGION_CODE_MAP[data.region]||data.region,data.customOrganization,startDate);
+          data={...data,teamId:custom.teamId};
         }
+        const existingTeam=db.prepare('SELECT id FROM teams WHERE id=?').get(data.teamId);
+        if(!existingTeam)throw Error('Choose an existing organization or customize your new club and three starting players.');
+        const rosterSource=db.prepare('SELECT status FROM team_roster_sources WHERE teamId=?').get(data.teamId);
+        if(rosterSource&&(['inactive','incomplete','disbanded'].includes(rosterSource.status)||db.prepare('SELECT COUNT(*) count FROM players WHERE teamId=?').get(data.teamId).count<3))throw Error('This organization has no eligible complete roster. Choose another club or create your own.');
 
         // Create career
         db.prepare(`
@@ -285,6 +318,7 @@ export function setupIpcHandlers() {
         `).run(id, data.managerName, data.teamId, data.region, data.difficulty, startDate, now, now);
         const mode=data.mode==='Path To Glory'?'Path To Glory':'Manager Career';
         db.prepare('INSERT INTO career_modes(careerId,mode) VALUES (?,?)').run(id,mode);
+        if(custom)saveCustomOrganizationBrand(db,custom);
 
         // Create first season
         const seasonId = uuidv4();
@@ -365,7 +399,7 @@ export function setupIpcHandlers() {
       activeCareerId = id;
       activateCareerWorld(id);
       career.mode=careerMode(db,id);
-      db.transaction(() => { applyTeamStatusAudit(db);management.tactics(id);management.ensureCircuit(id);if(!isPath(career)){syncTransferCalendar(db,career);interactions.tick(id);new TransferMarket(db).tick(id);}management.progressCircuit(id, career.currentDate); })();
+      db.transaction(() => { addAdditionalClubs(db);ensureTalentPool(db,career);applyTeamStatusAudit(db);management.tactics(id);management.ensureCircuit(id);if(!isPath(career)){syncTransferCalendar(db,career);interactions.tick(id);new TransferMarket(db).tick(id);}management.progressCircuit(id, career.currentDate); })();
       const teamId = career.teamId;
 
       // Load team
@@ -514,7 +548,7 @@ export function setupIpcHandlers() {
           WHERE NOT EXISTS (SELECT 1 FROM generated_entities g WHERE g.id = p.id)
         `).all();
       }
-      return players.map(visiblePlayer);
+      return players.map(visiblePlayer).filter(Boolean);
     } catch (err: any) {
       console.error('[IPC] players:getAll error:', err.message);
       return [];
@@ -542,7 +576,7 @@ export function setupIpcHandlers() {
         LEFT JOIN contracts c ON p.id = c.playerId AND c.isActive = 1
         WHERE p.id = ?
       `).get(id);
-      if (!row) return null;
+      if (!row || (activeCareerId&&!knownProspect(db,activeCareer(),id))) return null;
       const career=activeCareer(),honours=new CareerHonours(db);
       return {...visiblePlayer(row as any),careerTitle:honours.equipped(career.id,id)?.title||null,careerHonours:honours.list(career.id,id)};
     } catch (err: any) {
@@ -571,7 +605,7 @@ export function setupIpcHandlers() {
         WHERE p.teamId = ?
         ORDER BY p.overall DESC
       `).all(teamId);
-      return (activeCareerId ? management.orderRoster(activeCareerId, teamId, players) : players).map(visiblePlayer);
+      return (activeCareerId ? management.orderRoster(activeCareerId, teamId, players) : players).map(visiblePlayer).filter(Boolean);
     } catch (err: any) {
       console.error('[IPC] players:getByTeam error:', err.message);
       return [];
@@ -596,7 +630,7 @@ export function setupIpcHandlers() {
         WHERE (p.teamId IS NULL OR p.teamId = '') AND (af.status IS NULL OR af.status IN ('free_agent', 'career')) AND NOT EXISTS (SELECT 1 FROM generated_entities g WHERE g.id = p.id)
         ORDER BY p.overall DESC
       `).all();
-      return players.map(visiblePlayer);
+      return players.map(visiblePlayer).filter(Boolean);
     } catch (err: any) {
       console.error('[IPC] players:getFreeAgents error:', err.message);
       return [];
@@ -669,6 +703,13 @@ export function setupIpcHandlers() {
       return [];
     }
   });
+
+  handle('teams:recentResults',(_,id:string)=>db.prepare(`SELECT f.id,f.scheduledDate,f.homeTeamId,f.awayTeamId,f.homeScore,f.awayScore,
+    h.name homeTeamName,a.name awayTeamName,c.name competitionName FROM fixtures f
+    JOIN career_competitions cc ON cc.competitionId=f.competitionId JOIN competitions c ON c.id=f.competitionId
+    JOIN teams h ON h.id=f.homeTeamId JOIN teams a ON a.id=f.awayTeamId
+    WHERE cc.careerId=? AND (f.homeTeamId=? OR f.awayTeamId=?) AND f.status='completed'
+    ORDER BY f.scheduledDate DESC,f.rowid DESC LIMIT 10`).all(activeCareer().id,id,id));
 
   handle('teams:getById', async (_, id: string) => {
     try {
@@ -771,11 +812,13 @@ export function setupIpcHandlers() {
   handle('fixtures:getById', async (_, id: string) => {
     try {
       const fixture = db.prepare(`
-        SELECT f.*, ht.name as homeTeamName, at.name as awayTeamName, c.name as competitionName, c.type as competitionType
+        SELECT f.*, ht.name as homeTeamName, at.name as awayTeamName, c.name as competitionName, c.type as competitionType,st.stage,st.groupName,n.label roundLabel
         FROM fixtures f
         LEFT JOIN teams ht ON f.homeTeamId = ht.id
         LEFT JOIN teams at ON f.awayTeamId = at.id
         LEFT JOIN competitions c ON f.competitionId = c.id
+        LEFT JOIN fixture_stages st ON st.fixtureId=f.id
+        LEFT JOIN tournament_nodes n ON n.id=st.nodeId
         WHERE f.id = ?
       `).get(id);
       if (!fixture) return null;
@@ -881,14 +924,15 @@ export function setupIpcHandlers() {
         const event = db.prepare("SELECT MIN(ev.date) AS date FROM calendar_events ev LEFT JOIN competitions c ON c.id = ev.relatedId WHERE ev.careerId = ? AND ev.date > ? AND (c.id IS NULL OR c.region IN (?, 'GLOBAL'))").get(id, career.currentDate, region) as any;
       const scout = db.prepare("SELECT MIN(dueDate) AS date FROM scout_assignments WHERE careerId = ? AND status = 'pending'").get(id) as any;
       const regionReport=db.prepare("SELECT MIN(nextReport) date FROM scouting_regions WHERE careerId=? AND status='active'").get(id);
-      const targets = [fixture?.date, event?.date, scout?.date,regionReport?.date].filter(Boolean).sort();
+      const teamReport=db.prepare("SELECT MIN(dueDate) date FROM scouting_teams WHERE careerId=? AND status='pending'").get(id);
+      const targets = [fixture?.date, event?.date, scout?.date,regionReport?.date,teamReport?.date].filter(Boolean).sort();
       return finishAdvance(management.advance(id, targets[0] || addDays(career.currentDate, 7)));
     } catch (err: any) { return { success: false, error: err.message }; }
   });
 
   handle('inbox:getAll', async (_, careerId: string) => {
     try {
-      return db.prepare('SELECT * FROM inbox_items WHERE careerId = ? ORDER BY date DESC, rowid DESC').all(careerId).map((m: any) => ({ ...m, isRead: !!m.isRead, actions: m.actions ? JSON.parse(m.actions) : [] }));
+      return inboxMessages(db,careerId);
     } catch (err: any) {
       console.error('[IPC] inbox:getAll error:', err.message);
       return [];
@@ -897,7 +941,9 @@ export function setupIpcHandlers() {
 
   handle('inbox:markRead', async (_, id: string) => {
     try {
-      db.prepare('UPDATE inbox_items SET isRead = 1 WHERE id = ?').run(id);
+      const item=db.prepare('SELECT careerId,date,type FROM inbox_items WHERE id=?').get(id);
+      if(item?.type==='transfer_news')db.prepare("UPDATE inbox_items SET isRead=1 WHERE careerId=? AND date=? AND type='transfer_news'").run(item.careerId,item.date);
+      else db.prepare('UPDATE inbox_items SET isRead = 1 WHERE id = ?').run(id);
       return { success: true };
     } catch (err: any) {
       return { success: false };
@@ -911,8 +957,7 @@ export function setupIpcHandlers() {
 
   handle('inbox:getUnreadCount', async (_, careerId: string) => {
     try {
-      const result = db.prepare('SELECT COUNT(*) as count FROM inbox_items WHERE careerId = ? AND isRead = 0').get(careerId) as any;
-      return result?.count || 0;
+      return inboxMessages(db,careerId).filter(m=>!m.isRead).length;
     } catch (err: any) {
       return 0;
     }
@@ -1103,6 +1148,7 @@ export function setupIpcHandlers() {
       recoverActiveMatch();
       if (activeMatchStatus.fixtureId === config?.fixtureId && activeMatchStatus.result && !activeMatchStatus.resultSaved)
         throw new Error('Recover the previous played result before starting another game.');
+      deskAudio.cancel();
       launchToken = matchHandoff.start();
       chirp.setGameplayActive(true);
       const career = activeCareer();
@@ -1579,6 +1625,7 @@ export function ensureDatabaseSeeded(careerId?: string, seasonId?: string) {
         });
     }
     applyTeamStatusAudit(db);
+    addAdditionalClubs(db);
   } catch (err: any) {
     console.error('[Seed] ensureDatabaseSeeded error:', err.message);
   }

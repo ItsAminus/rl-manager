@@ -7,7 +7,7 @@ import sys
 ROOT = Path(__file__).resolve().parent
 sys.path[:0] = [str(ROOT), str(ROOT.parent)]
 from clip_broadcast import ClipBank
-from native_audio import ClipPlayer
+from native_audio import ClipPlayer,commentary_volume
 
 
 def check(play=False, silent=False):
@@ -19,7 +19,7 @@ def check(play=False, silent=False):
         chosen = bank.draw(category)
         if chosen is None:
             raise RuntimeError(f'{name} recordings are missing; rerun the complete setup')
-        player = ClipPlayer(continuous_output=True)
+        player = ClipPlayer(continuous_output=True,volume=commentary_volume() if name=='Commentary' else 1)
         try:
             if play or silent:
                 pcm = bank.np.zeros(4800, dtype=bank.np.float32) if silent else chosen[1]

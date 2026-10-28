@@ -9,6 +9,7 @@ import { LoadCareerPage } from './pages/LoadCareerPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SquadPage } from './pages/SquadPage';
 import { PlayerProfilePage } from './pages/PlayerProfilePage';
+import {TeamProfilePage} from './pages/TeamProfilePage';
 import { TacticsPage } from './pages/TacticsPage';
 import { TrainingPage } from './pages/TrainingPage';
 import { CalendarPage } from './pages/CalendarPage';
@@ -16,6 +17,7 @@ import { CompetitionsPage } from './pages/CompetitionsPage';
 import { CompetitionDetailPage } from './pages/CompetitionDetailPage';
 import { TransfersPage } from './pages/TransfersPage';
 import { ScoutingPage } from './pages/ScoutingPage';
+import {ScoutDossierPage} from './pages/ScoutDossierPage';
 import { FinancesPage } from './pages/FinancesPage';
 import { StatisticsPage } from './pages/StatisticsPage';
 import { InboxPage } from './pages/InboxPage';
@@ -64,6 +66,7 @@ export default function App() {
           <Route path="/challenges" element={<PathChallengesPage/>}/>
           <Route path="/squad" element={<CareerSquad />} />
           <Route path="/player/:id" element={<CareerPlayer />} />
+          <Route path="/team/:id" element={<TeamProfilePage />} />
           <Route path="/tactics" element={<TacticsPage />} />
           <Route path="/training" element={<TrainingPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
@@ -71,6 +74,7 @@ export default function App() {
           <Route path="/competition/:id" element={<CompetitionDetailPage />} />
           <Route path="/transfers" element={<TransfersPage />} />
           <Route path="/scouting" element={<ScoutingPage />} />
+          <Route path="/scouting/player/:id" element={<ScoutDossierPage />} />
           <Route path="/finances" element={<FinancesPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/social" element={<SocialPage />} />

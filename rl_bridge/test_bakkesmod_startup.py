@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch,Mock
 from contextlib import contextmanager
+from types import SimpleNamespace
 import json
 import io
 from tempfile import TemporaryDirectory
@@ -101,7 +102,34 @@ class HUDStartupTests(unittest.TestCase):
             self.assertTrue(allow_career_commands(root))
             text=path.read_text();self.assertIn('existing_command',text)
             self.assertIn('rlm_host_arm',text);self.assertNotIn('*',text)
+            self.assertIn('unreal_command',text.splitlines())
             self.assertFalse(allow_career_commands(root))
+
+    def test_complete_user_command_list_is_merged_without_erasing_other_rules(self):
+        names=('ws_inventory','sendback','rcon_password','plugin','cl_settings_refreshplugins',
+               'rcon_refresh_allowed','disconnect','unreal_command','open','rlm_host_arm',
+               'rlm_host_stop','rlm_hud_enabled','rlm_scoreboard_enabled','rlm_host_ready')
+        with TemporaryDirectory(dir=Path(__file__).parent) as root:
+            path=Path(root)/'data/rcon_commands.cfg';path.parent.mkdir()
+            old=b'\xef\xbb\xbf  plugin  \r\ncustom_plugin_command\r\n'
+            path.write_bytes(old)
+            self.assertTrue(allow_career_commands(root))
+            lines=[line.strip() for line in path.read_text().splitlines()]
+            for name in names:self.assertEqual(lines.count(name),1)
+            self.assertIn('custom_plugin_command',lines)
+            backup=path.with_name(path.name+'.before-rlm')
+            self.assertEqual(backup.read_bytes(),old)
+            self.assertFalse(allow_career_commands(root))
+            self.assertEqual(backup.read_bytes(),old)
+
+    def test_local_and_hosted_hud_preparation_repairs_rules_before_game_connection(self):
+        from bakkesmod_startup import prepare_hud_assets
+        with TemporaryDirectory(dir=Path(__file__).parent) as root, \
+             patch('bakkesmod_startup.os.name','nt'), \
+             patch('bakkesmod_startup.folder',return_value=Path(root)), \
+             patch.dict('os.environ',{'RLM_HUD_SOURCE':''}):
+            prepare_hud_assets()
+            self.assertIn('unreal_command',(Path(root)/'data/rcon_commands.cfg').read_text().splitlines())
 
     def check_startup(self, ready_at=None, replace_at=None, timeout=None):
         clock=StartupClock();messages=[];requests=[]
@@ -120,8 +148,7 @@ class HUDStartupTests(unittest.TestCase):
             with patch('bakkesmod_startup.folder',return_value=Path(root)), \
                  patch('bakkesmod_startup.process_ids',side_effect=processes), \
                  patch('bakkesmod_startup.rcon_commands',side_effect=rcon), \
-                 patch('bakkesmod_startup.time.monotonic',side_effect=clock.monotonic), \
-                 patch('bakkesmod_startup.time.sleep',side_effect=clock.sleep):
+                 patch('bakkesmod_startup.time', SimpleNamespace(monotonic=clock.monotonic, sleep=clock.sleep)):
                 result=wait_for_hud(messages.append,**({'timeout':timeout} if timeout is not None else {}))
         return result,clock.now,messages,requests
 
@@ -155,8 +182,7 @@ class HUDStartupTests(unittest.TestCase):
             with patch('bakkesmod_startup.folder',return_value=Path(root)), \
                  patch('bakkesmod_startup.process_ids',return_value={100}), \
                  patch('bakkesmod_startup.rcon_commands',side_effect=rcon), \
-                 patch('bakkesmod_startup.time.monotonic',side_effect=clock.monotonic), \
-                 patch('bakkesmod_startup.time.sleep',side_effect=clock.sleep):
+                 patch('bakkesmod_startup.time', SimpleNamespace(monotonic=clock.monotonic, sleep=clock.sleep)):
                 self.assertTrue(wait_for_hud(lambda _:None,timeout=10,required=True))
         self.assertGreaterEqual(clock.now,3)
 
@@ -168,8 +194,7 @@ class HUDStartupTests(unittest.TestCase):
             with patch('bakkesmod_startup.folder',return_value=Path(root)), \
                  patch('bakkesmod_startup.process_ids',return_value={100}), \
                  patch('bakkesmod_startup.rcon_commands',side_effect=HUDStartupError('authentication was rejected')) as request, \
-                 patch('bakkesmod_startup.time.monotonic',side_effect=clock.monotonic), \
-                 patch('bakkesmod_startup.time.sleep',side_effect=clock.sleep):
+                 patch('bakkesmod_startup.time', SimpleNamespace(monotonic=clock.monotonic, sleep=clock.sleep)):
                 with self.assertRaisesRegex(HUDStartupError,'authentication was rejected'):
                     wait_for_hud(lambda _:None,timeout=10,required=True)
                 self.assertLessEqual(request.call_count,4)
@@ -253,8 +278,7 @@ class HUDStartupTests(unittest.TestCase):
         def pids(_):return {100 if clock.now<2 else 200}
         with patch('bakkesmod_startup.process_ids',side_effect=pids), \
              patch('game_window.rocket_league_window_ready',side_effect=lambda _:clock.now>=1), \
-             patch('bakkesmod_startup.time.monotonic',side_effect=clock.monotonic), \
-             patch('bakkesmod_startup.time.sleep',side_effect=clock.sleep):
+             patch('bakkesmod_startup.time', SimpleNamespace(monotonic=clock.monotonic, sleep=clock.sleep)):
             self.assertTrue(wait_for_game_ready(lambda _:None,timeout=10,stable_seconds=3))
         self.assertEqual(clock.now,5)
 
@@ -262,8 +286,7 @@ class HUDStartupTests(unittest.TestCase):
         clock=StartupClock()
         with patch('bakkesmod_startup.process_ids',return_value={100}), \
              patch('game_window.rocket_league_window_ready',return_value=False), \
-             patch('bakkesmod_startup.time.monotonic',side_effect=clock.monotonic), \
-             patch('bakkesmod_startup.time.sleep',side_effect=clock.sleep):
+             patch('bakkesmod_startup.time', SimpleNamespace(monotonic=clock.monotonic, sleep=clock.sleep)):
             self.assertFalse(wait_for_game_ready(lambda _:None,timeout=4))
         self.assertEqual(clock.now,4)
 

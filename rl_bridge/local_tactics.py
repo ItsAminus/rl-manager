@@ -27,6 +27,10 @@ class LocalTactics:
         self.team_play=team_play;self.base_style=dict(team_play.style) if team_play else None
         self.packet=None;self.command='balanced';self.expires=0.;self.last_command=-100.;self.last_sender=None;self.ack=None
         self.base_command=saved_order(profile);self.orders_by_slot=profile.get('tacticOrdersBySlot') or {}
+        self.plan=profile.get('matchTactics') or {}
+        self.support_scale={'Close':.75,'Deep':1.3}.get(self.plan.get('supportDepth'),1.)
+        self.outlet_scale={'Narrow':.6,'Wide':1.5}.get(self.plan.get('outletWidth'),1.)
+        self.boost_reserve={'15':15,'30':30}.get(str(self.plan.get('boostReserve')),0)
         self.command_folder=Path(command_folder) if command_folder else None;self.command_sequence=0;self.next_poll=0.
         self.active_command=self.base_command;self.stage='Normal role';self.target_name='';self.changed_controls=False;self.next_status=0.
         self.drive_target=None;self.control_changes={}
@@ -59,7 +63,7 @@ class LocalTactics:
         result=copy_controls(controls);pos=point(car);angle=math.atan2(target[1]-pos[1],target[0]-pos[0])-car.physics.rotation.yaw
         angle=(angle+math.pi)%(2*math.pi)-math.pi
         result.steer=max(-1,min(1,angle*2.4));result.throttle=1 if distance(pos,target)>250 else .1
-        result.boost=bool(boost and abs(angle)<.25 and distance(pos,target)>600 and car.boost>5)
+        result.boost=bool(boost and abs(angle)<.25 and distance(pos,target)>600 and car.boost>max(5,self.boost_reserve))
         result.jump=False;result.pitch=0;result.yaw=0;result.roll=0
         result.handbrake=abs(angle)>2.4;return result
     def prepare(self,packet):
@@ -71,6 +75,8 @@ class LocalTactics:
         self.active_command=active
         if self.team_play and self.base_style:
             self.team_play.style=dict(self.base_style)
+            self.team_play.style['supportDistance']*=self.support_scale
+            self.team_play.style['supportWidth']*=self.outlet_scale
             if active=='press':self.team_play.style['supportDistance']*=.8
             elif active=='defend':self.team_play.style['supportDistance']*=1.3
             elif active=='infield':self.team_play.style['supportWidth']=.28
@@ -122,12 +128,12 @@ class LocalTactics:
                 return self.drive(car,controls,(max(-2700,min(2700,ball[0]*.65+(-650 if self.index%2 else 650))),max(-3800,min(3800,ball[1]-forward*700))))
         elif active=='defend':
             if gap>1200 and any(distance(point(c),ball)<gap for _,c in mates):
-                target=(max(-1800,min(1800,ball[0]*.4+(-550 if self.index%2 else 550))),forward*max(-3900,min(0,ball[1]*forward-1800)))
+                target=(max(-1800,min(1800,ball[0]*.4+(-550 if self.index%2 else 550))),forward*max(-3900,min(0,ball[1]*forward-1800*self.support_scale)))
                 self.status('Covering our half',changed=True)
                 return self.drive(car,controls,target)
         elif active=='infield':
             if gap>900 and any(distance(point(c),ball)<650 for _,c in mates):
-                target=(max(-1500,min(1500,ball[0]*.25+(-500 if self.index%2 else 500))),max(-3800,min(3800,ball[1]-forward*850)))
+                target=(max(-2300,min(2300,ball[0]*.25+(-500 if self.index%2 else 500)*self.outlet_scale)),max(-3800,min(3800,ball[1]-forward*850*self.support_scale)))
                 self.status('Offering an infield outlet',changed=True)
                 return self.drive(car,controls,target)
             outlets=[c for _,c in mates if abs(point(c)[0])<2000 and 350<(point(c)[1]-ball[1])*forward<2200 and 650<distance(point(c),ball)<2600]
@@ -137,6 +143,8 @@ class LocalTactics:
                 self.status('Looking for the pass',changed=True);return self.drive(car,controls,to if gap<230 else approach)
         elif active=='demo' and enemies and gap>650:
             target_index,target=max(enemies,key=lambda item:(getattr(item[1].score_info,'goals',0)*4+getattr(item[1].score_info,'assists',0)*2+getattr(item[1].score_info,'score',0)/1000,-item[0]))
+            if self.plan.get('demoTarget')=='Nearest opponent':target_index,target=min(enemies,key=lambda item:distance(point(car),point(item[1])))
+            elif self.plan.get('demoTarget')=='Last defender':target_index,target=max(enemies,key=lambda item:point(item[1])[1]*forward)
             # One hunter only; a teammate must remain behind the ball as cover.
             if not any((point(c)[1]-ball[1])*forward<-300 for _,c in mates):self.status('Waiting for defensive cover');return controls
             live_demo=self.command=='demo' and now<self.expires

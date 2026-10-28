@@ -25,7 +25,7 @@ const CATEGORIES = [
 ];
 
 export const TrainingPage: React.FC = () => {
-  const { roster, career, currentDate } = useCareerStore();
+  const { roster, career, currentDate,team } = useCareerStore();
   const [logs, setLogs] = useState<any[]>([]);
   const [development,setDevelopment]=useState<any[]|null>(null);
   const [developmentOwner,setDevelopmentOwner]=useState('');
@@ -97,6 +97,7 @@ export const TrainingPage: React.FC = () => {
   return (
     <div className="training-page">
       <div className="training-header">
+        <aside className="notice"><strong>Team chemistry · {Math.round(team?.teamChemistry??50)}/100</strong><p>Schedule Team Play sessions to build understanding slowly. Sessions improve both individual and team chemistry when average fatigue stays at 70 or below. Add rest days rather than overloading the squad.</p></aside>
         <div>
           <h1 className="page-heading">{isPath(career)?'SQUAD DEVELOPMENT':'WEEKLY TRAINING SCHEDULE'}</h1>
           <p className="page-subheading">

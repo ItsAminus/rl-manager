@@ -1,0 +1,9 @@
+.club-profile .club-heading{display:flex;align-items:center;gap:22px}
+.club-profile .matchday-team-crest{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border:1px solid #405449;border-radius:18px;flex-shrink:0;font-size:22px;background:#203129}
+.club-profile .matchday-team-crest img{width:100%;height:100%;object-fit:contain;padding:8px}
+.club-profile .club-player{display:flex;align-items:center;gap:16px}
+.club-profile h1{margin:6px 0}.club-profile .club-player p{margin:8px 0}
+.club-profile .club-results{display:grid;gap:12px}.club-profile .club-results article{padding:14px 0;border-bottom:1px solid #34453b}
+.club-profile .club-results small{display:block;margin-top:6px;color:#a8b6ae}
+.event-node-team>a{flex:1;font-size:13px}.event-group-team>a{font-weight:650}
+.text-link:focus-visible{outline:2px solid #b6efa4;outline-offset:4px;border-radius:3px}

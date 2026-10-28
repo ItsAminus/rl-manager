@@ -1,0 +1,326 @@
+{
+  "version": 1,
+  "voiceName": "Afro American RLCS Analyst",
+  "voiceId": "eLRqr8XZdATIWCQxFwz9",
+  "provider": "ElevenLabs",
+  "model": "eleven_v3",
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "use_speaker_boost": true
+  },
+  "lines": [
+    {
+      "id": "opening_01",
+      "category": "opening",
+      "text": "Alright, this is where the talking stops and the series starts. There is a chance here to set the tone early, but neither side can afford to rush the first few touches.",
+      "file": "opening_01.mp3"
+    },
+    {
+      "id": "opening_02",
+      "category": "opening",
+      "text": "We have our matchup, we have our lineups, and now we get to find out how these two teams fit together on the field. I want to see who settles into their game first.",
+      "file": "opening_02.mp3"
+    },
+    {
+      "id": "opening_03",
+      "category": "opening",
+      "text": "This is a fresh series. The preparation matters, but once that first kickoff goes, somebody has to win the challenge and somebody has to be there for the next touch.",
+      "file": "opening_03.mp3"
+    },
+    {
+      "id": "opening_04",
+      "category": "opening",
+      "text": "Before we get into it, look beyond the individual names. The real question is how these three players connect, especially when the first play does not go to plan.",
+      "file": "opening_04.mp3"
+    },
+    {
+      "id": "balanced_01",
+      "category": "balanced",
+      "text": "This is a close one on paper. I am looking at the space between the first challenge and the follow-up. If you leave that gap open, a good team will keep finding it.",
+      "file": "balanced_01.mp3"
+    },
+    {
+      "id": "balanced_02",
+      "category": "balanced",
+      "text": "I do not see a huge difference between these lineups. It might come down to who stays patient when the attack breaks down, rather than who makes the flashiest play.",
+      "file": "balanced_02.mp3"
+    },
+    {
+      "id": "balanced_03",
+      "category": "balanced",
+      "text": "When the teams are this close, you cannot keep giving away cheap possessions. Make the other side earn the ball. Do not do the hard work for them.",
+      "file": "balanced_03.mp3"
+    },
+    {
+      "id": "balanced_04",
+      "category": "balanced",
+      "text": "I can see a route to victory for either side here. Get the first challenge right, support it properly, and make the other team turn around. That is where I would start.",
+      "file": "balanced_04.mp3"
+    },
+    {
+      "id": "favourite_01",
+      "category": "favourite",
+      "text": "There is a favourite here, but being better on paper does not win the first game for you. Keep the ball, move the defence, and make that quality advantage count.",
+      "file": "favourite_01.mp3"
+    },
+    {
+      "id": "favourite_02",
+      "category": "favourite",
+      "text": "For the stronger lineup, the danger is getting impatient. You do not have to force a highlight every time. Keep asking the right questions and eventually the defence has to answer.",
+      "file": "favourite_02.mp3"
+    },
+    {
+      "id": "favourite_03",
+      "category": "favourite",
+      "text": "I want to see the favourite control the pace. If you keep turning this into a scramble, you are giving the other side a way into the series.",
+      "file": "favourite_03.mp3"
+    },
+    {
+      "id": "favourite_04",
+      "category": "favourite",
+      "text": "You have the stronger squad on paper. Fine. Now show it in the decisions. Take the extra touch when you have space, and do not turn a comfortable position into a free counterattack.",
+      "file": "favourite_04.mp3"
+    },
+    {
+      "id": "underdog_01",
+      "category": "underdog",
+      "text": "If you are the underdog, the first touch out of defence is massive. A save gets you through one shot. Finding a teammate afterwards is how you actually get out.",
+      "file": "underdog_01.mp3"
+    },
+    {
+      "id": "underdog_02",
+      "category": "underdog",
+      "text": "The underdog cannot spend the whole series surviving. You need a threat going the other way, even if it starts with one controlled touch and a teammate giving you an option.",
+      "file": "underdog_02.mp3"
+    },
+    {
+      "id": "underdog_03",
+      "category": "underdog",
+      "text": "You do not beat a stronger team by panicking every time the ball comes towards your net. Stay connected, protect the middle, and make the counterattack something they have to respect.",
+      "file": "underdog_03.mp3"
+    },
+    {
+      "id": "underdog_04",
+      "category": "underdog",
+      "text": "There is an opportunity for the underdog if they can make this awkward. Force the favourite to turn around. Do not let them get comfortable playing every touch in front of them.",
+      "file": "underdog_04.mp3"
+    },
+    {
+      "id": "form_good_01",
+      "category": "form_good",
+      "text": "Recent results give this team something to build on. I would not ask them to reinvent everything today. Keep the good habits, but make sure that confidence does not become carelessness.",
+      "file": "form_good_01.mp3"
+    },
+    {
+      "id": "form_good_02",
+      "category": "form_good",
+      "text": "There is some momentum coming into this matchup. The useful part is the belief that the next play will work. The dangerous part is assuming it will work without doing the basics.",
+      "file": "form_good_02.mp3"
+    },
+    {
+      "id": "form_good_03",
+      "category": "form_good",
+      "text": "They have put some wins together. Now the challenge is carrying that confidence into a different matchup, because what worked against the last opponent might need an adjustment here.",
+      "file": "form_good_03.mp3"
+    },
+    {
+      "id": "form_poor_01",
+      "category": "form_poor",
+      "text": "Coming off a difficult run, I want to see a simple first game. Complete the next play. Give each other a clear option. You do not fix everything with one desperate challenge.",
+      "file": "form_poor_01.mp3"
+    },
+    {
+      "id": "form_poor_02",
+      "category": "form_poor",
+      "text": "The recent results have been tough. For me, the response starts with cleaner decisions, not trying to make up for every loss in the opening thirty seconds.",
+      "file": "form_poor_02.mp3"
+    },
+    {
+      "id": "form_poor_03",
+      "category": "form_poor",
+      "text": "When results are going against you, it is easy to start forcing things. I want to see this team stay together after a mistake and give the next player a chance to recover the play.",
+      "file": "form_poor_03.mp3"
+    },
+    {
+      "id": "rematch_01",
+      "category": "rematch",
+      "text": "These clubs have a recent meeting on record, so there is something to look back at. But you still have to read what is happening today. Last time is context, not a script.",
+      "file": "rematch_01.mp3"
+    },
+    {
+      "id": "rematch_02",
+      "category": "rematch",
+      "text": "There is a recent matchup between these two to think about. I am interested in the response. Does either side adjust, or do they trust the same approach to work again?",
+      "file": "rematch_02.mp3"
+    },
+    {
+      "id": "rematch_03",
+      "category": "rematch",
+      "text": "A rematch gives both teams a little more information. What matters now is what they do with it. If the other side has made an adjustment, you have to recognise that early.",
+      "file": "rematch_03.mp3"
+    },
+    {
+      "id": "aerial_01",
+      "category": "aerial",
+      "text": "I want to watch how the defence handles the take-off. If you wait until the ball is already over your head, you are asking the last player to solve a very difficult problem.",
+      "file": "aerial_01.mp3"
+    },
+    {
+      "id": "aerial_02",
+      "category": "aerial",
+      "text": "Against an aerial threat, the first challenge does not always have to win the ball cleanly. Make the touch uncomfortable, then give the player behind you something they can actually deal with.",
+      "file": "aerial_02.mp3"
+    },
+    {
+      "id": "aerial_03",
+      "category": "aerial",
+      "text": "Backboard cover is going to matter here. You cannot have everybody looking at the ball from underneath it. Somebody has to see the next touch coming.",
+      "file": "aerial_03.mp3"
+    },
+    {
+      "id": "passing_01",
+      "category": "passing",
+      "text": "Watch the player away from the ball. That is often where the passing play starts. If the defence only follows the carrier, the next option can be sitting there completely free.",
+      "file": "passing_01.mp3"
+    },
+    {
+      "id": "passing_02",
+      "category": "passing",
+      "text": "A passing threat is not just about making the final pass. Move the defence first. Make somebody step out, and that is when the lane opens up.",
+      "file": "passing_02.mp3"
+    },
+    {
+      "id": "passing_03",
+      "category": "passing",
+      "text": "I want to see a second option in these attacks. If the defender knows the only play is a shot, you have made their job a lot easier.",
+      "file": "passing_03.mp3"
+    },
+    {
+      "id": "defence_01",
+      "category": "defence",
+      "text": "A save is not the end of the defensive play. Who gets the next ball? If it goes straight back to the attack, you are defending again with fewer resources.",
+      "file": "defence_01.mp3"
+    },
+    {
+      "id": "defence_02",
+      "category": "defence",
+      "text": "For the last player back, patience is everything. You want to close the space without handing over an open net. Stay involved, but do not make the challenge before you have to.",
+      "file": "defence_02.mp3"
+    },
+    {
+      "id": "defence_03",
+      "category": "defence",
+      "text": "The recovery after the first challenge is what I am watching. You cannot just miss the ball and leave the next teammate guessing. Get back into a useful position.",
+      "file": "defence_03.mp3"
+    },
+    {
+      "id": "semifinal_01",
+      "category": "semifinal",
+      "text": "A place in the final is on the line. That makes every decision feel a little heavier, but you still have to play the next ball. Do not let the occasion make the decision for you.",
+      "file": "semifinal_01.mp3"
+    },
+    {
+      "id": "semifinal_02",
+      "category": "semifinal",
+      "text": "This is the semifinal. Both teams can see what is waiting on the other side, but looking ahead is dangerous. There is still a full series to earn that opportunity.",
+      "file": "semifinal_02.mp3"
+    },
+    {
+      "id": "semifinal_03",
+      "category": "semifinal",
+      "text": "At this stage, you need your teammates to be an option when the pressure arrives. The team that stays connected has a much better chance of playing its way into the final.",
+      "file": "semifinal_03.mp3"
+    },
+    {
+      "id": "final_01",
+      "category": "final",
+      "text": "Here we are, the final. You want the big moment, but the way you get there is by making good decisions before it arrives. Stay in the series and give yourself that chance.",
+      "file": "final_01.mp3"
+    },
+    {
+      "id": "final_02",
+      "category": "final",
+      "text": "A title is on the line now. I want to see who can keep trusting their teammates when the game gets uncomfortable. That trust can disappear very quickly if you start trying to do everything alone.",
+      "file": "final_02.mp3"
+    },
+    {
+      "id": "final_03",
+      "category": "final",
+      "text": "This is the series you wanted to reach. Now you have to play it. Respect the opponent, trust the preparation, and do not let one bad touch turn into three bad decisions.",
+      "file": "final_03.mp3"
+    },
+    {
+      "id": "pick_favourite_01",
+      "category": "pick_favourite",
+      "text": "I am leaning towards the stronger lineup here. There is more room for them to create an advantage, but I still want to see how they respond when the first attack gets shut down.",
+      "file": "pick_favourite_01.mp3"
+    },
+    {
+      "id": "pick_favourite_02",
+      "category": "pick_favourite",
+      "text": "My pick goes with the favourite on paper. The other side has a route into this, though, if they can turn defensive stops into possession instead of another clearance straight back.",
+      "file": "pick_favourite_02.mp3"
+    },
+    {
+      "id": "pick_favourite_03",
+      "category": "pick_favourite",
+      "text": "I will take the stronger squad in this matchup. But if they lose control of the pace and start forcing things, that prediction can get uncomfortable very quickly.",
+      "file": "pick_favourite_03.mp3"
+    },
+    {
+      "id": "pick_close_01",
+      "category": "pick_close",
+      "text": "I am not comfortable calling this a clear favourite. There is enough quality on both sides to win it. Give me a clean first game, and we will learn a lot more.",
+      "file": "pick_close_01.mp3"
+    },
+    {
+      "id": "pick_close_02",
+      "category": "pick_close",
+      "text": "This is a tough prediction. I can make an argument either way, and that is what makes the opening game so interesting. Who gets the other team reacting first?",
+      "file": "pick_close_02.mp3"
+    },
+    {
+      "id": "pick_close_03",
+      "category": "pick_close",
+      "text": "I cannot split this one with much confidence. It is close enough that a couple of good decisions under pressure could change the whole feel of the series.",
+      "file": "pick_close_03.mp3"
+    },
+    {
+      "id": "closing_01",
+      "category": "closing",
+      "text": "That is what I am looking for. We have set the scene. Now let us see which team can actually put it together when the ball is in play.",
+      "file": "closing_01.mp3"
+    },
+    {
+      "id": "closing_02",
+      "category": "closing",
+      "text": "Alright, the preparation is done. It is time for the players to give us some answers. Let us get into game one.",
+      "file": "closing_02.mp3"
+    },
+    {
+      "id": "closing_03",
+      "category": "closing",
+      "text": "There is plenty to watch in this matchup. Keep an eye on the support behind that first challenge. Let us get to the action.",
+      "file": "closing_03.mp3"
+    },
+    {
+      "id": "closing_04",
+      "category": "closing",
+      "text": "We have our talking points. Now we find out what happens on the field. Time for game one.",
+      "file": "closing_04.mp3"
+    },
+    {
+      "id": "matchup_intro_01",
+      "category": "matchup_connector",
+      "text": "Our matchup today.",
+      "file": "matchup_intro_01.mp3"
+    },
+    {
+      "id": "matchup_against_01",
+      "category": "matchup_connector",
+      "text": "Against.",
+      "file": "matchup_against_01.mp3"
+    }
+  ]
+}

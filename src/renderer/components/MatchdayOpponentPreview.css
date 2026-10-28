@@ -1,0 +1,10 @@
+.matchday-preview header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.matchday-preview h2{margin:8px 0 18px}.matchday-preview h3{margin:24px 0 12px}
+.opponent-overview,.opponent-players{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.opponent-overview article,.opponent-players article{padding:18px;border:1px solid #354b40;border-radius:12px;background:#12221a}
+.opponent-overview small,.opponent-overview strong,.opponent-overview span{display:block}
+.opponent-overview strong{font-size:20px;margin:10px 0;color:#b7efb0}.opponent-overview span,.matchday-preview small{color:#a7bdb0;line-height:1.6}
+.opponent-comparison{border-left:3px solid #b7efb0;padding:12px 16px;background:#b7efb009}
+.opponent-players .text-link{font-size:17px;font-weight:700}.opponent-players p{font-size:13px;line-height:1.6}
+.matchday-preview li{margin:10px 0;line-height:1.6}.matchday-preview summary{cursor:pointer;color:#b7efb0;padding:12px 0}
+.matchday-preview footer{margin-top:20px;font-size:12px;color:#95aa9d;line-height:1.7}

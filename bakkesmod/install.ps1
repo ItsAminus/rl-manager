@@ -34,7 +34,7 @@ if(Test-Path -LiteralPath $taskSettings){
 Write-Output 'Native career HUD installed and autoload enabled; Rocket League set to Fullscreen. Game was not launched.'
 $taskAllowed=Join-Path $taskDestination 'data\rcon_commands.cfg'
 $taskRules=if(Test-Path -LiteralPath $taskAllowed){[IO.File]::ReadAllText($taskAllowed)}else{''}
-foreach($taskCommand in @('rlm_host_arm','rlm_host_stop','rlm_host_ready','rlm_hud_enabled','rlm_scoreboard_enabled')){
+foreach($taskCommand in @('ws_inventory','sendback','rcon_password','plugin','cl_settings_refreshplugins','rcon_refresh_allowed','disconnect','unreal_command','open','rlm_host_arm','rlm_host_stop','rlm_host_ready','rlm_hud_enabled','rlm_scoreboard_enabled')){
     if($taskRules.Split("`n").Trim() -notcontains $taskCommand){$taskRules=$taskRules.TrimEnd()+"`r`n"+$taskCommand+"`r`n"}
 }
 [IO.File]::WriteAllText($taskAllowed,$taskRules)

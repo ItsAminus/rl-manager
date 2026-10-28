@@ -27,6 +27,10 @@ def main():
     pairs=[(ROOT/'bakkesmod/build/RLManagerHUD.dll',resources/'career-hud/RLManagerHUD.dll')]
     pairs.extend((p,resources/'data'/p.name) for p in (ROOT/'data').glob('*.json'))
     pairs.extend((p,resources/'rl_bridge'/p.name) for p in (ROOT/'rl_bridge').glob('*.py') if not p.name.startswith('test_'))
+    pairs.extend((p,resources/'rl_bridge/commentary'/p.name) for p in (ROOT/'rl_bridge/commentary').glob('*.py') if (resources/'rl_bridge/commentary'/p.name).exists())
+    for directory in ['audio/desk-analyst','audio/desk-team-names']:
+        pairs.extend((p,resources/'app.asar.unpacked/public'/p.relative_to(ROOT/'public')) for p in (ROOT/'public'/directory).rglob('*.mp3'))
+    pairs.append((ROOT/'public/audio/introduction-anticipation.wav',resources/'app.asar.unpacked/public/audio/introduction-anticipation.wav'))
     pairs.extend((ROOT/'public'/p,resources/'app.asar.unpacked/public'/p) for p in ['brand/match-loading.png','competitions/fifae.mp4'])
     bank=json.loads((ROOT/'rl_bridge/commentary/player_intros/bank.json').read_text(encoding='utf-8'))
     for clip in bank['clips'].values():
@@ -39,6 +43,8 @@ def main():
     (release/'latest.yml').write_text(f'version: {version}\nfiles:\n  - url: {installer.name}\n    sha512: {sha512}\n    size: {installer.stat().st_size}\npath: {installer.name}\nsha512: {sha512}\nreleaseName: RL Manager {version} - MAJOR RELEASE\nreleaseDate: "{stamp}"\n',encoding='utf-8')
     for p in [installer,blockmap,release/'latest.yml']:link(p,assets/p.name)
     shutil.copy2(ROOT/'docs/releases'/f'{version}.md',assets/'Release-notes.md')
+    full_notes=ROOT/'docs/releases'/f'{version}-full-patch-notes.md'
+    if full_notes.is_file():shutil.copy2(full_notes,assets/'Full-patch-notes.md')
     if args.archive_complete:
         kit=ROOT/'distribution'/f'RL-Manager-Complete-{version}'
         manifest=json.loads((kit/'manifest.json').read_text(encoding='utf-8'))

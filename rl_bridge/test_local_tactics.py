@@ -18,6 +18,20 @@ def scenario():
     return p
 
 class Tests(unittest.TestCase):
+    def test_saved_support_width_depth_and_boost_reserve_change_real_controls(self):
+        p=scenario();profile={'difficulty':'Medium','performance':{'cohesion':.65,'role':'BALANCED'},'matchTactics':{'supportDepth':'Deep','outletWidth':'Wide','boostReserve':'30'}}
+        play=TeamPlay(1,profile);base=dict(play.style);d=LocalTactics(1,profile,play);d.prepare(p)
+        self.assertGreater(play.style['supportDistance'],base['supportDistance'])
+        self.assertGreater(play.style['supportWidth'],base['supportWidth'])
+        car=p.game_cars[1];car.boost=20;pos=(car.physics.location.x+2000,car.physics.location.y);car.physics.rotation.yaw=0
+        self.assertFalse(d.drive(car,SimpleControllerState(),pos,boost=True).boost)
+        car.boost=50;self.assertTrue(d.drive(car,SimpleControllerState(),pos,boost=True).boost)
+    def test_nearest_demo_priority_targets_a_different_opponent_than_star_priority(self):
+        p=scenario();p.game_cars[1].physics.location.x=-1500;p.game_cars[1].physics.location.y=2300
+        p.game_cars[3].name='Star';p.game_cars[4].name='Near'
+        profile={'difficulty':'Medium','performance':{'cohesion':.65,'role':'BALANCED'},'matchTactics':{'ordersByPlayer':{'p':'demo'},'demoTarget':'Nearest opponent'},'playerId':'p'}
+        d=LocalTactics(1,profile,TeamPlay(1,profile));d.apply(p,SimpleControllerState())
+        self.assertEqual(d.target_name,'Near')
     def director(self,mode='Medium'):
         profile={'difficulty':mode,'performance':{'cohesion':.65,'role':'BALANCED'}};play=TeamPlay(1,profile)
         return LocalTactics(1,profile,play)

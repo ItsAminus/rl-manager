@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { RatingBadge } from '../components/RatingBadge';
+import {Link} from 'react-router-dom';
+import {TeamLink} from '../components/TeamLink';
 import './StatisticsPage.css';
 import {useCareerStore} from '../../stores/careerStore';
 
 interface StatRow {
+  id: string;
+  teamId: string;
   rank: number;
   gamertag: string;
   teamName: string;
@@ -90,9 +94,9 @@ export const StatisticsPage: React.FC = () => {
               <tr key={row.gamertag} className={idx === 0 ? 'leader-row' : ''}>
                 <td className="rank-col">#{idx + 1}</td>
                 <td>
-                  <strong className="stat-gamertag">{row.gamertag}</strong>
+                  <Link className="text-link stat-gamertag" to={`/player/${row.id}`}>{row.gamertag}</Link>
                 </td>
-                <td className="text-secondary">{row.teamName}</td>
+                <td className="text-secondary"><TeamLink id={row.teamId}>{row.teamName||'Free agent'}</TeamLink></td>
                 <td>
                   <RatingBadge rating={row.ovr} size="sm" />
                 </td>
