@@ -60,6 +60,7 @@ def main():
         subprocess.run([str(seven),'a','-t7z','-mx=0','-mmt=4','-v1900m',str(archive),kit.name],cwd=kit.parent,check=True)
         subprocess.run([str(seven),'t',str(archive)+'.001','-bd'],check=True)
     receipt={'version':version,'releaseType':package.get('releaseType','stable'),'runtimeVersion':'1.0.8',
+             'completeKitBase':'1.5.0','localBotRuntimeVersion':version,'localPoliciesAudited':packaged['localPoliciesAudited'],
              'sourceCommit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
              'installerSHA256':digest(installer).hex(),'installerBytes':installer.stat().st_size,
              'appTestsPassed':validation['appTestsPassed'],'bridgeTestsPassed':validation['bridgeTestsPassed'],'nativeTestsPassed':validation['nativeTestsPassed'],'packagedAppPassed':True,
