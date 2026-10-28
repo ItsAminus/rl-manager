@@ -1,4 +1,4 @@
-RL MANAGER 1.7.1 - FIRST-TIME INSTALLATION
+RL MANAGER 1.7.2 - FIRST-TIME INSTALLATION
 
 BEFORE YOU START
 - Windows 10 or Windows 11, 64-bit.
@@ -27,13 +27,13 @@ EXTRACT AND INSTALL
 5. Close Rocket League, BakkesMod and RLM.
 6. Run Install RL Manager.exe, then click Install everything.
 7. Allow the component installers to finish. Keep Packages, Setup and Tools together.
-8. Close RLM if setup opened it. Install RL.Manager.1.7.1.Setup.exe from:
-   https://github.com/ItsAminus/rl-manager/releases/tag/v1.7.1
+8. Close RLM if setup opened it. Install RL.Manager.1.7.2.Setup.exe from:
+   https://github.com/ItsAminus/rl-manager/releases/tag/v1.7.2
 9. Open RL Manager using its desktop or Start menu shortcut.
 
 The wizard includes RLM, local bots/Python, BakkesMod, Rocket Host, the AI models and required runtime components.
-New players need the complete 1.5.0 kit AND the 1.7.1 app update.
-Existing players with the runtime already installed only need RL.Manager.1.7.1.Setup.exe.
+New players need the complete 1.5.0 kit AND the 1.7.2 app update.
+Existing players with the runtime already installed only need RL.Manager.1.7.2.Setup.exe.
 Close RLM and Rocket League before updating. Keep your saves, settings and runtime.
 GitHub's Source code downloads are for development, not installation.
 

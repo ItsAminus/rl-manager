@@ -1,6 +1,11 @@
 import copy
 import math
 import unittest
+import json
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+import numpy as np
 from types import SimpleNamespace as N
 from local_tactics import LocalTactics
 from team_play import TeamPlay
@@ -18,6 +23,29 @@ def scenario():
     return p
 
 class Tests(unittest.TestCase):
+    def test_numpy_controller_values_are_saved_without_interrupting_bot_output(self):
+        p=scenario()
+        profile={'difficulty':'Medium','performance':{'quality':.9},'matchTactics':{'ordersByPlayer':{'p1':'defend'}},'playerId':'p1'}
+        with tempfile.TemporaryDirectory() as directory:
+            d=LocalTactics(1,profile,command_folder=directory)
+            controls=SimpleControllerState(steer=np.float32(-.123),throttle=np.int64(0),boost=np.bool_(True),jump=np.int64(1),pitch=np.float32(.3),handbrake=np.bool_(True))
+            result=d.apply(p,controls)
+            report=json.loads((Path(directory)/'tactics-status-1.json').read_text())
+            self.assertTrue(report['changedControls'])
+            self.assertIs(type(report['controlChanges']['boost']['from']),bool)
+            self.assertIs(type(report['controlChanges']['jump']['from']),bool)
+            self.assertIs(type(report['controlChanges']['throttle']['from']),float)
+            self.assertFalse(result.boost)
+
+    def test_diagnostic_serialization_failure_never_discards_valid_bot_controls(self):
+        p=scenario()
+        with tempfile.TemporaryDirectory() as directory:
+            d=LocalTactics(1,{'difficulty':'Medium','performance':{'quality':.9}},command_folder=directory)
+            controls=SimpleControllerState(steer=.3)
+            # Isolate telemetry serialization from the bot/tactical logic.
+            with patch('local_tactics.json.dumps',side_effect=TypeError('unsupported diagnostic value')):
+                self.assertIs(d.apply(p,controls),controls)
+
     def test_saved_support_width_depth_and_boost_reserve_change_real_controls(self):
         p=scenario();profile={'difficulty':'Medium','performance':{'cohesion':.65,'role':'BALANCED'},'matchTactics':{'supportDepth':'Deep','outletWidth':'Wide','boostReserve':'30'}}
         play=TeamPlay(1,profile);base=dict(play.style);d=LocalTactics(1,profile,play);d.prepare(p)

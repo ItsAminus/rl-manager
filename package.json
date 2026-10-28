@@ -1,6 +1,6 @@
 {
   "name": "rl-manager",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "releaseType": "patch",
   "description": "Rocket League esports management game",
   "main": "dist-electron/main.js",
@@ -47,6 +47,6 @@
     "vite-plugin-electron-renderer": "^0.14.5",
     "vitest": "^2.0.3"
   },
-  "releaseName": "Quick bug fix",
+  "releaseName": "Match startup fixes",
   "localBotRuntimeVersion": "1.7.0"
 }

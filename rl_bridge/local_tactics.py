@@ -17,6 +17,13 @@ COMMANDS={QuickChats.Information_GoForIt:('press',18,'Press forward'),
 COMMANDS.update({QuickChats.Information_TakeTheShot:COMMANDS[QuickChats.Information_GoForIt],QuickChats.Information_IGotIt:COMMANDS[QuickChats.Information_Centering],QuickChats.Information_NeedBoost:COMMANDS[QuickChats.Information_Defending],QuickChats.Information_AllYours:COMMANDS[QuickChats.Information_GoForIt]})
 def point(car):return (car.physics.location.x,car.physics.location.y)
 def distance(a,b):return math.hypot(a[0]-b[0],a[1]-b[1])
+
+def control_status_value(field,value):
+    # Neural policies can return numpy scalars. Diagnostics must contain only
+    # Python JSON primitives and must never change the controls sent to RLBot.
+    if field in ('boost','jump','handbrake'):return bool(value)
+    number=float(value)
+    return round(number,3) if math.isfinite(number) else None
 def saved_order(profile):
     plan=profile.get('matchTactics') or {};chosen=(plan.get('ordersByPlayer') or {}).get(profile.get('playerId'))
     return chosen if chosen in ('balanced','press','defend','infield','demo') else ('defend' if plan.get('overallStyle')=='Defensive' else 'infield' if plan.get('passingStyle')=='Passing Focus' else 'demo' if plan.get('demoFreq')=='High' else 'press' if plan.get('overallStyle')=='Aggressive' else 'balanced')
@@ -88,7 +95,7 @@ class LocalTactics:
         try:
             target_file=self.command_folder/f'tactics-status-{self.index}.json';temporary=target_file.with_suffix('.tmp')
             temporary.write_text(json.dumps({'command':self.active_command,'stage':self.stage,'target':self.target_name,'changedControls':bool(self.control_changes),'controlChanges':self.control_changes,'driveTarget':self.drive_target,'elapsed':float(self.packet.game_info.seconds_elapsed),'sequence':self.command_sequence}),encoding='utf-8');temporary.replace(target_file)
-        except OSError:pass
+        except (OSError,TypeError,ValueError):pass
     def apply(self,packet,controls):
         if not self.enabled or not hasattr(packet,'num_cars') or self.index>=packet.num_cars:return controls
         self.drive_target=None;self.control_changes={}
@@ -96,8 +103,8 @@ class LocalTactics:
         before={key:getattr(controls,key) for key in fields}
         try:
             result=self.apply_order(packet,controls)
-            self.control_changes={key:{'from':round(before[key],3) if isinstance(before[key],float) else before[key],
-                                       'to':round(getattr(result,key),3) if isinstance(getattr(result,key),float) else getattr(result,key)}
+            self.control_changes={key:{'from':control_status_value(key,before[key]),
+                                       'to':control_status_value(key,getattr(result,key))}
                                   for key in fields if abs(float(before[key])-float(getattr(result,key)))>.001}
             return result
         finally:self.publish_status()

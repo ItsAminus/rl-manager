@@ -100,6 +100,19 @@ class HostedPacketReader:
             used.add(min(candidates,key=lambda p:int(p['nativeId']))['nativeId'])
         return True
 
+    def roster_present(self,raw):
+        """Team entry needs five bot cars, not a successful display-name alias."""
+        people=[p for p in raw.get('players',[]) if p.get('isBot')]
+        expected=[a for a in self.assignments if a['type']!='Human']
+        return (len(people)==len(expected) and
+                len({p['nativeId'] for p in people})==len(people) and
+                all(sum(p['team']==side for p in people)==sum(a['team']==side for a in expected)
+                    for side in (0,1)))
+
+    def unmatched_bots(self,raw):
+        matched={p['slot'] for p in self.staging_players(raw)}
+        return [a for a in self.assignments if a['type']!='Human' and a['slot'] not in matched]
+
     def check_activity(self,raw,timeout=20):
         stamp=float(raw['updated'])
         # Count fresh live-play seconds, excluding replays, pauses and respawns.
@@ -190,6 +203,12 @@ class HostedPacketReader:
         for axis,value in zip(('pitch','yaw','roll'),data.get('rotation',(0,0,0))):setattr(target.rotation,axis,float(value))
 
 
+class HostedEntryError(RuntimeError):
+    def __init__(self,message,unmatched=()):
+        super().__init__(message)
+        self.unmatched=list(unmatched)
+
+
 class HostedEntryGate:
     """Release the spectator lock promptly, then confirm the human's car.
 
@@ -205,12 +224,15 @@ class HostedEntryGate:
     @staticmethod
     def validate_start(raw):
         if raw['ended'] or raw['scores']!=[0,0] or raw['remaining']<295:
-            raise RuntimeError('Rocket Host started before your car joined. No career result recorded; retry this game.')
+            raise HostedEntryError('Rocket Host started before your car joined. No career result recorded; retry this game.')
 
     def advance(self,raw,now):
         if self.began is None:self.began=now
+        # A five-bot 2v3 must never continue scoring while the bridge waits for
+        # names. Even an incomplete/mismatched roster has a bounded recovery.
+        self.validate_start(raw)
         if not self.released:
-            if not self.reader.bots_present(raw):
+            if not self.reader.roster_present(raw):
                 if now>=self.next_progress:
                     matched=len(self.reader.staging_players(raw))
                     expected=sum(a['type']!='Human' for a in self.reader.assignments)
@@ -218,17 +240,25 @@ class HostedEntryGate:
                     self.log(f'Waiting for assigned bot identities: {matched}/{expected} matched; host reports {names or "no bots yet"}')
                     self.next_progress=now+5
                 if now-self.began>=self.roster_timeout:
-                    raise RuntimeError('Rocket Host did not supply the complete assigned bot roster before team entry')
+                    raise HostedEntryError('Rocket Host did not supply the complete assigned bot roster before team entry')
                 return False
             self.validate_start(raw)
             self.released=True;self.entry_deadline=now+self.entry_timeout
-            self.log('All five assigned bots confirmed; joining your selected team now')
+            self.log('All five bot slots are present; joining your selected team now. Verifying career identities separately.')
         if self.reader.bind(raw):
             self.validate_start(raw)
             return True
+        # Let replicated names settle briefly, but never keep the player in
+        # spectator mode for the old two-minute identity wait. Do not guess a
+        # pro's stats from an unknown bot name; retry with another policy.
+        if not self.reader.bots_present(raw) and now>=self.entry_deadline-self.entry_timeout+3:
+            missing=self.reader.unmatched_bots(raw)
+            seen=', '.join(p['name'] for p in raw.get('players',[]) if p.get('isBot'))
+            wanted=', '.join(a['name']+' ('+a['engine']+')' for a in missing)
+            raise HostedEntryError(f'Rocket Host supplied unexpected bot identities for {wanted}. Host reports: {seen}. No career result recorded.',missing)
         if now>=self.entry_deadline:
             detail=(' Control connection: '+self.last_error+'.') if self.last_error else ''
-            raise RuntimeError('All five bots joined, but your locally controlled car did not enter the assigned team within 15 seconds.'+detail+' No career result recorded; retry this game.')
+            raise HostedEntryError('All five bots joined, but your locally controlled car did not enter the assigned team within 15 seconds.'+detail+' No career result recorded; retry this game.')
         if now>=self.next_request:
             self.next_request=now+1
             try:self.send_ready();self.last_error=''
@@ -244,6 +274,16 @@ def launch(context,rl_path,result_path,enable_commentary=True):
     for attempt in range(3):
         try:
             return _launch_once(retry_context,rl_path,result_path,enable_commentary)
+        except HostedEntryError as exc:
+            # A server starting early is not evidence of a broken bot. Identity
+            # mismatches exclude only this attempt's policies, never global health.
+            if exc.unmatched:
+                blocked=set(retry_context.get('_excludedHostedBots',[]))
+                blocked.update(family_key(a['engine']) for a in exc.unmatched)
+                retry_context['_excludedHostedBots']=sorted(blocked)
+            if attempt==2:
+                raise RuntimeError(str(exc)+' Team-entry recovery exhausted two retries. No match result was recorded.') from exc
+            log_event('BOT_RECOVERY',message=f'{exc} Reconnecting game {context.get("gameNumber",1)} to put your selected player on the field (retry {attempt+1}/2).',gameNumber=context.get('gameNumber',1))
         except StalledBotsError as exc:
             blocked=set(retry_context.get('_excludedHostedBots',[]))
             blocked.update(family_key(a['engine']) for a in exc.assignments)

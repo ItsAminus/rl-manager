@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import patch,Mock
 from contextlib import ExitStack
 from urllib.parse import urlparse,parse_qs
-from rocket_host import request_url,validate_join_address,HostedPacketReader,HostedEntryGate,engine_matches
+from rocket_host import request_url,validate_join_address,HostedPacketReader,HostedEntryGate,HostedEntryError,engine_matches
 from rating_bots import rating_plan
 from test_bot_plan import roster
 from test_rating_bots import CATALOG, ssl_roster
@@ -198,12 +198,58 @@ class RocketHostTests(unittest.TestCase):
         human['locallyControlled']=True
         self.assertTrue(gate.advance(raw,101.1));self.assertEqual(len(calls),2)
 
-    def test_missing_or_wrong_bot_keeps_spectator_lock_with_progress_diagnostics(self):
+    def test_unexpected_name_does_not_lock_human_in_spectator_but_never_guesses_identity(self):
         a=rating_plan(roster(),CATALOG)['assignments'];raw=raw_packet(a);raw['players'][0]['name']='WrongPolicy'
         calls=[];messages=[];gate=HostedEntryGate(HostedPacketReader(a),lambda:calls.append('ready'),messages.append)
-        self.assertFalse(gate.advance(raw,0));self.assertFalse(gate.released);self.assertEqual(calls,[])
-        self.assertIn('4/5 matched',messages[0])
-        with self.assertRaisesRegex(RuntimeError,'complete assigned bot roster'):gate.advance(raw,120)
+        self.assertFalse(gate.advance(raw,0));self.assertTrue(gate.released);self.assertEqual(calls,['ready'])
+        self.assertFalse(gate.reader.bindings)
+        with self.assertRaisesRegex(HostedEntryError,'unexpected bot identities') as caught:gate.advance(raw,3)
+        self.assertEqual(len(caught.exception.unmatched),1)
+        self.assertIn('WrongPolicy',str(caught.exception))
+
+    def test_missing_bot_or_wrong_team_still_blocks_entry(self):
+        a=rating_plan(roster(),CATALOG)['assignments']
+        for change in ('missing','team'):
+            raw=raw_packet(a)
+            if change=='missing':raw['players'].pop(0)
+            else:raw['players'][0]['team']=1-raw['players'][0]['team']
+            calls=[];gate=HostedEntryGate(HostedPacketReader(a),lambda:calls.append('ready'),lambda _:None)
+            self.assertFalse(gate.advance(raw,0));self.assertFalse(gate.released);self.assertFalse(calls)
+            with self.assertRaises(HostedEntryError):gate.advance(raw,120)
+
+    def test_replicated_name_can_settle_after_entry_command_without_wrong_attribution(self):
+        a=rating_plan(roster(),CATALOG)['assignments'];raw=raw_packet(a)
+        bot=next(p for p in raw['players'] if p['isBot']);name=bot['name'];bot['name']='Loading'
+        calls=[];gate=HostedEntryGate(HostedPacketReader(a),lambda:calls.append('ready'),lambda _:None)
+        self.assertFalse(gate.advance(raw,0));self.assertEqual(calls,['ready'])
+        bot['name']=name
+        self.assertTrue(gate.advance(raw,.5))
+
+    def test_scoring_during_identity_wait_triggers_recovery_immediately(self):
+        a=rating_plan(roster(),CATALOG)['assignments'];raw=raw_packet(a)
+        raw['players']=[p for p in raw['players'] if p['isBot']];raw['players'][0]['name']='Unknown'
+        gate=HostedEntryGate(HostedPacketReader(a),lambda:None,lambda _:None)
+        self.assertFalse(gate.advance(raw,0))
+        raw['scores']=[1,0]
+        with self.assertRaisesRegex(HostedEntryError,'before your car joined'):gate.advance(raw,1)
+
+    def test_entry_recovery_retries_same_game_without_blacklisting_healthy_bots(self):
+        context=roster();context['gameNumber']=2;before=deepcopy(context)
+        with patch('rocket_host._launch_once',side_effect=[HostedEntryError('Started too early'),'played']) as attempt, \
+             patch('rocket_host.quarantine') as health,patch('launcher.log_event'):
+            self.assertEqual(rocket_host.launch(context,'rl','result'),'played')
+        self.assertEqual(attempt.call_count,2);health.assert_not_called();self.assertEqual(context,before)
+        self.assertEqual(attempt.call_args.args[0]['gameNumber'],2)
+
+    def test_identity_recovery_temporarily_excludes_requested_policy_and_is_bounded(self):
+        failure=HostedEntryError('Wrong policy',[{'engine':'Byte','name':'Zen'}])
+        with patch('rocket_host._launch_once',side_effect=[failure,'played']) as attempt, \
+             patch('rocket_host.quarantine') as health,patch('launcher.log_event'):
+            self.assertEqual(rocket_host.launch(roster(),'rl','result'),'played')
+        self.assertIn('byte',attempt.call_args.args[0]['_excludedHostedBots']);health.assert_not_called()
+        with patch('rocket_host._launch_once',side_effect=HostedEntryError('No human')) as attempt,patch('launcher.log_event'):
+            with self.assertRaisesRegex(RuntimeError,'exhausted two retries'):rocket_host.launch(roster(),'rl','result')
+        self.assertEqual(attempt.call_count,3)
 
     def test_entry_timeout_is_bounded_and_transient_command_failure_can_recover(self):
         a=rating_plan(roster(),CATALOG)['assignments'];raw=raw_packet(a)

@@ -1385,6 +1385,7 @@ export function setupIpcHandlers() {
               if(config.autoContinueSeries && managerWindow && !managerWindow.isDestroyed())managerWindow.minimize();
             }
             if (parsed.event === 'BOT_RECOVERY' && typeof parsed.message === 'string') {
+              matchLoading.close();
               activeMatchStatus = { ...activeMatchStatus, state: 'running', phase: 'preparing',
                 message: parsed.message };
               returnToManager();
