@@ -1,8 +1,8 @@
 # Automatic Steam launch repair
 
-Integrated locally on 28 October 2026. No GitHub push, release upload or installer rebuild was performed for this change.
+Integrated into the v1.7.0 application update on 28 October 2026.
 
-## What the next application update does
+## What the v1.7.0 application update does
 
 - Local and Rocket Host matches both configure RLBot through `game_launcher.configure_launcher`.
 - A Steam installation is identified by its library path or app manifest. On Windows, RLM launches the selected `RocketLeague.exe` directly, with `SteamAppId=252950`, `SteamGameId=252950`, the RLBot controller address, packet rate, and `-noeac`. It does not use the Steam `-applaunch` route that produced the reported failure. Epic retains its existing authentication route.

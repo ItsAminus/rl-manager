@@ -1,4 +1,4 @@
-RL MANAGER 1.0.8 - FIRST-TIME INSTALLATION
+RL MANAGER 1.7.0 - FIRST-TIME INSTALLATION
 
 BEFORE YOU START
 - Windows 10 or Windows 11, 64-bit.
@@ -9,12 +9,12 @@ BEFORE YOU START
 - NVIDIA is not required. AMD/Intel users can use CPU commentary with the same voices; generation may be slower.
 
 DOWNLOAD ALL FOUR FILES (about 7.3 GB total)
-1. RL-Manager-Complete-1.0.8.7z.001
-2. RL-Manager-Complete-1.0.8.7z.002
-3. RL-Manager-Complete-1.0.8.7z.003
-4. RL-Manager-Complete-1.0.8.7z.004
+1. RL-Manager-Complete-1.5.0.7z.001
+2. RL-Manager-Complete-1.5.0.7z.002
+3. RL-Manager-Complete-1.5.0.7z.003
+4. RL-Manager-Complete-1.5.0.7z.004
 
-Get them from https://github.com/ItsAminus/rl-manager/releases/tag/v1.0.8
+Get them from https://github.com/ItsAminus/rl-manager/releases/tag/v1.5.0
 Keep all four together in ONE folder. Do not rename them.
 These are parts of ONE download, not four installers.
 
@@ -23,15 +23,18 @@ EXTRACT AND INSTALL
 2. Right-click .001, choose 7-Zip, then Extract Here.
    Windows 11 may require Show more options first.
 3. 7-Zip reads .002, .003 and .004 automatically. Extract ONLY .001.
-4. Open the extracted RL-Manager-Complete-1.0.8 folder.
+4. Open the extracted RL-Manager-Complete-1.5.0 folder.
 5. Close Rocket League, BakkesMod and RLM.
 6. Run Install RL Manager.exe, then click Install everything.
 7. Allow the component installers to finish. Keep Packages, Setup and Tools together.
-8. Open RL Manager using its desktop or Start menu shortcut.
+8. Close RLM if setup opened it. Install RL.Manager.1.7.0.Setup.exe from:
+   https://github.com/ItsAminus/rl-manager/releases/tag/v1.7.0
+9. Open RL Manager using its desktop or Start menu shortcut.
 
 The wizard includes RLM, local bots/Python, BakkesMod, Rocket Host, the AI models and required runtime components.
-You do NOT need the separate RL.Manager.1.0.8.Setup.exe file for a first installation.
-That file is an app updater for people with an existing COMPLETE installation.
+New players need the complete 1.5.0 kit AND the 1.7.0 app update.
+Existing players with the runtime already installed only need RL.Manager.1.7.0.Setup.exe.
+Close RLM and Rocket League before updating. Keep your saves, settings and runtime.
 GitHub's Source code downloads are for development, not installation.
 
 BEFORE PLAYED MATCHES: LAUNCH ROCKET LEAGUE WITHOUT EAC
