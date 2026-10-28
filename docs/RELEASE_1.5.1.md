@@ -16,7 +16,7 @@ Existing users: close RL Manager and Rocket League, then run
 `RL.Manager.1.5.1.Setup.exe`. Keep your existing runtime, bots, voices, saves and
 settings. No full-runtime reinstall is needed.
 
-New users: install the [complete 1.5.0 kit](https://github.com/MyMedicalCenters/rl-manager/releases/tag/v1.5.0)
+New users: install the [complete 1.5.0 kit](https://github.com/ItsAminus/rl-manager/releases/tag/v1.5.0)
 first, then apply the 1.5.1 app update. The four large complete-kit parts have not
 been rebuilt because the shared bot and AI runtimes have not changed.
 
