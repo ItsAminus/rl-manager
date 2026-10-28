@@ -41,7 +41,20 @@ def run(*args,**kwargs):
 def digest(file):
     with Path(file).open('rb') as source:return hashlib.file_digest(source,'sha256').hexdigest()
 
+def bot_validation_files():
+    target=OUT/'Setup/BotValidation'
+    for name in ('local_bot_health.py','bot_assignment.py','player_style.py'):
+        copy(ROOT/'rl_bridge'/name,target/name)
+    copy(ROOT/'rl_bridge/local_bots',target/'local_bots')
+
+def validate_local_bots(runtime):
+    runtime=Path(runtime)
+    run(runtime/'python/python.exe','-B',ROOT/'rl_bridge/local_bot_health.py',
+        '--botpack',runtime/'botpack','--report',ROOT/'scratch'/f'local-bots-{VERSION}-release-audit.json',cwd=runtime)
+
 def package_staged():
+    validate_local_bots(STAGE)
+    bot_validation_files()
     if any(STAGE.rglob('*.pyc')) or any(STAGE.rglob('*.pyo')):
         raise RuntimeError('Remove generated Python bytecode before packaging the public runtime')
     for name in ('python/python.exe','botpack/Necto/Nexto/bot.cfg',
@@ -91,6 +104,7 @@ def reuse_runtime(source_version):
         else:copy(original,target)
     copy(installer,OUT/'Packages/RLManagerSetup.exe')
     copy(ROOT/'scripts/complete-setup/Install-RLM.ps1',OUT/'Setup/Install-RLM.ps1')
+    bot_validation_files()
     copy(ROOT/'scripts/complete-setup/Read me.txt',OUT/'Read me.txt')
     copy(ROOT/'docs/AMD_SPEECH.md',OUT/'AMD speech support.txt')
     write_manifest(manifest['runtimeBytes'],manifest.get('runtimeVersion',source_version))

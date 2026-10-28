@@ -17,6 +17,8 @@ The save-specific player-information editor and JSON importer remain available. 
 
 [RLM v1.7.0 Full Patch Notes](docs/releases/1.7.0-full-patch-notes.md) — the complete player guide to what changed.
 
+The 1.7.0 app updater also supplies a verified local-bot runtime. The first connection check may take longer while RLM installs and checks all local policies; no separate bot installation is needed. Existing speech models and saves are kept separate.
+
 1.5.1 fixes a local-match kickoff timeout when Rocket League assigns bots different car slots from the configured lineup. Bots are now tracked by their configured identity and still must produce working controls before kickoff. This addresses one cause of “Bots failed to initialize before kickoff”; unrelated bot crashes may still need a support log. Existing users only need the app update installer. Close RLM and Rocket League before installing; no saves or settings need to be deleted.
 
 Major career expansion: national management and playable FIFAe finals, the RLCS 2027 Club Championship, deeper finances and agent negotiations, hidden scouting information, livelier transfer activity, animated player introductions, native scoreboard portraits, and searchable/sortable club selection. Financial dismissals now require prolonged unpaid obligations and explicit warnings, with trophy protection and recovery archives for future dismissals. Existing playable saves and settings are preserved; this update cannot restore saves already deleted by earlier dismissal logic. Close RL Manager and Rocket League before updating.

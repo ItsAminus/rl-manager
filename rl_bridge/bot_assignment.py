@@ -22,9 +22,7 @@ def player_assignment(player, match_key, lucky_chance=.05):
             'availableLevel': 'approximately GC' if engine == 'Nexto' else 'approximately Diamond' if engine == 'Necto' else 'built-in bot'}
 
 
-def engine_config(folder, engine):
-    if engine=='Career Rookie':return Path(__file__).resolve().parent/'local_bots/career_rookie.cfg'
-    paths = {'Nexto': 'Necto/Nexto/bot.cfg', 'Necto': 'Necto/Necto/bot.cfg',
+LOCAL_BOT_PATHS = {'Nexto': 'Necto/Nexto/bot.cfg', 'Necto': 'Necto/Necto/bot.cfg',
              'Element':'Element/bot.cfg', 'Kamael':'Kamael_family/Kamael.cfg',
              'ReliefBot':'ReliefBotFamily/README/relief_bot.cfg',
              'Botimus Prime':'Botimus&Bumblebee/botimus.cfg',
@@ -35,5 +33,7 @@ def engine_config(folder, engine):
              'Beast from the East':'beastbot/beastbot.cfg','VirxEB':'VirxEB/VirxEB.cfg',
              'Bribblebot':'Bribblebot/bot.cfg','DisasterBot':'DisasterBot/disaster_bot.cfg',
              'Stick':'MarvinBots/Stick/stick.cfg'}
-    path = Path(folder) / paths[engine] if engine in paths else None
+def engine_config(folder, engine):
+    if engine=='Career Rookie':return Path(__file__).resolve().parent/'local_bots/career_rookie.cfg'
+    path = Path(folder) / LOCAL_BOT_PATHS[engine] if engine in LOCAL_BOT_PATHS else None
     return path if path and path.is_file() else None

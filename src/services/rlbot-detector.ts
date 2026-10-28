@@ -11,7 +11,7 @@ export interface PrerequisiteStatus {
 }
 
 export class RLBotDetector {
-  constructor(private runtimeRoot:()=>string=()=> ''){}
+  constructor(private runtimeRoot:()=>string=()=> '',private localBotRuntime?:()=>Promise<string>){}
   private commonRLPaths = [
     'C:\\Program Files\\Epic Games\\rocketleague\\Binaries\\Win64\\RocketLeague.exe',
     'C:\\Program Files (x86)\\Steam\\steamapps\\common\\rocketleague\\Binaries\\Win64\\RocketLeague.exe',
@@ -47,7 +47,8 @@ export class RLBotDetector {
 
   async detectRLBot(): Promise<{ found: boolean; path: string; pythonPath: string; version: string }> {
     // Check RLBotGUIX dedicated Python installation first
-    const runtime=this.runtimeRoot();
+    const managed=this.localBotRuntime?await this.localBotRuntime():'';
+    const runtime=managed||this.runtimeRoot();
     for (const pyPath of [...(runtime?[path.join(runtime,'python','python.exe')]:[]),...this.commonPythonRLBotPaths]) {
       if (fs.existsSync(pyPath)) {
         try {
@@ -78,7 +79,8 @@ export class RLBotDetector {
   }
 
   async detectBotPack(customPath?: string): Promise<{ found: boolean; path: string; botCount: number; bots: string[] }> {
-    const candidatePaths = customPath ? [customPath, ...this.commonBotPackPaths] : this.commonBotPackPaths;
+    const managed=this.localBotRuntime?await this.localBotRuntime():'';
+    const candidatePaths = [...(managed?[path.join(managed,'botpack')]:[]),...(customPath ? [customPath, ...this.commonBotPackPaths] : this.commonBotPackPaths)];
 
     for (const bPath of candidatePaths) {
       if (fs.existsSync(bPath)) {

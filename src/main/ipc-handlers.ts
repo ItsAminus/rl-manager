@@ -25,6 +25,7 @@ import fs from 'fs';
 import path from 'path';
 import * as child_process from 'child_process';
 import { RLBotDetector } from '../services/rlbot-detector';
+import {LocalBotRuntime} from './local-bot-runtime';
 import { buildSeriesContext } from '../services/series-context';
 import { CareerManagement } from './career-management';
 import { addDays, transferWindow } from '../game/career-rules';
@@ -987,7 +988,8 @@ export function setupIpcHandlers() {
   // ============================================================
   // RLBot Integration
   // ============================================================
-  const rlbotDetector = new RLBotDetector(installedAiRuntime);
+  const localBotRuntime=app.isPackaged?new LocalBotRuntime(process.resourcesPath,app.getPath('userData'),playerBridge):undefined;
+  const rlbotDetector = new RLBotDetector(installedAiRuntime,localBotRuntime?()=>localBotRuntime.ensure():undefined);
   let activeMatchStatus: any = { state: 'idle', message: 'Ready' };
   const injectorConfirmation=new InjectorConfirmation();
   const matchHandoff = new MatchHandoff();

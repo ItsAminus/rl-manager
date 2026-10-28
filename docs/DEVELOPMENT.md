@@ -13,10 +13,14 @@ npm ci
 npm run dev
 npm test
 npm run build:player
+# Before packaging, use the validated RLBot Python installation to prepare
+# the offline local-bot dependency payload (requires its working bot pack
+# and the Java17.zip input described in scripts/build-local-bot-runtime.py).
+python scripts/build-local-bot-runtime.py
 npm run package:win
 ```
 
-The Windows installer is written to `release/<version>/`. The source repository excludes careers, credentials, generated installers, third-party runtimes, speech weights and voice recordings. Supply the runtime/audio inputs described in the packaging scripts to reproduce a complete kit; cloning alone does not download them.
+The Windows installer is written to `release/<version>/`. Packaging requires a matching, audited `scratch/local-bot-payload/manifest.json` and archive. The source repository excludes careers, credentials, generated installers, third-party runtimes and speech weights. Supply the runtime/audio inputs described in the packaging scripts to reproduce a complete kit; cloning alone does not download them.
 
 See [release packaging](PLAYER_RELEASE.md), [storage](PROJECT_STORAGE.md), [AMD speech](AMD_SPEECH.md), and `scripts/complete-setup`.
 

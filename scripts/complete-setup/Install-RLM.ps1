@@ -71,6 +71,17 @@ function Configure-Bakkes([string]$Root){
     Add-Lines $cfg @("rcon_password `"$secret`"")
   }
 }
+function Test-LocalBots([string]$Runtime) {
+  $validator=Join-Path $PSScriptRoot 'BotValidation\local_bot_health.py'
+  if(!(Test-Path -LiteralPath $validator -PathType Leaf)){throw 'The local bot validator is missing. Extract the complete setup download again.'}
+  $report=Join-Path $Runtime 'local-bot-health.json'
+  try {
+    Run-Component (Join-Path $Runtime 'python\python.exe') @('-B',$validator,'--botpack',(Join-Path $Runtime 'botpack'),'--report',$report)
+    $health=Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
+    $failed=@($health.PSObject.Properties | Where-Object { !$_.Value.healthy })
+    return ($failed.Count -eq 0 -and @($health.PSObject.Properties).Count -ge 16)
+  } catch { return $false }
+}
 function Find-Game {
   $candidates=@('C:\Program Files\Epic Games\rocketleague\Binaries\Win64\RocketLeague.exe','C:\Program Files (x86)\Steam\steamapps\common\rocketleague\Binaries\Win64\RocketLeague.exe','D:\Epic Games\rocketleague\Binaries\Win64\RocketLeague.exe','D:\SteamLibrary\steamapps\common\rocketleague\Binaries\Win64\RocketLeague.exe')
   $epic=Join-Path $env:ProgramData 'Epic\EpicGamesLauncher\Data\Manifests'
@@ -132,14 +143,24 @@ $button.Add_Click({
     $runtimeVersion=if($manifest.runtimeVersion){$manifest.runtimeVersion}else{$manifest.version}
     $target=Join-Path $env:LOCALAPPDATA ('RLManagerRuntime\'+$runtimeVersion)
     $marker=Join-Path $target '.complete-runtime.json'
-    if(!(Test-Path -LiteralPath $marker)){
+    $runtimeCoreMissing=@('python\python.exe','botpack\Necto\Nexto\bot.cfg','llama\llama-server.exe','text_model\qwen2.5-1.5b-instruct-q4_k_m.gguf','chatterbox_model\t3_cfg.safetensors','chatterbox_model\s3gen.safetensors') | Where-Object { !(Test-Path -LiteralPath (Join-Path $target $_) -PathType Leaf) }
+    if(!(Test-Path -LiteralPath $marker) -or $runtimeCoreMissing){
       Update-Stage 18 'Unpacking Python, bots and AI. This can take several minutes...'
       [IO.Directory]::CreateDirectory($target)|Out-Null
       Run-Component $seven @('x','-y','-bd',('-o'+$target),(Join-Path $kitRoot 'Packages\Runtime.7z.001'))
     }
     Update-Stage 50 'Checking the portable bot and speech libraries...'
+    if(Test-Path -LiteralPath $marker){Remove-Item -LiteralPath $marker -Force}
     foreach($required in @('python\python.exe','botpack\Necto\Nexto\bot.cfg','llama\llama-server.exe','text_model\qwen2.5-1.5b-instruct-q4_k_m.gguf','chatterbox_model\t3_cfg.safetensors','chatterbox_model\s3gen.safetensors')){
       if(!(Test-Path -LiteralPath (Join-Path $target $required) -PathType Leaf)){throw "A runtime file is missing: $required. Remove only this version's runtime folder and rerun setup."}
+    }
+    Update-Stage 55 'Checking every local bot and its Python dependencies...'
+    if(!(Test-LocalBots $target)) {
+      Update-Stage 57 'Repairing the bundled bots and dependencies, then checking again...'
+      # Overlay the verified runtime archive even when an old completion marker
+      # exists. Repair only runtime files; careers and preferences live elsewhere.
+      Run-Component $seven @('x','-y','-bd',('-o'+$target),(Join-Path $kitRoot 'Packages\Runtime.7z.001'))
+      if(!(Test-LocalBots $target)){throw "Some local bots still cannot load after repair. Details: $target\local-bot-health.json. Setup has not marked this runtime ready."}
     }
     Run-Component (Join-Path $target 'python\python.exe') @('-I','-c','import rlbot,torch,torchaudio,chatterbox,websocket; from chatterbox.tts import ChatterboxTTS')
     $core=Join-Path $target 'bakkes-core'

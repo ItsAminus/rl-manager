@@ -25,6 +25,8 @@ def main():
     if validation.get('version')!=version or not all(validation.get(k) for k in ['appTestsPassed','bridgeTestsPassed','nativeTestsPassed']):raise RuntimeError('Recorded release validation is missing or failed')
     resources=release/'win-unpacked/resources';verified={}
     pairs=[(ROOT/'bakkesmod/build/RLManagerHUD.dll',resources/'career-hud/RLManagerHUD.dll')]
+    pairs.extend((p,resources/'local-bot-runtime'/p.name) for p in (ROOT/'scratch/local-bot-payload').iterdir() if p.is_file())
+    if packaged.get('localPoliciesAudited')!=16 or not packaged.get('localBotRuntimeProvisioned'):raise RuntimeError('The packaged updater must install and audit all 16 local policies')
     pairs.extend((p,resources/'data'/p.name) for p in (ROOT/'data').glob('*.json'))
     pairs.extend((p,resources/'rl_bridge'/p.name) for p in (ROOT/'rl_bridge').glob('*.py') if not p.name.startswith('test_'))
     pairs.extend((p,resources/'rl_bridge/commentary'/p.name) for p in (ROOT/'rl_bridge/commentary').glob('*.py') if (resources/'rl_bridge/commentary'/p.name).exists())

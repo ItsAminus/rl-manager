@@ -57,28 +57,33 @@ def find_bot_cfg(botpack_path: Path, name: str) -> Path | None:
 
 @lru_cache(maxsize=32)
 def verify_bot_can_load(cfg_path: Path) -> bool:
-    try:
-        # Nexto and Necto both import modules called agent/bot. Validate in
-        # separate processes so cached imports can't mix their model weights.
-        check = ('import sys; from rlbot.parsing.bot_config_bundle import get_bot_config_bundle; '
-                 'from rlbot.utils.class_importer import import_agent; '
-                 'b=get_bot_config_bundle(sys.argv[1]); '
-                 'import_agent(b.python_file).get_loaded_class()("test",0,0)')
-        result = subprocess.run([sys.executable, '-c', check, str(cfg_path)], timeout=30,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
-        return result.returncode == 0
-    except Exception:
-        return False
+    from local_bot_health import check_bot
+    healthy, error = check_bot(cfg_path)
+    if not healthy:log_event('STATUS',message=f'Local bot load failed: {cfg_path}: {error}')
+    return healthy
 
 def select_bot_cfg(botpack_path: Path, rating: int, index: int, tendency: str = "", profile=None) -> tuple:
     """Returns (bot_cfg_path_or_None, psyonix_skill_float)"""
     chosen = profile or player_assignment({'rating': rating, 'gamertag': str(index), 'tendency': tendency}, 'exhibition', lucky_chance=0)
     cfg = engine_config(botpack_path, chosen['engine'])
+    if cfg is None and chosen['engine']!='Psyonix':
+        log_event('STATUS',message=f'Local bot configuration missing: {chosen["engine"]}; selected bot pack: {botpack_path}')
     if cfg and verify_bot_can_load(cfg):
         return cfg, 1.0
     if chosen['engine'] != 'Psyonix':
-        raise RuntimeError(f"Required {chosen['engine']} bot is missing or cannot load; refusing to silently replace the player's skill tier")
+        from local_bot_health import candidates
+        requested=chosen['engine']
+        for replacement in candidates(requested)[1:]:
+            alternative=engine_config(botpack_path,replacement)
+            if alternative and verify_bot_can_load(alternative):
+                chosen['engine']=replacement
+                chosen['fallbackFrom']=requested
+                chosen['fallbackReason']=f'{requested} cannot load locally; using the next healthy choice, {replacement}.'
+                chosen['availableLevel']=chosen['fallbackReason']
+                if replacement=='Career Rookie':chosen['botSkill']=0.0
+                log_event('STATUS',message=chosen['fallbackReason'])
+                return alternative, chosen.get('botSkill',1.0)
+        raise RuntimeError(f"{requested} and all supported weaker local bots cannot load. Rerun the complete setup to repair the bot runtime. See the local bot load failures in the support log.")
     return None, chosen.get('botSkill', min(1., max(.1, rating/70)))
 
 def build_match_config(config_data: dict, botpack_path: Path, arena_name: str = None):

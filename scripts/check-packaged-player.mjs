@@ -94,8 +94,13 @@ try{
  const afterIdentity=await run(`window.api.players.getById(${JSON.stringify(identityPlayer.id)})`);
  if(afterIdentity.overall!==identityPlayer.overall||afterIdentity.teamId!==identityPlayer.teamId)throw Error('Identity import changed gameplay fields');
  if(fs.readdirSync(path.join(folder,'database/careers/identity-backups')).filter(f=>f.endsWith('.sqlite')).length!==2)throw Error('Identity backups missing');
+ const localPrereqs=await run('window.api.rlbot.detect()');
+ if(!localPrereqs.rlbot?.found||!localPrereqs.rlbot.pythonPath.startsWith(path.join(folder,'local-bots'))||!localPrereqs.botPack?.path.startsWith(path.join(folder,'local-bots')))throw Error('Packaged updater did not provision its verified local-bot runtime: '+JSON.stringify(localPrereqs));
+ const localAudit=JSON.parse(fs.readFileSync(path.join(path.dirname(localPrereqs.botPack.path),'local-bot-health.json'),'utf8'));
+ if(Object.keys(localAudit).length!==16||Object.values(localAudit).some(row=>!row.healthy))throw Error('A packaged local policy failed isolated loading');
  await run('window.api.app.quit()');
  const result={passed:true,packaged:true,version:info.version,background:image.width,practiceIsolated:true,cheatApiBlocked:true,splashAndPreloadWorking:true,chirpEmblem:emblem,arenaBackgrounds:3,nationalManagementAPI:true,managerTeamSearch:true,teamSorts:options,selectableTeams:selectable.length,competitionAssetHashes:mediaFiles.length,bridgeHashes:5,nativeHUDHash:true,playerInformationEditor:true,identityImportPreviewAndApply:true,identityBackups:2,decodedVideos};
+ result.localBotRuntimeProvisioned=true;result.localPoliciesAudited=16;
  fs.writeFileSync(path.join(root,'release',version,'release-check.json'),JSON.stringify(result,null,2));
  console.log(JSON.stringify({...result,folder}));
 }catch(error){console.error(error.stack);process.exitCode=1;}finally{socket?.close();if(proc.exitCode===null)proc.kill();}
