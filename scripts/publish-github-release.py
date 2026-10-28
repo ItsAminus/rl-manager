@@ -39,6 +39,7 @@ def main():
     parser.add_argument('--keep-draft', action='store_true', help='Upload a subset without publishing the release')
     parser.add_argument('--target', help='Exact source commit for the release tag')
     parser.add_argument('--major', action='store_true', help='Label this as a major feature release')
+    parser.add_argument('--title', help='Explicit player-facing release title')
     args = parser.parse_args()
     if args.repository.count('/') != 1:
         raise ValueError('Use owner/repository')
@@ -78,7 +79,7 @@ def main():
         if not release:
             raise RuntimeError('No matching release to resume.')
     else:
-        payload={'tag_name':tag,'name':'RL Manager '+args.version+(' — MAJOR RELEASE' if args.major else ''),'body':notes,'draft':True}
+        payload={'tag_name':tag,'name':args.title or 'RL Manager '+args.version+(' — MAJOR RELEASE' if args.major else ''),'body':notes,'draft':True}
         if args.target:
             import re
             if not re.fullmatch(r'[a-f0-9]{40}',args.target):raise ValueError('Release target must be a full commit SHA')

@@ -62,34 +62,36 @@ def verify_bot_can_load(cfg_path: Path) -> bool:
     if not healthy:log_event('STATUS',message=f'Local bot load failed: {cfg_path}: {error}')
     return healthy
 
-def select_bot_cfg(botpack_path: Path, rating: int, index: int, tendency: str = "", profile=None) -> tuple:
+def select_bot_cfg(botpack_path: Path, rating: int, index: int, tendency: str = "", profile=None, excluded=()) -> tuple:
     """Returns (bot_cfg_path_or_None, psyonix_skill_float)"""
     chosen = profile or player_assignment({'rating': rating, 'gamertag': str(index), 'tendency': tendency}, 'exhibition', lucky_chance=0)
     cfg = engine_config(botpack_path, chosen['engine'])
     if cfg is None and chosen['engine']!='Psyonix':
         log_event('STATUS',message=f'Local bot configuration missing: {chosen["engine"]}; selected bot pack: {botpack_path}')
-    if cfg and verify_bot_can_load(cfg):
+    if chosen['engine'] not in excluded and cfg and verify_bot_can_load(cfg):
         return cfg, 1.0
     if chosen['engine'] != 'Psyonix':
         from local_bot_health import candidates
         requested=chosen['engine']
         for replacement in candidates(requested)[1:]:
+            if replacement in excluded:continue
             alternative=engine_config(botpack_path,replacement)
             if alternative and verify_bot_can_load(alternative):
                 chosen['engine']=replacement
                 chosen['fallbackFrom']=requested
-                chosen['fallbackReason']=f'{requested} cannot load locally; using the next healthy choice, {replacement}.'
+                chosen['fallbackReason']=f'{requested} cannot load locally; temporarily using the closest healthy choice, {replacement}.'
                 chosen['availableLevel']=chosen['fallbackReason']
-                if replacement=='Career Rookie':chosen['botSkill']=0.0
+                chosen['botSkill']=0.0 if replacement=='Career Rookie' else 1.0
                 log_event('STATUS',message=chosen['fallbackReason'])
                 return alternative, chosen.get('botSkill',1.0)
-        raise RuntimeError(f"{requested} and all supported weaker local bots cannot load. Rerun the complete setup to repair the bot runtime. See the local bot load failures in the support log.")
+        raise RuntimeError(f"{requested} and all supported alternative local bots cannot load. Rerun the complete setup to repair the bot runtime. See the local bot load failures in the support log.")
     return None, chosen.get('botSkill', min(1., max(.1, rating/70)))
 
 def build_match_config(config_data: dict, botpack_path: Path, arena_name: str = None):
     import rlbot.matchconfig.match_config as mc
 
     match_cfg = mc.MatchConfig()
+    match_cfg.manager_botpack_path = str(botpack_path)
     match_cfg.game_mode = "Soccer"
     match_cfg.game_map = arena_name or config_data.get('arena', 'Mannfield_Dusk')
     # Use Rocket League's native goal replay; bots resume on the next kickoff.
@@ -302,7 +304,7 @@ def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Pat
                      manual_confirmation=manual_bakkesmod_confirmation,required=manual_bakkesmod_confirmation)
 
     log_event("STATUS", message="Loading 3v3 match configuration...")
-    from bot_startup import BotReadiness, receive_metadata, start_with_ready_bots
+    from bot_startup import BotReadiness, receive_metadata, start_with_bot_recovery
     readiness = BotReadiness(match_cfg)
 
     # Preload recordings and open the audio device before kickoff.
@@ -332,7 +334,7 @@ def launch_match(match_cfg, rl_exe: Path, monitor: bool = True, result_file: Pat
 
     log_event("STATUS", message="Loading bots before releasing kickoff...")
     try:
-        start_with_ready_bots(manager, readiness,
+        readiness = start_with_bot_recovery(manager, match_cfg, readiness,
                               lambda message: log_event("STATUS", message=message))
     except BaseException:
         if dispatcher:

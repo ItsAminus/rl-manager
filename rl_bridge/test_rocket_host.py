@@ -2,7 +2,8 @@ import unittest
 from copy import deepcopy
 from tempfile import TemporaryDirectory
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch,Mock
+from contextlib import ExitStack
 from urllib.parse import urlparse,parse_qs
 from rocket_host import request_url,validate_join_address,HostedPacketReader,HostedEntryGate,engine_matches
 from rating_bots import rating_plan
@@ -19,6 +20,37 @@ def raw_packet(assignments):
                     'goals':a['slot'],'touches':0} for a in reversed(assignments)]}
 
 class RocketHostTests(unittest.TestCase):
+    def test_recorded_only_commentary_reaches_host_request_without_generated_intro(self):
+        import sys
+        sys.path.insert(0,str(Path(__file__).parent/'commentary'))
+        from clip_broadcast import ClipBroadcast
+        # Use the real fallback type without opening an audio device. It has
+        # process_packet/stop, but deliberately no generated-intro interface.
+        recorded=ClipBroadcast.__new__(ClipBroadcast)
+        self.assertFalse(hasattr(recorded,'prepare_intro'))
+        class HostRequestReached(Exception):pass
+        with TemporaryDirectory() as directory,ExitStack() as stack:
+            root=Path(directory);status=root/'data/rl-manager/plugin-status.json'
+            status.parent.mkdir(parents=True)
+            status.write_text('{"rocketHostTelemetry":true,"pid":123}')
+            stack.enter_context(patch('bakkesmod_startup.folder',return_value=root))
+            for name in ('connect_with_hud','rcon_commands','allow_career_commands'):
+                stack.enter_context(patch('bakkesmod_startup.'+name))
+            manager=Mock();stack.enter_context(patch('rlbot.setup_manager.SetupManager',return_value=manager))
+            stack.enter_context(patch('game_launcher.configure_launcher',return_value='steam'))
+            stack.enter_context(patch('rocket_host.flatten_catalog',return_value=CATALOG))
+            stack.enter_context(patch('rocket_host.rating_plan',return_value=rating_plan(roster(),CATALOG)))
+            stack.enter_context(patch('rocket_host.read_url',side_effect=['{}','[{"location":"US-CENTRAL"}]']))
+            stack.enter_context(patch('launcher.create_commentary',return_value=recorded))
+            stack.enter_context(patch('launcher.log_event'))
+            stack.enter_context(patch('player_introductions.run_showcase'))
+            stack.enter_context(patch.object(recorded,'stop'))
+            request=stack.enter_context(patch('rocket_host.request_url',side_effect=HostRequestReached))
+            with self.assertRaises(HostRequestReached):
+                rocket_host._launch_once(roster(),'RocketLeague.exe','result.json')
+            request.assert_called_once()
+            manager.shut_down.assert_called_once()
+
     def test_live_server_labels_keep_distinct_policy_identities(self):
         for name,engine in [('Kiyo 3.0','Kiyo3'),('Kiyo 3.0 (2)','Kiyo3'),('Kiyo 3.0 (3)','Kiyo3'),('Kiyo3','Kiyo3'),('Kiyo3 (2)','Kiyo3'),('Chronos (2)','Chronos')]:
             self.assertTrue(engine_matches(name,engine),(name,engine))

@@ -278,7 +278,7 @@ def run_showcase(manager, context, dispatcher, log):
                 music.set_ducked(pcm is not None and began is not None and now-began < speech_duration)
                 if index==5 and began is not None and now-began>=speech_duration:
                     cover_transition()
-                if dispatcher and dispatcher.stopped.is_set():
+                if dispatcher and getattr(dispatcher,'stopped',None) is not None and dispatcher.stopped.is_set():
                     return played
                 time.sleep(.03)
         return played

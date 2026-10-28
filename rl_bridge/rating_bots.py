@@ -162,25 +162,30 @@ def rating_plan(context,catalog=None,lock_series=False,allow_partial=False):
             requested=next((t for t in tiers if t[0]==actual_cutoff),(cutoff,pool,level))
             engine=draw_engine(requested[0],requested[1])
         if remote and not p.get('isHuman') and not saved:
+            minimum_requested=minimum
             requested=next((t for t in tiers if t[0]==actual_cutoff),(cutoff,pool,level))
             actual_level=requested[2]
-            if engine is None and not minimum:
-                # Nearest weaker healthy tier first. Hosted matches cannot mix
-                # local policies in, and Necto is the hosted minimum.
-                for lower_cutoff,lower_pool,lower_level in tiers:
-                    if lower_cutoff>=actual_cutoff or lower_cutoff<79:continue
+            if engine is None:
+                # Closest strength first, lower on ties. Keep earned Path To
+                # Glory caps; local policies cannot join a hosted lobby.
+                anchor=79 if minimum else actual_cutoff
+                alternatives=sorted((t for t in tiers if t[0]>=79 and t[0]!=anchor and
+                                     (not path_mode or t[0]<=p.get('pathTierCap',cutoff))),
+                                    key=lambda t:(abs(t[0]-anchor),t[0]>anchor))
+                for lower_cutoff,lower_pool,lower_level in alternatives:
                     engine=draw_engine(lower_cutoff,lower_pool)
                     if engine:
-                        actual_cutoff=lower_cutoff;actual_level=lower_level;break
+                        actual_cutoff=lower_cutoff;actual_level=lower_level;minimum=False;break
             if engine and (actual_cutoff!=cutoff or old and old.get('engine') and old['engine']!=engine):
-                unavailable=old.get('engine') if old and old.get('engine') else ', '.join(pool)
+                unavailable=old.get('engine') if old and old.get('engine') else 'Necto' if minimum_requested else ', '.join(pool)
                 fallback={'fallbackFrom':unavailable,'actualTierCutoff':actual_cutoff,'actualLevel':actual_level,
-                          'fallbackReason':f'{unavailable} unavailable; using {engine} ({actual_level}, {actual_cutoff}+ tier).'}
+                          'requestedEngine':old.get('engine') if old and old.get('engine') else 'Necto' if minimum_requested else pool[0],
+                          'fallbackReason':f'{unavailable} unavailable; temporarily using {engine} ({actual_level}, {actual_cutoff}+ tier).'}
             elif engine:
                 fallback={'actualTierCutoff':actual_cutoff,'actualLevel':actual_level}
         assignment_error=None
         if not p.get('isHuman') and engine is None:
-            assignment_error=f'{p["gamertag"]}: no healthy hosted bot in the requested {level} tier or any weaker supported tier.'
+            assignment_error=f'{p["gamertag"]}: no healthy hosted bot in the requested {level} tier or any supported nearby tier.'
             if not remote:assignment_error=f'{p["gamertag"]}: no available local bot in the requested {level} tier.'
             if not allow_partial:raise ValueError(assignment_error)
             errors.append(assignment_error)
@@ -219,13 +224,18 @@ def rating_plan(context,catalog=None,lock_series=False,allow_partial=False):
             if alternatives:
                 a['engine']=random.Random(game_key+a['playerId']).choice(alternatives)
                 if a.get('fallbackReason'):
-                    a['fallbackReason']=f'{a["fallbackFrom"]} unavailable; using {a["engine"]} ({a.get("actualLevel",a["target"])}, {cutoff}+ tier).'
+                    a['fallbackReason']=f'{a["fallbackFrom"]} unavailable; temporarily using {a["engine"]} ({a.get("actualLevel",a["target"])}, {cutoff}+ tier).'
         used.add(a['engine'])
     if lock_series and file and not errors:
         # Launch commits actual catalog identifiers; preview never commits guesses.
         SERIES_ROOT.mkdir(parents=True,exist_ok=True)
         with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=SERIES_ROOT,delete=False) as temp:
             saved=[previous.get(a['playerId'],a) if a['type']=='Human' else a for a in assignments]
+            # A substitute belongs to this game, not the player's permanent
+            # series choice. Reconsider the intended policy on the next launch.
+            saved=[{**{k:v for k,v in a.items() if k not in ('fallbackFrom','fallbackReason','requestedEngine','actualLevel')},
+                    'engine':a['requestedEngine'],'actualTierCutoff':a['tierCutoff']}
+                   if a.get('requestedEngine') else a for a in saved]
             json.dump({'route':'Rocket Host' if remote else 'Local','assignments':saved},temp)
         os.replace(temp.name,file)
     # Apply AFTER saving the ordinary series assignment. This game's windfall
@@ -240,7 +250,7 @@ def rating_plan(context,catalog=None,lock_series=False,allow_partial=False):
         'route':'Rocket Host' if remote else 'Local','difficulty':'Path To Glory' if path_mode else mode,'assignments':assignments,'seriesLocked':bool(locked) or bool(lock_series and file and not errors),
         'notice':('Hosted bot choices follow your rating tiers. Private bot policies cannot be modified locally.'+
                   ' Bot families are shuffled per series and locked to player identities for every game. Only failed or unavailable policies are replaced.'+
-                  (' Unavailable bots were replaced by the next strongest healthy choices; replacements are shown per player.' if any(a.get('fallbackReason') for a in assignments) else '')+
+                  (' Unavailable bots were temporarily replaced by the closest healthy choices; replacements are shown per player.' if any(a.get('fallbackReason') for a in assignments) else '')+
                   (' Failed hosted policies excluded: '+', '.join(sorted(blocked))+'.' if blocked else '')+
                   (' Rocket Host advertises Necto as Champ; its local Diamond version cannot be mixed into a hosted match.' if not path_mode and any(a['engine']=='Necto' and a['type']!='Human' for a in assignments) else '')+
                   (' Rocket Host only offers Necto or stronger; lower-rated players in this mixed match use Necto.' if any(a['hostedMinimum'] and a['type']!='Human' for a in assignments) else '')) if remote

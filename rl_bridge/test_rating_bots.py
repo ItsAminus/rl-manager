@@ -190,22 +190,22 @@ class RatingTests(unittest.TestCase):
         context=ssl_roster()
         context['orangeTeam']['players'][2]['rating']=79
         context['_excludedHostedBots']=[e for e in CATALOG if e!='Kiyo3' and e!='Necto']
-        # An available stronger bot must not upgrade a weaker player's tier.
-        partial=rating_plan(context,['Kiyo3'],allow_partial=True,lock_series=True)
+        partial=rating_plan(context,[],allow_partial=True,lock_series=True)
         self.assertFalse(partial['success'])
         self.assertEqual(len(partial['assignments']),6)
         self.assertEqual(partial['assignments'][0]['type'],'Human')
         self.assertTrue(partial['assignments'][1]['assignmentError'])
         self.assertFalse(list(Path(self.temp.name).glob('*.json')))
-        with self.assertRaises(ValueError):rating_plan(context,['Kiyo3'],lock_series=True)
+        with self.assertRaises(ValueError):rating_plan(context,[],lock_series=True)
 
-    def test_partial_preview_keeps_healthy_players_assigned(self):
+    def test_stronger_replacement_prevents_an_unnecessary_partial_failure(self):
         context=ssl_roster()
         context['orangeTeam']['players'][2]['rating']=79
         partial=rating_plan(context,['Opti'],allow_partial=True)
-        self.assertFalse(partial['success'])
+        self.assertTrue(partial['success'])
         self.assertEqual([a['engine'] for a in partial['assignments'][1:5]],['Opti']*4)
-        self.assertTrue(partial['assignments'][5]['assignmentError'])
+        self.assertEqual(partial['assignments'][5]['engine'],'Opti')
+        self.assertIn('temporarily',partial['assignments'][5]['fallbackReason'])
 
     def test_primary_hierarchy_recovers_down_the_entire_hosted_ladder(self):
         context=ssl_roster();context['blueTeam']['players'][1]['rating']=99
@@ -219,18 +219,28 @@ class RatingTests(unittest.TestCase):
             self.assertEqual(assignment['rating'],99)
         with self.assertRaises(ValueError):rating_plan(context,[])
 
-    def test_public_preview_keeps_valid_assignments_on_a_partial_failure(self):
+    def test_public_preview_substitutes_a_higher_healthy_tier_when_needed(self):
         from bot_plan import plan
         context=ssl_roster()
         context['orangeTeam']['players'][2]['rating']=79
         context['_excludedHostedBots']=['Necto','Element']
         result=plan(context)
-        self.assertFalse(result['success'])
+        self.assertTrue(result['success'])
         self.assertEqual(len(result['assignments']),6)
         self.assertTrue(all(a['engine'] for a in result['assignments'][1:5]))
-        self.assertTrue(result['assignments'][5]['assignmentError'])
+        self.assertNotEqual(result['assignments'][5]['engine'],'Necto')
+        self.assertGreater(result['assignments'][5]['actualTierCutoff'],79)
 
-    def test_fallback_persists_and_steps_down_from_failed_replacement(self):
+    def test_higher_fallback_does_not_bypass_path_promotion_caps(self):
+        context=roster();context['gameMode']='Path To Glory';context['pathHostedUnlocked']=True
+        for side in ('blueTeam','orangeTeam'):
+            for player in context[side]['players']:
+                player['rating']=79;player['pathTierCap']=79
+        result=rating_plan(context,['Kiyo3'],allow_partial=True)
+        self.assertFalse(result['success'])
+        self.assertTrue(all(a.get('assignmentError') for a in result['assignments'] if a['type']!='Human'))
+
+    def test_fallback_is_temporary_and_original_policy_returns_when_healthy(self):
         context=ssl_roster();context['careerId']='fallback-lock'
         context['blueTeam']['players'][1]['rating']=99
         first=rating_plan(context,CATALOG,lock_series=True)
@@ -239,11 +249,11 @@ class RatingTests(unittest.TestCase):
         self.assertEqual(second['assignments'][1]['engine'],'Chronos')
         self.assertEqual([a['engine'] for a in first['assignments'][2:]],[a['engine'] for a in second['assignments'][2:]])
         context['_excludedHostedBots']=[]
-        self.assertEqual(rating_plan(context,CATALOG)['assignments'][1]['engine'],'Chronos')
-        context['_excludedHostedBots']=['Chronos']
+        self.assertEqual(rating_plan(context,CATALOG)['assignments'][1]['engine'],'Kiyo3')
+        context['_excludedHostedBots']=['Kiyo3','Chronos']
         third=rating_plan(context,CATALOG,lock_series=True)['assignments'][1]
         self.assertEqual(third['engine'],'BonkDaddy')
-        self.assertEqual(third['fallbackFrom'],'Chronos')
+        self.assertEqual(third['fallbackFrom'],'Kiyo3')
 
     def test_elite_families_are_shuffled_before_reuse_and_refresh_redraws(self):
         context=ssl_roster();context['careerId']='career-1'

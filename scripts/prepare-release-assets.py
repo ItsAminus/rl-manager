@@ -42,7 +42,8 @@ def main():
         if not installed.is_file() or digest(original)!=digest(installed):raise RuntimeError('Missing or different packaged payload: '+str(original.relative_to(ROOT)))
         verified[str(installed.relative_to(resources)).replace('\\','/')]=digest(installed).hex()
     sha512=base64.b64encode(digest(installer,'sha512')).decode();stamp=datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
-    (release/'latest.yml').write_text(f'version: {version}\nfiles:\n  - url: {installer.name}\n    sha512: {sha512}\n    size: {installer.stat().st_size}\npath: {installer.name}\nsha512: {sha512}\nreleaseName: RL Manager {version} - MAJOR RELEASE\nreleaseDate: "{stamp}"\n',encoding='utf-8')
+    label=package.get('releaseName','MAJOR RELEASE' if package.get('releaseType')=='major' else 'Update')
+    (release/'latest.yml').write_text(f'version: {version}\nfiles:\n  - url: {installer.name}\n    sha512: {sha512}\n    size: {installer.stat().st_size}\npath: {installer.name}\nsha512: {sha512}\nreleaseName: RL Manager {version} - {label}\nreleaseDate: "{stamp}"\n',encoding='utf-8')
     for p in [installer,blockmap,release/'latest.yml']:link(p,assets/p.name)
     shutil.copy2(ROOT/'docs/releases'/f'{version}.md',assets/'Release-notes.md')
     full_notes=ROOT/'docs/releases'/f'{version}-full-patch-notes.md'
@@ -60,7 +61,7 @@ def main():
         subprocess.run([str(seven),'a','-t7z','-mx=0','-mmt=4','-v1900m',str(archive),kit.name],cwd=kit.parent,check=True)
         subprocess.run([str(seven),'t',str(archive)+'.001','-bd'],check=True)
     receipt={'version':version,'releaseType':package.get('releaseType','stable'),'runtimeVersion':'1.0.8',
-             'completeKitBase':'1.5.0','localBotRuntimeVersion':version,'localPoliciesAudited':packaged['localPoliciesAudited'],
+             'completeKitBase':'1.5.0','localBotRuntimeVersion':package.get('localBotRuntimeVersion',version),'localPoliciesAudited':packaged['localPoliciesAudited'],
              'sourceCommit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
              'installerSHA256':digest(installer).hex(),'installerBytes':installer.stat().st_size,
              'appTestsPassed':validation['appTestsPassed'],'bridgeTestsPassed':validation['bridgeTestsPassed'],'nativeTestsPassed':validation['nativeTestsPassed'],'packagedAppPassed':True,

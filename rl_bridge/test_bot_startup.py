@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-from bot_startup import BotReadiness, mark_ready, receive_metadata, start_with_ready_bots
+from bot_startup import BotReadiness, BotStartupError, mark_ready, mark_failed, receive_metadata, start_with_ready_bots
 from rlbot.utils.class_importer import import_agent
 
 
@@ -188,6 +188,22 @@ class StartupTests(unittest.TestCase):
         manager = Mock()
         with patch('bot_startup.receive_metadata'), self.assertRaisesRegex(RuntimeError, 'Bot'):
             self.barrier.wait(manager, lambda _: None, clock=clock, sleep=lambda _: None)
+
+    def test_explicit_agent_failure_triggers_recovery_before_timeout(self):
+        mark_failed(self.barrier.folder,1,'Bribblebot initialize_agent failed')
+        with patch('bot_startup.receive_metadata'):
+            with self.assertRaises(BotStartupError) as caught:
+                self.barrier.wait(Mock(),lambda _:None,clock=lambda:0,sleep=lambda _:self.fail('should not wait'))
+        self.assertEqual(caught.exception.missing,{1:'Bot'})
+
+    def test_failed_attempt_keeps_kickoff_paused_for_recovery(self):
+        manager=self.manager()
+        self.barrier.wait=Mock(side_effect=BotStartupError({1:'Bot'}))
+        with self.assertRaises(BotStartupError):
+            start_with_ready_bots(manager,self.barrier,lambda _:None,hold_on_failure=True)
+        states=manager.game_interface.set_game_state.call_args_list
+        self.assertEqual(len(states),1)
+        self.assertTrue(states[0].args[0].game_info.paused)
 
 
 if __name__ == '__main__':

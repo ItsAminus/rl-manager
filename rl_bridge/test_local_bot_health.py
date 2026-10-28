@@ -39,10 +39,14 @@ class LocalBotHealthTests(unittest.TestCase):
         self.assertIn('Bribblebot',result)
         self.assertIn('Career Rookie',result)
 
-    def test_candidate_order_does_not_upgrade_a_failed_bot(self):
+    def test_candidate_order_uses_nearest_level_lower_before_higher_on_tie(self):
         self.assertEqual(candidates('Nexto')[:3],['Nexto','Necto','Element'])
-        self.assertNotIn('Nexto',candidates('Bribblebot'))
-        self.assertEqual(candidates('Bribblebot')[-1],'Career Rookie')
+        order=candidates('Bribblebot')
+        self.assertIn('Nexto',order)
+        self.assertLess(order.index('Career Rookie'),order.index('Stick'))
+        order=candidates('Necto')
+        self.assertLess(order.index('Botimus Prime'),order.index('Nexto'))
+        self.assertLess(order.index('Nexto'),order.index('Stick'))
 
     def test_local_failure_falls_back_and_updates_actual_profile(self):
         profile={'engine':'Bribblebot','rating':60,'playerId':'test'}

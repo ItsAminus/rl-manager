@@ -7,11 +7,13 @@
 
 Build your Rocket League career in **Manager Career** or take a fixed squad from the bottom to the top in **Path To Glory**.
 
-**Latest version: 1.7.0 · MAJOR UPDATE · Windows PC only**
+**Latest version: 1.7.1 · Quick bug fix · Windows PC only**
 
-**[Download the 1.7.0 update installer](https://github.com/ItsAminus/rl-manager/releases/download/v1.7.0/RL.Manager.1.7.0.Setup.exe)** · [Release notes](https://github.com/ItsAminus/rl-manager/releases/tag/v1.7.0)
+**[Download the 1.7.1 update installer](https://github.com/ItsAminus/rl-manager/releases/download/v1.7.1/RL.Manager.1.7.1.Setup.exe)** · [Release notes](https://github.com/ItsAminus/rl-manager/releases/tag/v1.7.1)
 
-**v1.7.0 is a major management update:** expanded scouting and hidden young prospects, negotiated board visions, club-to-club bargaining and instalment transfers, backroom departments, custom clubs and starting players, automatic matchday reports and recorded analyst desks, additional SSA/APAC teams, a rebalanced Hard bot ladder, Steam/BakkesMod startup repairs, and separate commentator volume. [Full announcement and update notes](docs/releases/1.7.0.md).
+**v1.7.1 fixes local matches getting stuck at 4/5 bots ready and the muted-commentary `ClipBroadcast.prepare_intro` startup crash.** Existing users only need the [1.7.1 app installer](https://github.com/ItsAminus/rl-manager/releases/download/v1.7.1/RL.Manager.1.7.1.Setup.exe). [Quick bug fix notes](docs/releases/1.7.1.md).
+
+**v1.7.0 was a major management update:** expanded scouting and hidden young prospects, negotiated board visions, club-to-club bargaining and instalment transfers, backroom departments, custom clubs and starting players, automatic matchday reports and recorded analyst desks, additional SSA/APAC teams, a rebalanced Hard bot ladder, Steam/BakkesMod startup repairs, and separate commentator volume. [Full announcement and update notes](docs/releases/1.7.0.md).
 
 The save-specific player-information editor and JSON importer remain available. [Editor guide](docs/PLAYER_INFORMATION_EDITOR.md).
 
@@ -25,9 +27,9 @@ Major career expansion: national management and playable FIFAe finals, the RLCS 
 
 ## Start here: first-time installation
 
-**New players need the COMPLETE 1.5.0 download: all four numbered parts below, followed by the 1.7.0 update installer linked above.**
+**New players need the COMPLETE 1.5.0 download: all four numbered parts below, followed by the 1.7.1 update installer linked above.**
 
-The separate `RL.Manager.1.7.0.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
+The separate `RL.Manager.1.7.1.Setup.exe` file updates the app. It is **not the complete first-time setup**. GitHub's **Source code** downloads are for developers.
 
 ### 1. What you need before downloading
 
@@ -61,9 +63,9 @@ Open the **[complete 1.5.0 download page](https://github.com/ItsAminus/rl-manage
 4. Open the extracted **`RL-Manager-Complete-1.5.0`** folder.
 5. Close Rocket League, BakkesMod and any running RL Manager window.
 6. Double-click **`Install RL Manager.exe`**, then click **Install everything**. Allow the included component installers to finish and approve their installation prompts when asked.
-7. When setup finishes, close RLM if it opened and run the **1.7.0 update installer** linked above. Then open **RL Manager** from its desktop or Start menu shortcut.
+7. When setup finishes, close RLM if it opened and run the **1.7.1 update installer** linked above. Then open **RL Manager** from its desktop or Start menu shortcut.
 
-**Keep the extracted folder and its `Packages`, `Setup` and `Tools` subfolders together until setup finishes.** The wizard handles the internal `Runtime.7z` files itself. You do not need to open them. Apply the 1.7.0 app update after the complete kit finishes.
+**Keep the extracted folder and its `Packages`, `Setup` and `Tools` subfolders together until setup finishes.** The wizard handles the internal `Runtime.7z` files itself. You do not need to open them. Apply the 1.7.1 app update after the complete kit finishes.
 
 ### 4. Prepare Rocket League: launch WITHOUT Easy Anti-Cheat
 
@@ -101,7 +103,7 @@ In Manager Career, **Easy and Medium use local bots**. **Hard is experimental** 
 **Do I install parts 1, 2, 3 and 4 separately?**  
 No. Download all four, extract `.001`, then run **Install RL Manager.exe** inside the extracted folder.
 
-**Do I also download `RL.Manager.1.7.0.Setup.exe`?**
+**Do I also download `RL.Manager.1.7.1.Setup.exe`?**
 
 Existing users only need this update. New users install the complete 1.5.0 kit first, then apply 1.7.0. If you already have the complete 1.0.8 runtime, the update installer reuses it.
 

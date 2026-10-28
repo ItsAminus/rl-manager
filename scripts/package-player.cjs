@@ -6,7 +6,8 @@ async function main(){
  const version=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version;
  const payload=path.join(root,'scratch/local-bot-payload');
  const manifest=JSON.parse(fs.readFileSync(path.join(payload,'manifest.json'),'utf8'));
- if(manifest.version!==version||manifest.policies!==16||!manifest.files?.length||!fs.existsSync(path.join(payload,'local-bots.7z')))throw Error('Build and audit the local-bot repair payload for this version first: python scripts/build-local-bot-runtime.py');
+ const runtimeVersion=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).localBotRuntimeVersion||version;
+ if(manifest.version!==runtimeVersion||manifest.policies!==16||!manifest.files?.length||!fs.existsSync(path.join(payload,'local-bots.7z')))throw Error('Build and audit the local-bot repair payload for this version first: python scripts/build-local-bot-runtime.py');
  if(process.platform==='win32'){
   const target=path.join(cache,'winCodeSign','winCodeSign-2.6.0');
   if(!fs.existsSync(path.join(target,'rcedit-x64.exe'))){

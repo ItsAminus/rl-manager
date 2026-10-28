@@ -254,7 +254,7 @@ def launch(context,rl_path,result_path,enable_commentary=True):
             if attempt==2:
                 raise RuntimeError(str(exc)+' Automatic recovery exhausted two retries. Previous completed series games remain saved; retry this game with healthy bots.') from exc
             names=', '.join(a['name']+' ('+a['engine']+')' for a in exc.assignments)
-            log_event('BOT_RECOVERY',message=f'{names} stopped playing. Excluding the failed bots and restarting game {context.get("gameNumber",1)} with the next strongest healthy replacements (retry {attempt+1}/2). Previous completed games remain saved.',gameNumber=context.get('gameNumber',1))
+            log_event('BOT_RECOVERY',message=f'{names} stopped playing. Excluding the failed bots and restarting game {context.get("gameNumber",1)} with temporary closest-level healthy replacements (retry {attempt+1}/2). Previous completed games remain saved.',gameNumber=context.get('gameNumber',1))
 
 
 def _launch_once(context,rl_path,result_path,enable_commentary=True):
@@ -291,7 +291,9 @@ def _launch_once(context,rl_path,result_path,enable_commentary=True):
         dispatcher=create_commentary(enable_commentary,context=context)
         from player_introductions import run_showcase
         run_showcase(manager,context,dispatcher,log)
-        if dispatcher:dispatcher.prepare_intro()
+        # Recorded-only/muted commentary keeps crowd/countdown audio active,
+        # but has no generated introduction to prepare.
+        if dispatcher and hasattr(dispatcher,'prepare_intro'):dispatcher.prepare_intro()
         log('Requesting Rocket Host server in '+server['location']+' with all five assigned bots...')
         address=validate_join_address(read_url(request_url(server,context,assignments),timeout=90))
         session=uuid.uuid4().hex

@@ -19,8 +19,10 @@ LOCAL_LADDER = (
 def candidates(engine):
     for index, pool in enumerate(LOCAL_LADDER):
         if engine in pool:
+            levels=sorted((i for i in range(len(LOCAL_LADDER)) if i!=index),
+                          key=lambda i:(abs(i-index),i<index))
             return [engine, *[name for name in pool if name != engine],
-                    *[name for lower in LOCAL_LADDER[index + 1:] for name in lower]]
+                    *[name for i in levels for name in LOCAL_LADDER[i]]]
     return [engine]
 
 
